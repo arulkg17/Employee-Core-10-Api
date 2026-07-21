@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="../../../AI/.Net10/GeneratorTool/GeneratorTool/GeneratorTool.csproj" />
   <Project Path="Employee-Core10-API/Invoice-Core10-API.csproj" />
 </Solution>
