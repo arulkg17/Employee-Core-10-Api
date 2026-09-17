@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="16.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="10.0.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Invoice.DAL\Invoice.DAL.csproj" />
+    <ProjectReference Include="..\Invoice.DTOs\Invoice.DTOs.csproj" />
+    <ProjectReference Include="..\Invoice.Model\Invoice.Model.csproj" />
+  </ItemGroup>
+
+</Project>

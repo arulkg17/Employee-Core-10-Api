@@ -6,7 +6,7 @@ using System.Data;
 using Microsoft.EntityFrameworkCore;
 namespace Invoice.DAL.Repositories;
 
-public class ProductSPRepository : IProductRepositorySp
+public class ProductSPRepository : IProductRepository
 {
     private readonly AppDbContext _context;
 
@@ -15,7 +15,7 @@ public class ProductSPRepository : IProductRepositorySp
         _context = context;
     }
 
-    public async Task<int> AddAsync(ProductEntity product)
+    public async Task<int> CreateAsync(ProductEntity product)
     {
         var idParam = new SqlParameter("@Id", SqlDbType.Int)
         {
