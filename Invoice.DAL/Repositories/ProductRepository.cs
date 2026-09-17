@@ -19,11 +19,11 @@ public class ProductRepository : IProductRepository
         return await _dbContext.Products.FindAsync(id);
     }
 
-    public async Task<ProductEntity> CreateAsync(ProductEntity entiry)
+    public async Task<int> CreateAsync(ProductEntity entiry)
     {
         _dbContext.Products.Add(entiry);
-        await _dbContext.SaveChangesAsync();
-        return entiry;
+        var ret = await _dbContext.SaveChangesAsync();
+        return ret;
     }
     public async Task<bool> UpdateAsync(ProductEntity entity)
     {
@@ -31,7 +31,7 @@ public class ProductRepository : IProductRepository
         return await _dbContext.SaveChangesAsync() > 0;
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(int id, byte[] rowVersion)
     {
         var entity = await _dbContext.Products.FindAsync(id);
         if (entity == null)
