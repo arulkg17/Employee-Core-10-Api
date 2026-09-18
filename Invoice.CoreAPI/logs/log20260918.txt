@@ -1,0 +1,146 @@
+2026-09-18 14:11:09.691 -05:00 [INF] User profile is available. Using 'C:\Users\arulg\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-09-18 14:11:10.411 -05:00 [INF] Now listening on: http://localhost:5063
+2026-09-18 14:11:10.589 -05:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-09-18 14:11:10.590 -05:00 [INF] Hosting environment: Development
+2026-09-18 14:11:10.590 -05:00 [INF] Content root path: D:\Projects\NetCore\Employee-Core10-Api\Employee-Core10-API\Invoice.CoreAPI
+2026-09-18 14:11:11.393 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.html - null null
+2026-09-18 14:11:11.867 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.html - 304 null null 494.4357ms
+2026-09-18 14:11:11.926 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-18 14:11:11.926 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui.css - null null
+2026-09-18 14:11:11.926 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.css - null null
+2026-09-18 14:11:11.942 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/_framework/aspnetcore-browser-refresh.js - 200 14935 application/javascript; charset=utf-8 17.5994ms
+2026-09-18 14:11:11.944 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-bundle.js - null null
+2026-09-18 14:11:11.946 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-standalone-preset.js - null null
+2026-09-18 14:11:11.965 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.js - null null
+2026-09-18 14:11:11.966 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.js - 304 null null 1.1532ms
+2026-09-18 14:11:11.974 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui.css - 304 null null 49.352ms
+2026-09-18 14:11:11.981 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.css - 304 null null 56.3077ms
+2026-09-18 14:11:11.983 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-standalone-preset.js - 304 null null 37.2275ms
+2026-09-18 14:11:11.991 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-bundle.js - 304 null null 47.0922ms
+2026-09-18 14:11:12.341 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/v1/swagger.json - null null
+2026-09-18 14:11:12.392 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 50.8818ms
+2026-09-18 14:11:23.484 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/Category/TestException - null null
+2026-09-18 14:11:23.568 -05:00 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+2026-09-18 14:11:23.575 -05:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-09-18 14:11:23.576 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/Category/TestException - 401 0 null 91.3073ms
+2026-09-18 14:11:55.068 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.html - null null
+2026-09-18 14:11:55.069 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.html - 304 null null 1.2088ms
+2026-09-18 14:11:55.131 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-18 14:11:55.131 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.css - null null
+2026-09-18 14:11:55.131 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.css - 304 null null 0.5224ms
+2026-09-18 14:11:55.132 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/_framework/aspnetcore-browser-refresh.js - 200 14935 application/javascript; charset=utf-8 0.6013ms
+2026-09-18 14:11:55.132 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.js - null null
+2026-09-18 14:11:55.132 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-standalone-preset.js - null null
+2026-09-18 14:11:55.132 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-standalone-preset.js - 304 null null 0.3412ms
+2026-09-18 14:11:55.133 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.js - 304 null null 0.6078ms
+2026-09-18 14:11:55.133 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui.css - null null
+2026-09-18 14:11:55.133 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui.css - 304 null null 0.5081ms
+2026-09-18 14:11:55.149 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-bundle.js - null null
+2026-09-18 14:11:55.149 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-bundle.js - 304 null null 0.3692ms
+2026-09-18 14:11:55.637 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/v1/swagger.json - null null
+2026-09-18 14:11:55.646 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/favicon-32x32.png - null null
+2026-09-18 14:11:55.646 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/favicon-32x32.png - 304 null null 0.6196ms
+2026-09-18 14:11:55.662 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 24.3458ms
+2026-09-18 14:12:16.778 -05:00 [INF] Request starting HTTP/1.1 POST http://localhost:5063/api/Login - application/json 54
+2026-09-18 14:12:16.786 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.LoginController.Login (Invoice.CoreAPI)'
+2026-09-18 14:12:16.840 -05:00 [INF] Route matched with {action = "Login", controller = "Login"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(Invoice.DTOs.LoginRequestDto) on controller Invoice.CoreAPI.Controllers.LoginController (Invoice.CoreAPI).
+2026-09-18 14:12:18.175 -05:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType1`3[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[Invoice.DTOs.LoginResponseDto, Invoice.DTOs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-09-18 14:12:18.229 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.LoginController.Login (Invoice.CoreAPI) in 1381.3242ms
+2026-09-18 14:12:18.229 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.LoginController.Login (Invoice.CoreAPI)'
+2026-09-18 14:12:18.238 -05:00 [INF] Request finished HTTP/1.1 POST http://localhost:5063/api/Login - 200 null application/json; charset=utf-8 1460.6663ms
+2026-09-18 14:12:44.079 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/Category/TestException - null null
+2026-09-18 14:12:44.198 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.CategoryController.TestException (Invoice.CoreAPI)'
+2026-09-18 14:12:44.201 -05:00 [INF] Route matched with {action = "TestException", controller = "Category"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult TestException() on controller Invoice.CoreAPI.Controllers.CategoryController (Invoice.CoreAPI).
+2026-09-18 14:12:48.589 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.CategoryController.TestException (Invoice.CoreAPI) in 4387.8025ms
+2026-09-18 14:12:48.590 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.CategoryController.TestException (Invoice.CoreAPI)'
+2026-09-18 14:12:48.612 -05:00 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-09-18 14:12:48.613 -05:00 [ERR] Unhandled exception occurred. Method: GET, Path: /api/Category/TestException
+System.InvalidOperationException: This is a test exception from Invoice CoreAPI.
+   at Invoice.CoreAPI.Controllers.CategoryController.TestException() in D:\Projects\NetCore\Employee-Core10-Api\Employee-Core10-API\Invoice.CoreAPI\Controllers\CategoryController.cs:line 355
+   at lambda_method10(Closure, Object, Object[])
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.SyncActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeNextActionFilterAsync()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Invoice.CoreAPI.Middleware.ExceptionLoggingMiddleware.InvokeAsync(HttpContext context) in D:\Projects\NetCore\Employee-Core10-Api\Employee-Core10-API\Invoice.CoreAPI\Middleware\ExceptionLoggingMiddleware.cs:line 23
+2026-09-18 14:12:48.658 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/Category/TestException - 500 null application/json 4579.4674ms
+2026-09-18 14:22:33.726 -05:00 [INF] User profile is available. Using 'C:\Users\arulg\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-09-18 14:22:34.158 -05:00 [INF] Now listening on: http://localhost:5063
+2026-09-18 14:22:34.866 -05:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-09-18 14:22:34.866 -05:00 [INF] Hosting environment: Development
+2026-09-18 14:22:34.866 -05:00 [INF] Content root path: D:\Projects\NetCore\Employee-Core10-Api\Employee-Core10-API\Invoice.CoreAPI
+2026-09-18 14:22:35.015 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.html - null null
+2026-09-18 14:22:35.414 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.html - 304 null null 414.2309ms
+2026-09-18 14:22:35.459 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui.css - null null
+2026-09-18 14:22:35.476 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.css - null null
+2026-09-18 14:22:35.476 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-bundle.js - null null
+2026-09-18 14:22:35.476 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.js - null null
+2026-09-18 14:22:35.477 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/_framework/aspnetcore-browser-refresh.js - null null
+2026-09-18 14:22:35.478 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.js - 304 null null 1.3762ms
+2026-09-18 14:22:35.478 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-standalone-preset.js - null null
+2026-09-18 14:22:35.482 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/_framework/aspnetcore-browser-refresh.js - 200 14935 application/javascript; charset=utf-8 4.7552ms
+2026-09-18 14:22:35.504 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.css - 304 null null 27.9619ms
+2026-09-18 14:22:35.504 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui.css - 304 null null 49.5187ms
+2026-09-18 14:22:35.504 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-standalone-preset.js - 304 null null 25.3368ms
+2026-09-18 14:22:35.504 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-bundle.js - 304 null null 27.6395ms
+2026-09-18 14:22:35.757 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/v1/swagger.json - null null
+2026-09-18 14:22:35.788 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 30.6877ms
+2026-09-18 14:23:03.998 -05:00 [INF] Request starting HTTP/1.1 POST http://localhost:5063/api/Login - application/json 54
+2026-09-18 14:23:04.090 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.LoginController.Login (Invoice.CoreAPI)'
+2026-09-18 14:23:04.137 -05:00 [INF] Route matched with {action = "Login", controller = "Login"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(Invoice.DTOs.LoginRequestDto) on controller Invoice.CoreAPI.Controllers.LoginController (Invoice.CoreAPI).
+2026-09-18 14:23:05.277 -05:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType1`3[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[Invoice.DTOs.LoginResponseDto, Invoice.DTOs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-09-18 14:23:05.308 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.LoginController.Login (Invoice.CoreAPI) in 1166.8089ms
+2026-09-18 14:23:05.309 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.LoginController.Login (Invoice.CoreAPI)'
+2026-09-18 14:23:05.314 -05:00 [INF] Request finished HTTP/1.1 POST http://localhost:5063/api/Login - 200 null application/json; charset=utf-8 1315.591ms
+2026-09-18 14:23:29.500 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/v1/Category/GetAll - null null
+2026-09-18 14:23:29.823 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.CategoryController.GetAll (Invoice.CoreAPI)'
+2026-09-18 14:23:29.845 -05:00 [INF] Route matched with {action = "GetAll", controller = "Category"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll() on controller Invoice.CoreAPI.Controllers.CategoryController (Invoice.CoreAPI).
+2026-09-18 14:23:30.655 -05:00 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-09-18 14:23:32.954 -05:00 [INF] Executed DbCommand (14ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+EXEC sp_Category_GetAll
+2026-09-18 14:23:33.082 -05:00 [INF] Executing OkObjectResult, writing value of type 'Invoice.Model.ApiResponse`1[[System.Collections.Generic.IEnumerable`1[[Invoice.DTOs.CategoryDto, Invoice.DTOs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-09-18 14:23:33.100 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.CategoryController.GetAll (Invoice.CoreAPI) in 3254.5465ms
+2026-09-18 14:23:33.100 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.CategoryController.GetAll (Invoice.CoreAPI)'
+2026-09-18 14:23:33.113 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/v1/Category/GetAll - 200 null application/json; charset=utf-8 3612.8662ms
+2026-09-18 14:23:49.205 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/v1/Category/TestException - null null
+2026-09-18 14:23:49.216 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.CategoryController.TestException (Invoice.CoreAPI)'
+2026-09-18 14:23:49.220 -05:00 [INF] Route matched with {action = "TestException", controller = "Category"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult TestException() on controller Invoice.CoreAPI.Controllers.CategoryController (Invoice.CoreAPI).
+2026-09-18 14:23:51.505 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.CategoryController.TestException (Invoice.CoreAPI) in 2284.956ms
+2026-09-18 14:23:51.506 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.CategoryController.TestException (Invoice.CoreAPI)'
+2026-09-18 14:23:51.529 -05:00 [ERR] Unhandled exception occurred. Method: GET, Path: /api/v1/Category/TestException
+System.InvalidOperationException: This is a test exception from Invoice CoreAPI.
+   at Invoice.CoreAPI.Controllers.CategoryController.TestException() in D:\Projects\NetCore\Employee-Core10-Api\Employee-Core10-API\Invoice.CoreAPI\Controllers\CategoryController.cs:line 358
+   at lambda_method82(Closure, Object, Object[])
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.SyncActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeNextActionFilterAsync()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Invoice.CoreAPI.Middleware.ExceptionLoggingMiddleware.InvokeAsync(HttpContext context) in D:\Projects\NetCore\Employee-Core10-Api\Employee-Core10-API\Invoice.CoreAPI\Middleware\ExceptionLoggingMiddleware.cs:line 23
+2026-09-18 14:23:51.575 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/v1/Category/TestException - 500 null application/json 2370.0116ms
