@@ -1,0 +1,58 @@
+```yaml
+name: IMS .NET 10 CI
+
+on:
+  push:
+    branches:
+      - main
+      - feature/github-actions-ci
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # --------------------------------------------------
+      # 1. Checkout source code
+      # --------------------------------------------------
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      # --------------------------------------------------
+      # 2. Install .NET 10
+      # --------------------------------------------------
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      # --------------------------------------------------
+      # 3. Display .NET information
+      # --------------------------------------------------
+      - name: Display .NET version
+        run: dotnet --info
+
+      # --------------------------------------------------
+      # 4. Restore NuGet packages
+      # --------------------------------------------------
+      - name: Restore dependencies
+        run: dotnet restore
+
+      # --------------------------------------------------
+      # 5. Build solution
+      # --------------------------------------------------
+      - name: Build solution
+        run: dotnet build --no-restore --configuration Release
+
+      # --------------------------------------------------
+      # 6. Run all tests
+      # --------------------------------------------------
+      - name: Run unit tests
+        run: dotnet test --no-build --configuration Release
+```
