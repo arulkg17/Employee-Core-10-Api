@@ -1,5 +1,4 @@
 <Solution>
-  <Project Path="../../../AI/.Net10/GeneratorTool/GeneratorTool/GeneratorTool.csproj" />
   <Project Path="Employee-Core10-API/Invoice-Core10-API.csproj" />
   <Project Path="Invoice.BAL.Test/Invoice.BAL.Test.csproj" Id="c98da3fa-9e6b-4cae-95a4-34c75f5eea3b" />
   <Project Path="Invoice.BAL/Invoice.BAL.csproj" Id="df62dcdb-622a-44a0-9590-b62be11947b5" />
