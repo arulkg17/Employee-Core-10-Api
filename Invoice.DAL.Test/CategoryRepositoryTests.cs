@@ -167,8 +167,8 @@ public class CategoryRepositoryTests
         Assert.Null(result);
     }
 
-    [Fact]
-    public async Task AddAsync_ShouldAddCategory()
+[Fact]
+public async Task AddAsync_ShouldAddCategory()
     {
         await using var context = CreateDbContext();
         await SeedCategoriesAsync(context);
@@ -195,14 +195,20 @@ public class CategoryRepositoryTests
             CreatedDate = DateTime.UtcNow
         };
 
-        await repository.AddAsync(category);
+        // Act
+        var generatedId = await repository.AddAsync(category);
 
+        // Assert generated ID
+        Assert.True(generatedId > 0);
+
+        // Verify record was actually inserted.
         var savedCategory = await context.Category
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Code == "FR001");
 
         Assert.NotNull(savedCategory);
 
+        Assert.Equal(generatedId, savedCategory.Id);
         Assert.Equal("FR001", savedCategory.Code);
         Assert.Equal("Fruits", savedCategory.Name);
         Assert.Equal("Fresh fruits", savedCategory.Description);
@@ -212,6 +218,7 @@ public class CategoryRepositoryTests
         context.Category.Remove(savedCategory);
         await context.SaveChangesAsync();
     }
+
 
     [Fact]
     public async Task UpdateAsync_ShouldUpdateCategory()

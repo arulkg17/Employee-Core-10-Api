@@ -7,11 +7,11 @@ using Invoice.DTOs;
 namespace Invoice.BAL.Services;
 
 
-public class CustomerServiceEFsp : ICustomerService
+public class CustomerServiceEFSp : ICustomerService
 {
     private readonly ICustomerRepository _repository;
     private readonly IMapper _mapper;
-    public CustomerServiceEFsp(ICustomerRepository repository, IMapper mapper)
+    public CustomerServiceEFSp(ICustomerRepository repository, IMapper mapper)
     {
         _repository = repository; _mapper = mapper;
     }

@@ -15,22 +15,48 @@ public class CategoryRepository : ICategoryRepository
     {
         _dbContext = dbContext;
     }
+
     public async Task<int> AddAsync(CategoryEntity category)
     {
-        var result = await _dbContext.Database.ExecuteSqlRawAsync(
-            @"EXEC sp_Category_Insert
-            @Code,
-            @Name,
-            @Description,
-            @IsActive",
-            new SqlParameter("@Code", category.Code),
-            new SqlParameter("@name", category.Name),
-            new SqlParameter("@Description", (object?)category.Description ?? DBNull.Value),
-            new SqlParameter("@IsActive", (object?)category.IsActive ?? DBNull.Value)
-            );
-        return result;
+        var connection = _dbContext.Database.GetDbConnection();
 
+        if (connection.State != ConnectionState.Open)
+        {
+            await connection.OpenAsync();
+        }
+
+        using var command = connection.CreateCommand();
+
+        command.CommandText = "sp_Category_Insert";
+        command.CommandType = CommandType.StoredProcedure;
+
+        command.Parameters.Add(
+            new SqlParameter("@Code", category.Code));
+
+        command.Parameters.Add(
+            new SqlParameter("@Name", category.Name));
+
+        command.Parameters.Add(
+            new SqlParameter(
+                "@Description",
+                (object?)category.Description ?? DBNull.Value));
+
+        command.Parameters.Add(
+            new SqlParameter(
+                "@IsActive",
+                (object?)category.IsActive ?? DBNull.Value));
+
+        var result = await command.ExecuteScalarAsync();
+
+        if (result == null || result == DBNull.Value)
+        {
+            throw new InvalidOperationException(
+                "Category insert did not return the generated Id.");
+        }
+
+        return Convert.ToInt32(result);
     }
+
     public async Task<bool> UpdateAsync(CategoryEntity category)
     {
         var affectedRows = await _dbContext.Database.ExecuteSqlRawAsync(
