@@ -1,36 +1,123 @@
 name: IMS .NET 10 CI
 
 on:
-  push:
-    branches:
-      - main
-      - feature/github-actions-ci
+push:
+branches:
+- main
+- feature/github-actions-ci
 
-  pull_request:
-    branches:
-      - main
+pull_request:
+branches:
+- main
 
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
+build-and-test:
+runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
+```
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    env:
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
+    ports:
+      - 1433:1433
+    options: >-
+      --health-cmd "/opt/mssql-tools18/bin/sqlcmd
+      -S localhost
+      -U sa
+      -P $${MSSQL_SA_PASSWORD}
+      -C
+      -Q 'SELECT 1'"
+      --health-interval 10s
+      --health-timeout 5s
+      --health-retries 30
+      --health-start-period 30s
 
-      - name: Setup .NET 10
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
+env:
+  TEST_DB_CONNECTION: "Server=localhost,1433;Database=Accounts_Test;User Id=sa;Password=${{ secrets.TEST_DB_PASSWORD }};Encrypt=False;TrustServerCertificate=True"
 
-      - name: Display .NET version
-        run: dotnet --info
+steps:
+  - name: Checkout source code
+    uses: actions/checkout@v4
 
-      - name: Restore dependencies
-        run: dotnet restore
+  - name: Setup .NET 10
+    uses: actions/setup-dotnet@v4
+    with:
+      dotnet-version: '10.0.x'
 
-      - name: Build solution
-        run: dotnet build --no-restore --configuration Release
+  - name: Display .NET version
+    run: dotnet --info
 
-      - name: Run unit tests
-        run: dotnet test --no-build --configuration Release
+  - name: Wait for SQL Server
+    shell: bash
+    run: |
+      echo "Waiting for SQL Server..."
+
+      for i in {1..30}; do
+        if /opt/mssql-tools18/bin/sqlcmd \
+          -S localhost,1433 \
+          -U sa \
+          -P "${{ secrets.TEST_DB_PASSWORD }}" \
+          -C \
+          -Q "SELECT 1" > /dev/null 2>&1
+        then
+          echo "SQL Server is ready."
+          break
+        fi
+
+        echo "SQL Server not ready yet... attempt $i/30"
+        sleep 2
+      done
+
+  - name: Create Accounts_Test database
+    shell: bash
+    run: |
+      /opt/mssql-tools18/bin/sqlcmd \
+        -S localhost,1433 \
+        -U sa \
+        -P "${{ secrets.TEST_DB_PASSWORD }}" \
+        -C \
+        -Q "IF DB_ID('Accounts_Test') IS NULL CREATE DATABASE Accounts_Test"
+
+  - name: Initialize Accounts_Test database
+    shell: bash
+    run: |
+      /opt/mssql-tools18/bin/sqlcmd \
+        -S localhost,1433 \
+        -U sa \
+        -P "${{ secrets.TEST_DB_PASSWORD }}" \
+        -C \
+        -d Accounts_Test \
+        -i Database/CI/01_Initialize_Accounts_Test.sql
+
+  - name: Verify database initialization
+    shell: bash
+    run: |
+      echo "Checking tables..."
+      /opt/mssql-tools18/bin/sqlcmd \
+        -S localhost,1433 \
+        -U sa \
+        -P "${{ secrets.TEST_DB_PASSWORD }}" \
+        -C \
+        -d Accounts_Test \
+        -Q "SELECT TABLE_SCHEMA, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' ORDER BY TABLE_SCHEMA, TABLE_NAME"
+
+      echo "Checking stored procedures..."
+      /opt/mssql-tools18/bin/sqlcmd \
+        -S localhost,1433 \
+        -U sa \
+        -P "${{ secrets.TEST_DB_PASSWORD }}" \
+        -C \
+        -d Accounts_Test \
+        -Q "SELECT COUNT(*) AS StoredProcedureCount FROM sys.procedures WHERE name LIKE 'sp_%'"
+
+  - name: Restore dependencies
+    run: dotnet restore
+
+  - name: Build solution
+    run: dotnet build --no-restore --configuration Release
+
+  - name: Run unit tests
+    run: dotnet test --no-build --configuration Release
