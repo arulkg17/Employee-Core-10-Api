@@ -1,125 +1,126 @@
 name: IMS .NET 10 CI
 
 on:
-push:
-branches:
-- main
-- feature/github-actions-ci
+  push:
+    branches:
+      - main
+      - feature/github-actions-ci
+  pull_request:
+    branches:
+      - main
 
-pull_request:
-branches:
-- main
+permissions:
+  contents: read
 
 jobs:
-build-and-test:
-runs-on: ubuntu-latest
+  build-and-test:
+    runs-on: ubuntu-latest
 
-services:
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
     env:
-      ACCEPT_EULA: Y
-      MSSQL_SA_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
-    ports:
-      - 1433:1433
+      # Single source of truth for the SA password.
+      # Swap to ${{ secrets.TEST_DB_PASSWORD }} if you prefer, but note that
+      # secrets are NOT available to pull requests from forks.
+      SA_PASSWORD: 'Your_Strong!Passw0rd'
+      TEST_DB_CONNECTION: 'Server=localhost,1433;Database=Accounts_Test;User Id=sa;Password=Your_Strong!Passw0rd;Encrypt=False;TrustServerCertificate=True'
 
-env:
-  TEST_DB_CONNECTION: "Server=localhost,1433;Database=Accounts_Test;User Id=sa;Password=${{ secrets.TEST_DB_PASSWORD }};Encrypt=False;TrustServerCertificate=True"
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: 'Y'
+          MSSQL_SA_PASSWORD: 'Your_Strong!Passw0rd'
+          MSSQL_PID: Developer
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'Your_Strong!Passw0rd' -C -Q 'SELECT 1' || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 12
+          --health-start-period 30s
 
-steps:
-  - name: Checkout source code
-    uses: actions/checkout@v4
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
 
-  - name: Setup .NET 10
-    uses: actions/setup-dotnet@v4
-    with:
-      dotnet-version: '10.0.x'
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
 
-  - name: Display .NET version
-    run: dotnet --info
+      - name: Display .NET version
+        run: dotnet --info
 
-  - name: Install sqlcmd
-    shell: bash
-    run: |
-      curl https://packages.microsoft.com/keys/microsoft.asc | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc > /dev/null
-      curl https://packages.microsoft.com/config/ubuntu/24.04/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list > /dev/null
-      sudo apt-get update
-      sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18 unixodbc-dev
-      echo "/opt/mssql-tools18/bin" >> "$GITHUB_PATH"
+      - name: Install sqlcmd
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
+            | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc > /dev/null
+          curl -fsSL https://packages.microsoft.com/config/ubuntu/24.04/prod.list \
+            | sudo tee /etc/apt/sources.list.d/mssql-release.list > /dev/null
+          sudo apt-get update
+          sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18 unixodbc-dev
+          echo "/opt/mssql-tools18/bin" >> "$GITHUB_PATH"
 
-  - name: Wait for SQL Server
-    shell: bash
-    run: |
-      echo "Waiting for SQL Server..."
+      - name: Wait for SQL Server
+        shell: bash
+        run: |
+          echo "Waiting for SQL Server..."
+          for i in $(seq 1 40); do
+            if sqlcmd -S localhost,1433 -U sa -P "$SA_PASSWORD" -C -l 5 -Q "SELECT 1" > /dev/null 2>&1; then
+              echo "SQL Server is ready after $i attempt(s)."
+              exit 0
+            fi
+            echo "Not ready yet... attempt $i/40"
+            sleep 3
+          done
+          echo "::error::SQL Server did not become ready in time."
+          docker ps -a
+          exit 1
 
-      for i in {1..30}; do
-        if sqlcmd \
-          -S localhost,1433 \
-          -U sa \
-          -P "${{ secrets.TEST_DB_PASSWORD }}" \
-          -C \
-          -Q "SELECT 1" > /dev/null 2>&1
-        then
-          echo "SQL Server is ready."
-          exit 0
-        fi
+      - name: Create Accounts_Test database
+        shell: bash
+        run: |
+          set -euo pipefail
+          sqlcmd -S localhost,1433 -U sa -P "$SA_PASSWORD" -C -b \
+            -Q "IF DB_ID('Accounts_Test') IS NULL CREATE DATABASE Accounts_Test"
 
-        echo "SQL Server not ready yet... attempt $i/30"
-        sleep 2
-      done
+      - name: Initialize Accounts_Test database
+        shell: bash
+        run: |
+          set -euo pipefail
+          sqlcmd -S localhost,1433 -U sa -P "$SA_PASSWORD" -C -b \
+            -d Accounts_Test -i "Database/CI/01_Initialize_Accounts_Test.sql"
 
-      echo "SQL Server did not become ready."
-      exit 1
+      - name: Verify database initialization
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Checking tables..."
+          sqlcmd -S localhost,1433 -U sa -P "$SA_PASSWORD" -C -b -d Accounts_Test \
+            -Q "SELECT TABLE_SCHEMA, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' ORDER BY TABLE_SCHEMA, TABLE_NAME"
 
-  - name: Create Accounts_Test database
-    shell: bash
-    run: |
-      sqlcmd \
-        -S localhost,1433 \
-        -U sa \
-        -P "${{ secrets.TEST_DB_PASSWORD }}" \
-        -C \
-        -Q "IF DB_ID('Accounts_Test') IS NULL CREATE DATABASE Accounts_Test"
+          echo "Checking stored procedures..."
+          sqlcmd -S localhost,1433 -U sa -P "$SA_PASSWORD" -C -b -d Accounts_Test \
+            -Q "SET NOCOUNT ON; SELECT COUNT(*) AS StoredProcedureCount FROM sys.procedures"
 
-  - name: Initialize Accounts_Test database
-    shell: bash
-    run: |
-      sqlcmd \
-        -S localhost,1433 \
-        -U sa \
-        -P "${{ secrets.TEST_DB_PASSWORD }}" \
-        -C \
-        -d Accounts_Test \
-        -i Database/CI/01_Initialize_Accounts_Test.sql
+      - name: Restore dependencies
+        run: dotnet restore
 
-  - name: Verify database initialization
-    shell: bash
-    run: |
-      echo "Checking tables..."
+      - name: Build solution
+        run: dotnet build --no-restore --configuration Release
 
-      sqlcmd \
-        -S localhost,1433 \
-        -U sa \
-        -P "${{ secrets.TEST_DB_PASSWORD }}" \
-        -C \
-        -d Accounts_Test \
-        -Q "SELECT TABLE_SCHEMA, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' ORDER BY TABLE_SCHEMA, TABLE_NAME"
+      - name: Run unit tests
+        run: >-
+          dotnet test --no-build --configuration Release
+          --logger "trx;LogFileName=test-results.trx"
+          --results-directory ./TestResults
 
-      echo "Checking stored procedures..."
-
-      sqlcmd \
-        -S localhost,1433 \
-        -U sa \
-        -P "${{ secrets.TEST_DB_PASSWORD }}" \
-        -C \
-        -d Accounts_Test \
-        -Q "SELECT COUNT(*) AS StoredProcedureCount FROM sys.procedures WHERE name LIKE 'sp_%'"
-
-  - name: Restore dependencies
-    run: dotnet restore
-
-  - name: Build solution
-    run: dotnet build --no-restore --configuration Release
-
-  - name: Run unit tests
-    run: dotnet test --no-build --configuration Release
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: ./TestResults
+          if-no-files-found: ignore
