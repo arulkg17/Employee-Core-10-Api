@@ -14,6 +14,7 @@ jobs:
 build-and-test:
 runs-on: ubuntu-latest
 
+```
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -61,12 +62,15 @@ steps:
           -Q "SELECT 1" > /dev/null 2>&1
         then
           echo "SQL Server is ready."
-          break
+          exit 0
         fi
 
         echo "SQL Server not ready yet... attempt $i/30"
         sleep 2
       done
+
+      echo "SQL Server did not become ready."
+      exit 1
 
   - name: Create Accounts_Test database
     shell: bash
