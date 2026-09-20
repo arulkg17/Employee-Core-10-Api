@@ -1,82 +1,115 @@
-﻿using Invoice.BAL.Contracts;
-using Invoice.DAL.Contracts;
+﻿using Invoice.DAL.Contracts;
+using Invoice.Data.Db;
 using Invoice.Data.Entities;
-using Invoice.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using System.Data;
 
-namespace Invoice.BAL.Services;
+namespace Invoice.DAL.Repositories;
 
-
-public class ProductServiceSp : IProductService
+public class ProductRepositorySp : IProductRepository
 {
-    private readonly IProductRepository _repo;
+    private readonly AppDbContext _context;
 
-    public ProductServiceSp(IProductRepository repo)
+    public ProductRepositorySp(AppDbContext context)
     {
-        _repo = repo;
+        _context = context;
     }
 
-    public async Task<ProductDto> CreateAsync(ProductDto dto)
+    public async Task<int> CreateAsync(ProductEntity product)
     {
-        var product = new ProductEntity
+        var idParam = new SqlParameter("@Id", SqlDbType.Int)
         {
-            Name = dto.Name,
-            Price = dto.Price,
-            Stock = dto.Stock
+            Direction = ParameterDirection.Output
         };
 
-        await _repo.CreateAsync(product);
-        return dto;
+        await _context.Database.ExecuteSqlRawAsync(
+            @"EXEC dbo.sp_Product_Insert
+                @Id OUTPUT,
+                @Name,
+                @Description,
+                @Price,
+                @Stock",
+            idParam,
+            new SqlParameter(
+                "@Name",
+                product.Name ?? (object)DBNull.Value),
+            new SqlParameter(
+                "@Description",
+                product.Description ?? (object)DBNull.Value),
+            new SqlParameter("@Price", product.Price),
+            new SqlParameter("@Stock", product.Stock));
+
+        return (int)idParam.Value;
     }
 
-    public async Task<IEnumerable<ProductDto>> GetAllAsync()
+    public async Task<IEnumerable<ProductEntity>> GetAllAsync()
     {
-        var products = await _repo.GetAllAsync();
-
-        return products.Select(p => new ProductDto
-        {
-            Id = p.Id,
-            Name = p.Name,
-            Price = p.Price,
-            Stock = p.Stock,
-            RowVersion = Convert.ToBase64String(p.RowVersion)
-        });
+        return await _context.Products
+            .FromSqlRaw("EXEC dbo.sp_Product_GetAll")
+            .AsNoTracking()
+            .ToListAsync();
     }
 
-    public async Task<ProductDto?> GetByIdAsync(int id)
+    public async Task<ProductEntity?> GetByIdAsync(int id)
     {
-        var p = await _repo.GetByIdAsync(id);
-        if (p == null) return null;
+        var products = await _context.Products
+            .FromSqlRaw(
+                "EXEC dbo.sp_Product_GetById @Id",
+                new SqlParameter("@Id", id))
+            .AsNoTracking()
+            .ToListAsync();
 
-        return new ProductDto
-        {
-            Id = p.Id,
-            Name = p.Name,
-            Price = p.Price,
-            Stock = p.Stock,
-            RowVersion = Convert.ToBase64String(p.RowVersion)
-        };
+        return products.FirstOrDefault();
     }
 
-    public async Task<bool> UpdateAsync(ProductDto dto)
+    public async Task<bool> UpdateAsync(ProductEntity product)
     {
-        var product = new ProductEntity
-        {
-            Id = dto.Id,
-            Name = dto.Name,
-            Price = dto.Price,
-            Stock = dto.Stock,
-            RowVersion = Convert.FromBase64String(dto.RowVersion!)
-        };
+        var connection = _context.Database.GetDbConnection();
 
-        return await _repo.UpdateAsync(product);
+        await using var command = connection.CreateCommand();
+
+        command.CommandText = "dbo.sp_Product_Update";
+        command.CommandType = CommandType.StoredProcedure;
+
+        command.Parameters.Add(new SqlParameter("@Id", product.Id));
+        command.Parameters.Add(new SqlParameter("@Name",
+            product.Name ?? (object)DBNull.Value));
+        command.Parameters.Add(new SqlParameter("@Description",
+            product.Description ?? (object)DBNull.Value));
+        command.Parameters.Add(new SqlParameter("@Price", product.Price));
+        command.Parameters.Add(new SqlParameter("@Stock", product.Stock));
+        command.Parameters.Add(new SqlParameter(
+            "@RowVersion",
+            product.RowVersion));
+
+        if (connection.State != ConnectionState.Open)
+            await connection.OpenAsync();
+
+        var affectedRows = await command.ExecuteScalarAsync();
+
+        return Convert.ToInt32(affectedRows) > 0;
     }
 
-    public async Task<bool> DeleteAsync(int id, string rowVersion)
+    public async Task<bool> DeleteAsync(int id, byte[] rowVersion)
     {
-        var versionBytes = Convert.FromBase64String(rowVersion);
-        return await _repo.DeleteAsync(id, versionBytes);
+        var connection = _context.Database.GetDbConnection();
+
+        await using var command = connection.CreateCommand();
+
+        command.CommandText = "dbo.sp_Product_Delete";
+        command.CommandType = CommandType.StoredProcedure;
+
+        command.Parameters.Add(new SqlParameter("@Id", id));
+        command.Parameters.Add(new SqlParameter(
+            "@RowVersion",
+            rowVersion));
+
+        if (connection.State != ConnectionState.Open)
+            await connection.OpenAsync();
+
+        var affectedRows = await command.ExecuteScalarAsync();
+
+        return Convert.ToInt32(affectedRows) > 0;
     }
 }
