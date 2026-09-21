@@ -8,3 +8,7 @@
 # Build files
 bin/
 obj/
+
+TestResults/
+coveragereport/
+CoverageReport/

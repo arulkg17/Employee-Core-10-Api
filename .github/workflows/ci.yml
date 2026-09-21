@@ -17,9 +17,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      # Single source of truth for the SA password.
-      # Swap to ${{ secrets.TEST_DB_PASSWORD }} if you prefer, but note that
-      # secrets are NOT available to pull requests from forks.
       SA_PASSWORD: 'Your_Strong!Passw0rd'
       TEST_DB_CONNECTION: 'Server=localhost,1433;Database=Accounts_Test;User Id=sa;Password=Your_Strong!Passw0rd;Encrypt=False;TrustServerCertificate=True'
 
@@ -111,11 +108,30 @@ jobs:
       - name: Build solution
         run: dotnet build --no-restore --configuration Release
 
-      - name: Run unit tests
+      - name: Run unit tests with coverage
         run: >-
           dotnet test --no-build --configuration Release
+          --collect:"XPlat Code Coverage"
           --logger "trx;LogFileName=test-results.trx"
           --results-directory ./TestResults
+
+      - name: Restore local tools (ReportGenerator)
+        run: dotnet tool restore
+
+      - name: Generate coverage report
+        run: >-
+          dotnet reportgenerator
+          -reports:"TestResults/**/coverage.cobertura.xml"
+          -targetdir:"CoverageReport"
+          -reporttypes:"Html;Cobertura;MarkdownSummaryGithub"
+
+      - name: Add coverage summary to job
+        if: always()
+        shell: bash
+        run: |
+          if [ -f "CoverageReport/SummaryGithub.md" ]; then
+            cat "CoverageReport/SummaryGithub.md" >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Upload test results
         if: always()
@@ -123,4 +139,12 @@ jobs:
         with:
           name: test-results
           path: ./TestResults
+          if-no-files-found: ignore
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: ./CoverageReport
           if-no-files-found: ignore
