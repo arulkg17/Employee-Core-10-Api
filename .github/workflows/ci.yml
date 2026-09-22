@@ -12,7 +12,6 @@ on:
 # Required so GitHub Actions can push the Docker image to GHCR
 permissions:
   contents: read
-  packages: write
 
 jobs:
   build-and-test:
@@ -151,23 +150,4 @@ jobs:
           path: ./CoverageReport
           if-no-files-found: ignore
 
-      # ============================================================
-      # Docker / GitHub Container Registry
-      # ============================================================
-
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build Docker image
-        run: |
-          docker build \
-            -t ghcr.io/arulkg17/invoice-coreapi:latest \
-            .
-
-      - name: Push Docker image to GHCR
-        run: |
-          docker push ghcr.io/arulkg17/invoice-coreapi:latest
+ 
