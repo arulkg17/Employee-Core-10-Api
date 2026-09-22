@@ -4,10 +4,14 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: {}   # lets you trigger it manually from the Actions tab too
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
 
 jobs:
-  docker-build-and-smoke-test:
+  docker-build-and-publish:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,14 +31,17 @@ jobs:
       - name: Wait for container to be ready
         run: |
           echo "Waiting for app to respond on http://localhost:5010 ..."
+
           for i in $(seq 1 20); do
             if curl -sf http://localhost:5010/health > /dev/null; then
               echo "App is up after $i attempt(s)."
               exit 0
             fi
+
             echo "Not ready yet... attempt $i/20"
             sleep 3
           done
+
           echo "::error::App did not become ready in time."
           docker logs invoice-coreapi-test
           exit 1
@@ -42,40 +49,58 @@ jobs:
       - name: Smoke test the endpoint
         run: |
           echo "Hitting http://localhost:5010/health"
-          response=$(curl -s -o /tmp/response.txt -w "%{http_code}" http://localhost:5010/health)
+
+          response=$(curl -s -o /tmp/response.txt \
+            -w "%{http_code}" \
+            http://localhost:5010/health)
+
           echo "HTTP status: $response"
           cat /tmp/response.txt
+
           if [ "$response" -lt 200 ] || [ "$response" -ge 300 ]; then
             echo "::error::Smoke test failed with status $response"
             docker logs invoice-coreapi-test
             exit 1
           fi
 
-      - name: Show container logs (always, for debugging)
+      - name: Show container logs
         if: always()
-        run: docker logs invoice-coreapi-test || true
+        run: |
+          docker logs invoice-coreapi-test || true
 
-      - name: Stop and remove container
+      - name: Stop and remove test container
         if: always()
         run: |
           docker stop invoice-coreapi-test || true
           docker rm invoice-coreapi-test || true
 
-      # Optional: push image to GitHub Container Registry once smoke test passes.
-      # Uncomment when you're ready to actually deploy the image somewhere.
-      #
-      # - name: Log in to GHCR
-      #   uses: docker/login-action@v3
-      #   with:
-      #     registry: ghcr.io
-      #     username: ${{ github.actor }}
-      #     password: ${{ secrets.GITHUB_TOKEN }}
-      #
-      # - name: Tag and push image
-      #   run: |
-      #     IMAGE_ID=ghcr.io/${{ github.repository_owner }}/invoice-coreapi
-      #     IMAGE_ID=$(echo "$IMAGE_ID" | tr '[:upper:]' '[:lower:]')
-      #     docker tag invoice-coreapi:ci "$IMAGE_ID:latest"
-      #     docker tag invoice-coreapi:ci "$IMAGE_ID:${{ github.sha }}"
-      #     docker push "$IMAGE_ID:latest"
-      #     docker push "$IMAGE_ID:${{ github.sha }}"
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prepare GHCR image name
+        run: |
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/invoice-coreapi
+          IMAGE_ID=$(echo "$IMAGE_ID" | tr '[:upper:]' '[:lower:]')
+
+          echo "IMAGE_ID=$IMAGE_ID" >> "$GITHUB_ENV"
+
+      - name: Tag Docker image
+        run: |
+          docker tag invoice-coreapi:ci "$IMAGE_ID:latest"
+          docker tag invoice-coreapi:ci "$IMAGE_ID:${{ github.sha }}"
+
+          echo "Created images:"
+          docker images "$IMAGE_ID"
+
+      - name: Push Docker image to GHCR
+        run: |
+          docker push "$IMAGE_ID:latest"
+          docker push "$IMAGE_ID:${{ github.sha }}"
+
+          echo "Successfully pushed:"
+          echo "$IMAGE_ID:latest"
+          echo "$IMAGE_ID:${{ github.sha }}"
