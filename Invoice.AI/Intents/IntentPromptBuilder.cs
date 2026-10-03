@@ -7,37 +7,28 @@ namespace Invoice.AI.Intents;
 /// <summary>
 /// Builds the system prompt and the JSON schema from the registered handlers.
 /// Add a handler -> the LLM automatically learns the new intent.
+/// Speed notes: the prompt is identical for Single and Multi except the LAST rule line
+/// (so Ollama can reuse its cache), and the model only writes the fields it needs.
 /// </summary>
 public sealed class IntentPromptBuilder
 {
-    private static readonly (string Question, string Json)[] SingleExamples =
+    // Same examples for both modes. Fields that are not needed are simply left out.
+    private static readonly (string Question, string Json)[] Examples =
     {
         ("How many active items are in Rice?",
-         """{"intents":[{"intent":"CategoryItemCount","phrase":"How many active items are in Rice","categoryName":"Rice","city":"","activeFilter":"active"}]}"""),
-
-        ("How many inactive items are in Snacks?",
-         """{"intents":[{"intent":"CategoryItemCount","phrase":"How many inactive items are in Snacks","categoryName":"Snacks","city":"","activeFilter":"inactive"}]}"""),
-
-        ("How many items are there in total?",
-         """{"intents":[{"intent":"ItemCount","phrase":"How many items are there in total","categoryName":"","city":"","activeFilter":"any"}]}"""),
+         """{"intents":[{"intent":"CategoryItemCount","phrase":"How many active items are in Rice","categoryName":"Rice","activeFilter":"active"}]}"""),
 
         ("How many customers are in Pune?",
-         """{"intents":[{"intent":"CustomerCountByCity","phrase":"How many customers are in Pune","categoryName":"","city":"Pune","activeFilter":"any"}]}"""),
-
-        ("Show customer count for every city",
-         """{"intents":[{"intent":"CustomerCountAllCities","phrase":"Show customer count for every city","categoryName":"","city":"","activeFilter":"any"}]}"""),
+         """{"intents":[{"intent":"CustomerCountByCity","phrase":"How many customers are in Pune","city":"Pune"}]}"""),
 
         ("What is the weather today?",
-         """{"intents":[{"intent":"Unknown","phrase":"What is the weather today","categoryName":"","city":"","activeFilter":"any"}]}""")
-    };
+         """{"intents":[{"intent":"Unknown","phrase":"What is the weather today"}]}"""),
 
-    private static readonly (string Question, string Json)[] MultiExamples =
-    {
         ("How many active customers and inactive vendors are there?",
-         """{"intents":[{"intent":"CustomerCount","phrase":"How many active customers","categoryName":"","city":"","activeFilter":"active"},{"intent":"VendorCount","phrase":"inactive vendors","categoryName":"","city":"","activeFilter":"inactive"}]}"""),
+         """{"intents":[{"intent":"CustomerCount","phrase":"How many active customers","activeFilter":"active"},{"intent":"VendorCount","phrase":"inactive vendors","activeFilter":"inactive"}]}"""),
 
         ("How many items are in Oil, how many users and how many categories?",
-         """{"intents":[{"intent":"CategoryItemCount","phrase":"How many items are in Oil","categoryName":"Oil","city":"","activeFilter":"any"},{"intent":"UserCount","phrase":"how many users","categoryName":"","city":"","activeFilter":"any"},{"intent":"CategoryCount","phrase":"how many categories","categoryName":"","city":"","activeFilter":"any"}]}""")
+         """{"intents":[{"intent":"CategoryItemCount","phrase":"How many items are in Oil","categoryName":"Oil"},{"intent":"UserCount","phrase":"how many users"},{"intent":"CategoryCount","phrase":"how many categories"}]}""")
     };
 
     public string BuildSystemPrompt(
@@ -65,46 +56,31 @@ public sealed class IntentPromptBuilder
         sb.AppendLine();
 
         sb.AppendLine("FIELDS OF EVERY INTENT OBJECT:");
-        sb.AppendLine("- intent: one of the supported intents.");
-        sb.AppendLine("- phrase: the exact words from the user's question that belong to this intent.");
-        sb.AppendLine("- categoryName: the closest KNOWN CATEGORY (fix spelling and plurals), or \"\" if not needed.");
-        sb.AppendLine("- city: the closest KNOWN CITY (fix spelling), or \"\" if not needed.");
+        sb.AppendLine("- intent: one of the supported intents. (always)");
+        sb.AppendLine("- phrase: the exact words from the user's question that belong to this intent. (always)");
+        sb.AppendLine("- categoryName: the closest KNOWN CATEGORY (fix spelling). Leave it out if not needed.");
+        sb.AppendLine("- city: the closest KNOWN CITY (fix spelling). Leave it out if not needed.");
         sb.AppendLine("- activeFilter: \"active\" ONLY if the exact word \"active\" is in the phrase,");
-        sb.AppendLine("  \"inactive\" ONLY if the exact word \"inactive\" is in the phrase, otherwise \"any\".");
-        sb.AppendLine("  \"active\" and \"inactive\" are DIFFERENT words - check the letters.");
+        sb.AppendLine("  \"inactive\" ONLY if the exact word \"inactive\" is in the phrase.");
+        sb.AppendLine("  Leave it out if neither word is in the phrase.");
         sb.AppendLine();
 
-        sb.AppendLine("RULES:");
-        if (mode == AskMode.Single)
-        {
-            sb.AppendLine("- Return EXACTLY ONE object inside \"intents\".");
-        }
-        else
-        {
-            sb.AppendLine("- The user may ask several questions in one sentence.");
-            sb.AppendLine("- Return ONE object per question, in the order they were asked.");
-            sb.AppendLine("- Never merge two questions into one object and never skip a question.");
-        }
-        sb.AppendLine("- Output ONLY the JSON object. No explanation, no markdown.");
+        sb.AppendLine("Output ONLY the JSON object. No explanation, no markdown.");
         sb.AppendLine();
 
         sb.AppendLine("EXAMPLES:");
-        foreach (var (q, json) in SingleExamples)
+        foreach (var (q, json) in Examples)
         {
             sb.AppendLine("Q: " + q);
             sb.AppendLine(json);
             sb.AppendLine();
         }
 
-        if (mode == AskMode.Multi)
-        {
-            foreach (var (q, json) in MultiExamples)
-            {
-                sb.AppendLine("Q: " + q);
-                sb.AppendLine(json);
-                sb.AppendLine();
-            }
-        }
+        // Keep this mode-specific line LAST: everything above is identical for both modes,
+        // so Ollama's prompt cache is reused when you switch between /ask and /ask-multi.
+        sb.AppendLine(mode == AskMode.Single
+            ? "RULE FOR THIS REQUEST: return EXACTLY ONE object inside \"intents\"."
+            : "RULE FOR THIS REQUEST: the user may ask several questions. Return ONE object per question, in the order asked. Never merge or skip a question.");
 
         return sb.ToString();
     }
@@ -126,14 +102,15 @@ public sealed class IntentPromptBuilder
                 ["activeFilter"] = new Dictionary<string, object>
                 {
                     ["type"] = "string",
-                    ["enum"] = new[] { "any", "active", "inactive" }
+                    ["enum"] = new[] { "active", "inactive" }
                 }
             },
-            ["required"] = new[] { "intent", "phrase", "categoryName", "city", "activeFilter" }
+            // Only these two are mandatory. The others are optional, so the model writes fewer tokens.
+            ["required"] = new[] { "intent", "phrase" }
         };
 
-        // Note: Single mode does NOT set maxItems on purpose. If the user asks two questions
-        // on the single endpoint we want to notice it and tell them (see AIOrchestrator).
+        // Note: no maxItems on purpose. If the user asks two questions on the single endpoint
+        // we want to notice it and tell them (see AIOrchestrator).
         return new Dictionary<string, object>
         {
             ["type"] = "object",

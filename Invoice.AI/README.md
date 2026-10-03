@@ -128,3 +128,7 @@ Add 1-2 examples to `IntentPromptBuilder` if the small model still mixes it up w
 | Wrong intent chosen | look at `debug.rawModelOutput`; improve the handler `Description` or add an example |
 | "could not find the category" | check `MasterTableMap` and the category spelling in the database |
 | Slow on CPU | try `qwen2.5:3b-instruct` (less accurate) or close other apps; context is already small (`NumCtx` 4096) |
+
+
+   ollama pull qwen2.5:3b-instruct
+   ollama run qwen2.5:3b-instruct --verbose "Say hello in five words"

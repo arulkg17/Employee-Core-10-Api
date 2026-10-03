@@ -57,9 +57,52 @@ public sealed class OllamaClient : IOllamaClient
         }
 
         using var doc = JsonDocument.Parse(raw);
-        return doc.RootElement
-                   .GetProperty("message")
-                   .GetProperty("content")
-                   .GetString() ?? string.Empty;
+        var root = doc.RootElement;
+
+        LogTimings(root);
+
+        return root
+            .GetProperty("message")
+            .GetProperty("content")
+            .GetString() ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Ollama reports durations in nanoseconds. This shows WHERE the time goes:
+    /// load   = model being loaded into memory (should be ~0 after the first call)
+    /// prompt = reading our system prompt + question
+    /// output = generating the JSON answer
+    /// </summary>
+    private void LogTimings(JsonElement root)
+    {
+        static double Seconds(JsonElement r, string name) =>
+            r.TryGetProperty(name, out var v) && v.ValueKind == JsonValueKind.Number
+                ? v.GetInt64() / 1_000_000_000.0
+                : 0;
+
+        static long Number(JsonElement r, string name) =>
+            r.TryGetProperty(name, out var v) && v.ValueKind == JsonValueKind.Number
+                ? v.GetInt64()
+                : 0;
+
+        var promptTokens = Number(root, "prompt_eval_count");
+        var promptSec = Seconds(root, "prompt_eval_duration");
+        var outTokens = Number(root, "eval_count");
+        var outSec = Seconds(root, "eval_duration");
+
+        var outRate = outSec > 0 ? outTokens / outSec : 0;
+
+        var model = root.TryGetProperty("model", out var m) ? m.GetString() : "?";
+
+        _logger.LogInformation(
+            "Ollama timings [{Model}]: total {Total:F1}s | load {Load:F1}s | prompt {PromptTokens} tokens in {PromptSec:F1}s | output {OutTokens} tokens in {OutSec:F1}s ({Rate:F1} tokens/sec)",
+            model,
+            Seconds(root, "total_duration"),
+            Seconds(root, "load_duration"),
+            promptTokens,
+            promptSec,
+            outTokens,
+            outSec,
+            outRate);
     }
 }
