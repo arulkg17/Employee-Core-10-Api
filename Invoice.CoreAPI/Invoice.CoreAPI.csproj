@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Invoice.AI\Invoice.AI.csproj" />
     <ProjectReference Include="..\Invoice.BAL\Invoice.BAL.csproj" />
     <ProjectReference Include="..\Invoice.DAL\Invoice.DAL.csproj" />
     <ProjectReference Include="..\Invoice.Data\Invoice.Data.csproj" />
