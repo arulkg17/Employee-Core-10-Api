@@ -1,0 +1,23 @@
+{
+  "poNumber": "PO-000001",
+  "poDate": "2026-10-04T00:00:00",
+  "vendorId": 1,
+  "status": "Draft",
+  "notes": "Test Purchase Order",
+  "details": [
+    {
+      "itemmasterId": 1,
+      "quantity": 10,
+      "rate": 100,
+      "discountAmount": 0,
+      "taxPercent": 10
+    },
+    {
+      "itemmasterId": 2,
+      "quantity": 5,
+      "rate": 200,
+      "discountAmount": 10,
+      "taxPercent": 10
+    }
+  ]
+}

@@ -85,6 +85,7 @@ builder.Services.AddAutoMapper(cfg =>
     cfg.AddProfile<CustomerProfile>();
     cfg.AddProfile<VendorProfile>();
     cfg.AddProfile<UserProfile>();
+    cfg.AddProfile<PurchaseOrderProfile>();
 });
 
 // ============================================================
@@ -112,7 +113,12 @@ builder.Services.AddScoped<IVendorService, VendorServiceEFSp>();
 // ============================================================
 builder.Services.AddScoped<IUserRepository, UserRepositorySpDap>();
 builder.Services.AddScoped<IUserService, UserServiceSpDap>();
-
+// ============================================================
+//  Purchase Order Repository / Service
+// ============================================================
+builder.Services.AddScoped<IPurchaseOrderRepository,PurchaseOrderRepositoryEFSp>();
+builder.Services.AddScoped<IPurchaseOrderDetailRepository,PurchaseOrderDetailRepositoryEFSp>();
+builder.Services.AddScoped<IPurchaseOrderService,PurchaseOrderServiceEFSp>();
 
 // ============================================================
 // Swagger
