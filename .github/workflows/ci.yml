@@ -110,11 +110,44 @@ jobs:
         run: dotnet build --no-restore --configuration Release
 
       - name: Run unit tests with coverage
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          dotnet test Invoice.AI.Tests/Invoice.AI.Tests.csproj \
+            --no-build \
+            --configuration Release \
+            --collect:"XPlat Code Coverage" \
+            --logger "trx;LogFileName=Invoice.AI.Tests.trx" \
+            --results-directory ./TestResults/AI
+
+          dotnet test Invoice.BAL.Test/Invoice.BAL.Test.csproj \
+            --no-build \
+            --configuration Release \
+            --collect:"XPlat Code Coverage" \
+            --logger "trx;LogFileName=Invoice.BAL.Test.trx" \
+            --results-directory ./TestResults/BAL
+
+          dotnet test Invoice.CoreAPI.Test/Invoice.CoreAPI.Test.csproj \
+            --no-build \
+            --configuration Release \
+            --collect:"XPlat Code Coverage" \
+            --logger "trx;LogFileName=Invoice.CoreAPI.Test.trx" \
+            --results-directory ./TestResults/CoreAPI
+
+          dotnet test Invoice.DAL.Test/Invoice.DAL.Test.csproj \
+            --no-build \
+            --configuration Release \
+            --collect:"XPlat Code Coverage" \
+            --logger "trx;LogFileName=Invoice.DAL.Test.trx" \
+            --results-directory ./TestResults/DAL
+
+      - name: Generate coverage report
         run: >-
-          dotnet test --no-build --configuration Release
-          --collect:"XPlat Code Coverage"
-          --logger "trx;LogFileName=test-results.trx"
-          --results-directory ./TestResults
+          dotnet reportgenerator
+          -reports:"TestResults/**/coverage.cobertura.xml"
+          -targetdir:"CoverageReport"
+          -reporttypes:"Html;Cobertura;MarkdownSummaryGithub"
 
       - name: Restore local tools (ReportGenerator)
         run: dotnet tool restore
