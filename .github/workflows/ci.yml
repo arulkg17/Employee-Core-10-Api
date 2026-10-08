@@ -142,6 +142,9 @@ jobs:
             --logger "trx;LogFileName=Invoice.DAL.Test.trx" \
             --results-directory ./TestResults/DAL
 
+      - name: Restore .NET Tools
+  	run: dotnet tool restore
+
       - name: Generate coverage report
         run: >-
           dotnet reportgenerator
