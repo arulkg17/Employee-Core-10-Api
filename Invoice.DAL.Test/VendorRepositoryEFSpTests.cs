@@ -6,6 +6,7 @@ using Xunit;
 
 namespace Invoice.DAL.Test;
 
+[Collection("Database Tests")]
 public class VendorRepositoryEFSpTests
 {
     private static string ConnectionString = TestDatabase.ConnectionString;
