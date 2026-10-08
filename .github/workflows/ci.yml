@@ -9,7 +9,6 @@ on:
     branches:
       - main
 
-# Required so GitHub Actions can push the Docker image to GHCR
 permissions:
   contents: read
 
@@ -53,26 +52,40 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+
           curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
             | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc > /dev/null
+
           curl -fsSL https://packages.microsoft.com/config/ubuntu/24.04/prod.list \
             | sudo tee /etc/apt/sources.list.d/mssql-release.list > /dev/null
+
           sudo apt-get update
+
           sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18 unixodbc-dev
+
           echo "/opt/mssql-tools18/bin" >> "$GITHUB_PATH"
 
       - name: Wait for SQL Server
         shell: bash
         run: |
           echo "Waiting for SQL Server..."
+
           for i in $(seq 1 40); do
-            if sqlcmd -S localhost,1433 -U sa -P "$SA_PASSWORD" -C -l 5 -Q "SELECT 1" > /dev/null 2>&1; then
+            if sqlcmd -S localhost,1433 \
+              -U sa \
+              -P "$SA_PASSWORD" \
+              -C \
+              -l 5 \
+              -Q "SELECT 1" > /dev/null 2>&1; then
+
               echo "SQL Server is ready after $i attempt(s)."
               exit 0
             fi
+
             echo "Not ready yet... attempt $i/40"
             sleep 3
           done
+
           echo "::error::SQL Server did not become ready in time."
           docker ps -a
           exit 1
@@ -81,30 +94,57 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          sqlcmd -S localhost,1433 -U sa -P "$SA_PASSWORD" -C -b \
+
+          sqlcmd -S localhost,1433 \
+            -U sa \
+            -P "$SA_PASSWORD" \
+            -C \
+            -b \
             -Q "IF DB_ID('Accounts_Test') IS NULL CREATE DATABASE Accounts_Test"
 
       - name: Initialize Accounts_Test database
         shell: bash
         run: |
           set -euo pipefail
-          sqlcmd -S localhost,1433 -U sa -P "$SA_PASSWORD" -C -b \
-            -d Accounts_Test -i "Database/CI/01_Initialize_Accounts_Test.sql"
+
+          sqlcmd -S localhost,1433 \
+            -U sa \
+            -P "$SA_PASSWORD" \
+            -C \
+            -b \
+            -d Accounts_Test \
+            -i "database/ci/01_Initialize_Accounts_Test.sql"
 
       - name: Verify database initialization
         shell: bash
         run: |
           set -euo pipefail
+
           echo "Checking tables..."
-          sqlcmd -S localhost,1433 -U sa -P "$SA_PASSWORD" -C -b -d Accounts_Test \
+
+          sqlcmd -S localhost,1433 \
+            -U sa \
+            -P "$SA_PASSWORD" \
+            -C \
+            -b \
+            -d Accounts_Test \
             -Q "SELECT TABLE_SCHEMA, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' ORDER BY TABLE_SCHEMA, TABLE_NAME"
 
           echo "Checking stored procedures..."
-          sqlcmd -S localhost,1433 -U sa -P "$SA_PASSWORD" -C -b -d Accounts_Test \
+
+          sqlcmd -S localhost,1433 \
+            -U sa \
+            -P "$SA_PASSWORD" \
+            -C \
+            -b \
+            -d Accounts_Test \
             -Q "SET NOCOUNT ON; SELECT COUNT(*) AS StoredProcedureCount FROM sys.procedures"
 
       - name: Restore dependencies
         run: dotnet restore
+
+      - name: Restore .NET tools
+        run: dotnet tool restore
 
       - name: Build solution
         run: dotnet build --no-restore --configuration Release
@@ -142,19 +182,6 @@ jobs:
             --logger "trx;LogFileName=Invoice.DAL.Test.trx" \
             --results-directory ./TestResults/DAL
 
-      - name: Restore .NET Tools
-  	run: dotnet tool restore
-
-      - name: Generate coverage report
-        run: >-
-          dotnet reportgenerator
-          -reports:"TestResults/**/coverage.cobertura.xml"
-          -targetdir:"CoverageReport"
-          -reporttypes:"Html;Cobertura;MarkdownSummaryGithub"
-
-      - name: Restore local tools (ReportGenerator)
-        run: dotnet tool restore
-
       - name: Generate coverage report
         run: >-
           dotnet reportgenerator
@@ -185,5 +212,3 @@ jobs:
           name: coverage-report
           path: ./CoverageReport
           if-no-files-found: ignore
-
- 
