@@ -113,7 +113,7 @@ jobs:
             -C \
             -b \
             -d Accounts_Test \
-            -i "database/ci/01_Initialize_Accounts_Test.sql"
+            -i "Database/CI/01_Initialize_Accounts_Test.sql"
 
       - name: Verify database initialization
         shell: bash
