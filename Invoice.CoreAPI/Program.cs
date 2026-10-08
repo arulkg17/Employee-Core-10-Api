@@ -63,29 +63,32 @@ builder.Services.AddScoped<IDbConnection>(sp =>
 // ============================================================ 
 // Entity Framework Core - AppDbContext 
 // ============================================================
- 
+
 builder.Services.AddDbContext<AppDbContext>(options =>
- { 
-     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection"); 
-     if (string.IsNullOrWhiteSpace(connectionString)) 
-     { 
-         throw new InvalidOperationException( "DefaultConnection is not configured."); 
-     } 
-     options.UseSqlServer(connectionString); 
- });
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    if (string.IsNullOrWhiteSpace(connectionString))
+    {
+        throw new InvalidOperationException("DefaultConnection is not configured.");
+    }
+    options.UseSqlServer(connectionString);
+});
 
 // ============================================================
 // AutoMapper
 // ============================================================
 
-builder.Services.AddAutoMapper(cfg => 
-{ 
+builder.Services.AddAutoMapper(cfg =>
+{
     cfg.AddProfile<CategoryProfile>();
     cfg.AddProfile<ItemmasterProfile>();
     cfg.AddProfile<CustomerProfile>();
     cfg.AddProfile<VendorProfile>();
     cfg.AddProfile<UserProfile>();
     cfg.AddProfile<PurchaseOrderProfile>();
+    cfg.AddProfile<ReceiptProfile>();
+    cfg.AddProfile<SalesInvoiceProfile>();
+    cfg.AddProfile<StockProfile>();
 });
 
 // ============================================================
@@ -116,9 +119,34 @@ builder.Services.AddScoped<IUserService, UserServiceSpDap>();
 // ============================================================
 //  Purchase Order Repository / Service
 // ============================================================
-builder.Services.AddScoped<IPurchaseOrderRepository,PurchaseOrderRepositoryEFSp>();
-builder.Services.AddScoped<IPurchaseOrderDetailRepository,PurchaseOrderDetailRepositoryEFSp>();
-builder.Services.AddScoped<IPurchaseOrderService,PurchaseOrderServiceEFSp>();
+builder.Services.AddScoped<IPurchaseOrderRepository, PurchaseOrderRepositoryEFSp>();
+builder.Services.AddScoped<IPurchaseOrderDetailRepository, PurchaseOrderDetailRepositoryEFSp>();
+builder.Services.AddScoped<IPurchaseOrderService, PurchaseOrderServiceEFSp>();
+
+// ============================================================
+//  Transaction runner (header + details saved atomically)
+// ============================================================
+builder.Services.AddScoped<ITransactionRunner, EfTransactionRunner>();
+
+// ============================================================
+//  Receipt (Goods Receipt) Repository / Service
+// ============================================================
+builder.Services.AddScoped<IReceiptRepository, ReceiptRepositoryEFSp>();
+builder.Services.AddScoped<IReceiptDetailRepository, ReceiptDetailRepositoryEFSp>();
+builder.Services.AddScoped<IReceiptService, ReceiptServiceEFSp>();
+
+// ============================================================
+//  Sales Invoice Repository / Service
+// ============================================================
+builder.Services.AddScoped<ISalesInvoiceRepository, SalesInvoiceRepositoryEFSp>();
+builder.Services.AddScoped<ISalesInvoiceDetailRepository, SalesInvoiceDetailRepositoryEFSp>();
+builder.Services.AddScoped<ISalesInvoiceService, SalesInvoiceServiceEFSp>();
+
+// ============================================================
+//  Stock (read only)
+// ============================================================
+builder.Services.AddScoped<IStockRepository, StockRepositoryEFSp>();
+builder.Services.AddScoped<IStockService, StockServiceEFSp>();
 
 // ============================================================
 // Swagger

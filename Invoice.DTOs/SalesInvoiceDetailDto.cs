@@ -1,10 +1,10 @@
 ﻿namespace Invoice.DTOs;
 
-public class PurchaseOrderDetailDto
+public class SalesInvoiceDetailDto
 {
     public int Id { get; set; }
 
-    public int PurchaseOrderId { get; set; }
+    public int SalesInvoiceId { get; set; }
 
     public int ItemmasterId { get; set; }
 
@@ -16,10 +16,9 @@ public class PurchaseOrderDetailDto
 
     public decimal TaxPercent { get; set; }
 
+    /// <summary>Output only: calculated by the server.</summary>
     public decimal TaxAmount { get; set; }
 
+    /// <summary>Output only: calculated by the server.</summary>
     public decimal LineTotal { get; set; }
-
-    // Output only: set by the server, ignored on create/update
-    public decimal ReceivedQuantity { get; set; }
 }

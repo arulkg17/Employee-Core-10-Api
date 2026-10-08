@@ -20,4 +20,9 @@ public interface IPurchaseOrderService
         string? Status,
         int pageNumber,
         int pageSize);
+
+    // NEW
+    Task<bool> ApproveAsync(int id, string? updatedBy);
+
+    Task<bool> CancelAsync(int id, string? updatedBy);
 }

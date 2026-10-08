@@ -1,0 +1,15 @@
+{
+  "purchaseOrderId": 1,
+  "receiptDate": "2026-10-07T00:00:00",
+  "notes": "First delivery",
+  "details": [
+    {
+      "purchaseOrderDetailId": 1,
+      "receivedQuantity": 6
+    },
+    {
+      "purchaseOrderDetailId": 2,
+      "receivedQuantity": 5
+    }
+  ]
+}

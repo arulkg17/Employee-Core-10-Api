@@ -6,23 +6,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Invoice.DAL.Repositories;
 
-public class PurchaseOrderDetailRepositoryEFSp : IPurchaseOrderDetailRepository
+public class ReceiptDetailRepositoryEFSp : IReceiptDetailRepository
 {
     private readonly AppDbContext _dbContext;
 
-    public PurchaseOrderDetailRepositoryEFSp(AppDbContext dbContext)
+    public ReceiptDetailRepositoryEFSp(AppDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-    public Task<int> AddAsync(PurchaseOrderDetailEntity detail)
+    public Task<int> AddAsync(ReceiptDetailEntity detail)
     {
         return SpExecutor.ScalarIntAsync(
             _dbContext,
-            "dbo.sp_PurchaseOrderDetail_Insert",
-            SpExecutor.P("@PurchaseOrderId", detail.PurchaseOrderId),
+            "dbo.sp_ReceiptDetail_Insert",
+            SpExecutor.P("@ReceiptId", detail.ReceiptId),
+            SpExecutor.P("@PurchaseOrderDetailId", detail.PurchaseOrderDetailId),
             SpExecutor.P("@ItemmasterId", detail.ItemmasterId),
-            SpExecutor.Dec("@Quantity", detail.Quantity),
+            SpExecutor.Dec("@ReceivedQuantity", detail.ReceivedQuantity),
             SpExecutor.Dec("@Rate", detail.Rate),
             SpExecutor.Dec("@DiscountAmount", detail.DiscountAmount),
             SpExecutor.Dec("@TaxPercent", detail.TaxPercent),
@@ -30,22 +31,21 @@ public class PurchaseOrderDetailRepositoryEFSp : IPurchaseOrderDetailRepository
             SpExecutor.Dec("@LineTotal", detail.LineTotal));
     }
 
-    public async Task<IEnumerable<PurchaseOrderDetailEntity>> GetByPurchaseOrderIdAsync(
-        int purchaseOrderId)
+    public async Task<IEnumerable<ReceiptDetailEntity>> GetByReceiptIdAsync(int receiptId)
     {
-        return await _dbContext.PurchaseOrderDetails
+        return await _dbContext.ReceiptDetails
             .FromSqlRaw(
-                "EXEC dbo.sp_PurchaseOrderDetail_GetByPurchaseOrderId @PurchaseOrderId",
-                new SqlParameter("@PurchaseOrderId", purchaseOrderId))
+                "EXEC dbo.sp_ReceiptDetail_GetByReceiptId @ReceiptId",
+                new SqlParameter("@ReceiptId", receiptId))
             .AsNoTracking()
             .ToListAsync();
     }
 
-    public async Task<PurchaseOrderDetailEntity?> GetByIdAsync(int id)
+    public async Task<ReceiptDetailEntity?> GetByIdAsync(int id)
     {
-        var details = await _dbContext.PurchaseOrderDetails
+        var details = await _dbContext.ReceiptDetails
             .FromSqlRaw(
-                "EXEC dbo.sp_PurchaseOrderDetail_GetById @Id",
+                "EXEC dbo.sp_ReceiptDetail_GetById @Id",
                 new SqlParameter("@Id", id))
             .AsNoTracking()
             .ToListAsync();
@@ -53,14 +53,13 @@ public class PurchaseOrderDetailRepositoryEFSp : IPurchaseOrderDetailRepository
         return details.FirstOrDefault();
     }
 
-    public async Task<bool> UpdateAsync(PurchaseOrderDetailEntity detail)
+    public async Task<bool> UpdateAsync(ReceiptDetailEntity detail)
     {
         var affectedRows = await SpExecutor.NonQueryAsync(
             _dbContext,
-            "dbo.sp_PurchaseOrderDetail_Update",
+            "dbo.sp_ReceiptDetail_Update",
             SpExecutor.P("@Id", detail.Id),
-            SpExecutor.P("@ItemmasterId", detail.ItemmasterId),
-            SpExecutor.Dec("@Quantity", detail.Quantity),
+            SpExecutor.Dec("@ReceivedQuantity", detail.ReceivedQuantity),
             SpExecutor.Dec("@Rate", detail.Rate),
             SpExecutor.Dec("@DiscountAmount", detail.DiscountAmount),
             SpExecutor.Dec("@TaxPercent", detail.TaxPercent),
@@ -74,18 +73,18 @@ public class PurchaseOrderDetailRepositoryEFSp : IPurchaseOrderDetailRepository
     {
         var affectedRows = await SpExecutor.NonQueryAsync(
             _dbContext,
-            "dbo.sp_PurchaseOrderDetail_Delete",
+            "dbo.sp_ReceiptDetail_Delete",
             SpExecutor.P("@Id", id));
 
         return affectedRows > 0;
     }
 
-    public async Task<bool> DeleteByPurchaseOrderIdAsync(int purchaseOrderId)
+    public async Task<bool> DeleteByReceiptIdAsync(int receiptId)
     {
         var affectedRows = await SpExecutor.NonQueryAsync(
             _dbContext,
-            "dbo.sp_PurchaseOrderDetail_DeleteByPurchaseOrderId",
-            SpExecutor.P("@PurchaseOrderId", purchaseOrderId));
+            "dbo.sp_ReceiptDetail_DeleteByReceiptId",
+            SpExecutor.P("@ReceiptId", receiptId));
 
         return affectedRows > 0;
     }

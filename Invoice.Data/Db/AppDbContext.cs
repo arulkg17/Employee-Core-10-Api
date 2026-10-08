@@ -18,9 +18,15 @@ public class AppDbContext : DbContext
 
     //============== Purchase Order and Details section =========
     public DbSet<PurchaseOrderEntity> PurchaseOrders
-    => Set<PurchaseOrderEntity>();
+     => Set<PurchaseOrderEntity>();
     public DbSet<PurchaseOrderDetailEntity> PurchaseOrderDetails
         => Set<PurchaseOrderDetailEntity>();
+
+    public DbSet<ReceiptEntity> Receipts { get; set; }
+    public DbSet<ReceiptDetailEntity> ReceiptDetails { get; set; }
+    public DbSet<SalesInvoiceEntity> SalesInvoices { get; set; }
+    public DbSet<SalesInvoiceDetailEntity> SalesInvoiceDetails { get; set; }
+    public DbSet<ItemStockEntity> ItemStocks { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

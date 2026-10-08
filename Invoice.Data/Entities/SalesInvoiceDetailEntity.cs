@@ -3,23 +3,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Invoice.Data.Entities;
 
-[Table("PurchaseOrderDetail")]
-public class PurchaseOrderDetailEntity
+[Table("SalesInvoiceDetail")]
+public class SalesInvoiceDetailEntity
 {
     [Key]
     public int Id { get; set; }
 
-    [Required]
-    public int PurchaseOrderId { get; set; }
+    public int SalesInvoiceId { get; set; }
 
-    [Required]
     public int ItemmasterId { get; set; }
 
-    [Required]
     [Column(TypeName = "decimal(18,2)")]
     public decimal Quantity { get; set; }
 
-    [Required]
     [Column(TypeName = "decimal(18,2)")]
     public decimal Rate { get; set; }
 
@@ -34,8 +30,4 @@ public class PurchaseOrderDetailEntity
 
     [Column(TypeName = "decimal(18,2)")]
     public decimal LineTotal { get; set; }
-
-    // NEW: quantity already received through posted receipts (maintained by sp_Receipt_Post / sp_Receipt_Cancel)
-    [Column(TypeName = "decimal(18,2)")]
-    public decimal ReceivedQuantity { get; set; }
 }

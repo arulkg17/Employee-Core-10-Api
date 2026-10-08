@@ -8,16 +8,16 @@ using Invoice.Model;
 
 namespace Invoice.BAL.Services;
 
-public class PurchaseOrderServiceEFSp : IPurchaseOrderService
+public class SalesInvoiceServiceEFSp : ISalesInvoiceService
 {
-    private readonly IPurchaseOrderRepository _repository;
-    private readonly IPurchaseOrderDetailRepository _detailRepository;
+    private readonly ISalesInvoiceRepository _repository;
+    private readonly ISalesInvoiceDetailRepository _detailRepository;
     private readonly ITransactionRunner _transaction;
     private readonly IMapper _mapper;
 
-    public PurchaseOrderServiceEFSp(
-        IPurchaseOrderRepository repository,
-        IPurchaseOrderDetailRepository detailRepository,
+    public SalesInvoiceServiceEFSp(
+        ISalesInvoiceRepository repository,
+        ISalesInvoiceDetailRepository detailRepository,
         ITransactionRunner transaction,
         IMapper mapper)
     {
@@ -28,13 +28,13 @@ public class PurchaseOrderServiceEFSp : IPurchaseOrderService
     }
 
     // ============================================================
-    // CREATE  (always starts as Draft)
+    // CREATE  (always starts as Draft; stock is checked on Post)
     // ============================================================
-    public async Task<int> AddAsync(PurchaseOrderDto dto)
+    public async Task<int> AddAsync(SalesInvoiceDto dto)
     {
-        ValidateDetails(dto.Details);
+        Validate(dto);
 
-        var entity = _mapper.Map<PurchaseOrderEntity>(dto);
+        var entity = _mapper.Map<SalesInvoiceEntity>(dto);
         entity.Status = "Draft";
 
         CalculateTotals(entity);
@@ -45,7 +45,7 @@ public class PurchaseOrderServiceEFSp : IPurchaseOrderService
 
             foreach (var detail in entity.Details)
             {
-                detail.PurchaseOrderId = id;
+                detail.SalesInvoiceId = id;
                 await _detailRepository.AddAsync(detail);
             }
 
@@ -54,41 +54,56 @@ public class PurchaseOrderServiceEFSp : IPurchaseOrderService
     }
 
     // ============================================================
-    // GET ALL
+    // READ
     // ============================================================
-    public async Task<IEnumerable<PurchaseOrderDto>> GetAllAsync()
+    public async Task<IEnumerable<SalesInvoiceDto>> GetAllAsync()
     {
         var entities = (await _repository.GetAllAsync()).ToList();
 
         foreach (var entity in entities)
-        {
-            var details = await _detailRepository.GetByPurchaseOrderIdAsync(entity.Id);
-            entity.Details = details.ToList();
-        }
+            entity.Details = (await _detailRepository.GetBySalesInvoiceIdAsync(entity.Id)).ToList();
 
-        return _mapper.Map<IEnumerable<PurchaseOrderDto>>(entities);
+        return _mapper.Map<IEnumerable<SalesInvoiceDto>>(entities);
     }
 
-    // ============================================================
-    // GET BY ID
-    // ============================================================
-    public async Task<PurchaseOrderDto?> GetByIdAsync(int id)
+    public async Task<SalesInvoiceDto?> GetByIdAsync(int id)
     {
         var entity = await _repository.GetByIdAsync(id);
 
         if (entity == null)
             return null;
 
-        var details = await _detailRepository.GetByPurchaseOrderIdAsync(id);
-        entity.Details = details.ToList();
+        entity.Details = (await _detailRepository.GetBySalesInvoiceIdAsync(id)).ToList();
 
-        return _mapper.Map<PurchaseOrderDto>(entity);
+        return _mapper.Map<SalesInvoiceDto>(entity);
+    }
+
+    public async Task<PagedResultDto<SalesInvoiceDto>> GetAllPagedAsync(
+        string? invoiceNumber,
+        int? customerId,
+        string? status,
+        int pageNumber,
+        int pageSize)
+    {
+        var result = await _repository.GetAllPagedAsync(
+            invoiceNumber, customerId, status, pageNumber, pageSize);
+
+        var entities = result.Data.ToList();
+
+        foreach (var entity in entities)
+            entity.Details = (await _detailRepository.GetBySalesInvoiceIdAsync(entity.Id)).ToList();
+
+        return new PagedResultDto<SalesInvoiceDto>
+        {
+            Data = _mapper.Map<IEnumerable<SalesInvoiceDto>>(entities),
+            TotalRecords = result.TotalRecords
+        };
     }
 
     // ============================================================
     // UPDATE  (Draft only)
     // ============================================================
-    public async Task<bool> UpdateAsync(PurchaseOrderDto dto)
+    public async Task<bool> UpdateAsync(SalesInvoiceDto dto)
     {
         var existing = await _repository.GetByIdAsync(dto.Id);
 
@@ -96,11 +111,14 @@ public class PurchaseOrderServiceEFSp : IPurchaseOrderService
             return false;
 
         if (existing.Status != "Draft")
-            throw new BusinessRuleException("Only Draft purchase orders can be edited.");
+            throw new BusinessRuleException("Only Draft sales invoices can be edited.");
 
-        ValidateDetails(dto.Details);
+        Validate(dto);
 
-        var entity = _mapper.Map<PurchaseOrderEntity>(dto);
+        var entity = _mapper.Map<SalesInvoiceEntity>(dto);
+
+        entity.InvoiceNumber = existing.InvoiceNumber;
+        entity.Status = existing.Status;
 
         CalculateTotals(entity);
 
@@ -111,11 +129,11 @@ public class PurchaseOrderServiceEFSp : IPurchaseOrderService
             if (!updated)
                 return false;
 
-            await _detailRepository.DeleteByPurchaseOrderIdAsync(entity.Id);
+            await _detailRepository.DeleteBySalesInvoiceIdAsync(entity.Id);
 
             foreach (var detail in entity.Details)
             {
-                detail.PurchaseOrderId = entity.Id;
+                detail.SalesInvoiceId = entity.Id;
                 await _detailRepository.AddAsync(detail);
             }
 
@@ -124,43 +142,13 @@ public class PurchaseOrderServiceEFSp : IPurchaseOrderService
     }
 
     // ============================================================
-    // DELETE  (soft delete of the header; lines are kept for audit)
+    // DELETE / WORKFLOW
     // ============================================================
-    public Task<bool> DeleteAsync(int id) => _repository.DeleteAsync(id);
+    public Task<bool> DeleteAsync(int id, string? updatedBy = null)
+        => _repository.DeleteAsync(id, updatedBy);
 
-    // ============================================================
-    // PAGED
-    // ============================================================
-    public async Task<PagedResultDto<PurchaseOrderDto>> GetAllPagedAsync(
-        string? PONumber,
-        int? VendorId,
-        string? Status,
-        int pageNumber,
-        int pageSize)
-    {
-        var result = await _repository.GetAllPagedAsync(
-            PONumber, VendorId, Status, pageNumber, pageSize);
-
-        var entities = result.Data.ToList();
-
-        foreach (var entity in entities)
-        {
-            var details = await _detailRepository.GetByPurchaseOrderIdAsync(entity.Id);
-            entity.Details = details.ToList();
-        }
-
-        return new PagedResultDto<PurchaseOrderDto>
-        {
-            Data = _mapper.Map<IEnumerable<PurchaseOrderDto>>(entities),
-            TotalRecords = result.TotalRecords
-        };
-    }
-
-    // ============================================================
-    // WORKFLOW
-    // ============================================================
-    public Task<bool> ApproveAsync(int id, string? updatedBy)
-        => _repository.ApproveAsync(id, updatedBy);
+    public Task<bool> PostAsync(int id, string? updatedBy)
+        => _repository.PostAsync(id, updatedBy);
 
     public Task<bool> CancelAsync(int id, string? updatedBy)
         => _repository.CancelAsync(id, updatedBy);
@@ -168,14 +156,20 @@ public class PurchaseOrderServiceEFSp : IPurchaseOrderService
     // ============================================================
     // HELPERS
     // ============================================================
-    private static void ValidateDetails(List<PurchaseOrderDetailDto>? details)
+    private static void Validate(SalesInvoiceDto dto)
     {
-        if (details == null || details.Count == 0)
-            throw new BusinessRuleException("A purchase order must have at least one line.");
+        if (dto.CustomerId <= 0)
+            throw new BusinessRuleException("Customer is required.");
 
-        for (var i = 0; i < details.Count; i++)
+        if (dto.DueDate.HasValue && dto.DueDate.Value < dto.InvoiceDate)
+            throw new BusinessRuleException("Due date cannot be earlier than the invoice date.");
+
+        if (dto.Details == null || dto.Details.Count == 0)
+            throw new BusinessRuleException("A sales invoice must have at least one line.");
+
+        for (var i = 0; i < dto.Details.Count; i++)
         {
-            var d = details[i];
+            var d = dto.Details[i];
 
             if (d.ItemmasterId <= 0)
                 throw new BusinessRuleException($"Line {i + 1}: item is required.");
@@ -184,7 +178,7 @@ public class PurchaseOrderServiceEFSp : IPurchaseOrderService
         }
     }
 
-    private static void CalculateTotals(PurchaseOrderEntity entity)
+    private static void CalculateTotals(SalesInvoiceEntity entity)
     {
         decimal subTotal = 0;
         decimal taxAmount = 0;
@@ -196,7 +190,6 @@ public class PurchaseOrderServiceEFSp : IPurchaseOrderService
 
             detail.TaxAmount = amounts.TaxAmount;
             detail.LineTotal = amounts.LineTotal;
-            detail.ReceivedQuantity = 0;          // only receipts may change this
 
             subTotal += amounts.Taxable;
             taxAmount += amounts.TaxAmount;
