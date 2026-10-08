@@ -28,4 +28,8 @@
     <ProjectReference Include="..\Invoice.Model\Invoice.Model.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Requests\" />
+  </ItemGroup>
+
 </Project>

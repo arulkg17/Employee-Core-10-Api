@@ -1737,3 +1737,478 @@ BEGIN
     WHERE Id = @Id;
 END
 GO
+
+
+/* ============================================================
+   PURCHASEORDER
+   ============================================================ */
+
+IF OBJECT_ID('dbo.PurchaseOrder', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.PurchaseOrder
+(
+    Id INT IDENTITY(1,1) NOT NULL,
+    PONumber VARCHAR(30) NOT NULL,
+    PODate DATETIME NOT NULL,
+    VendorId INT NOT NULL,
+    Status VARCHAR(20) NOT NULL
+        CONSTRAINT DF_PurchaseOrder_Status DEFAULT ('Draft'),
+    Notes NVARCHAR(500) NULL,
+    SubTotal DECIMAL(18,2) NOT NULL
+        CONSTRAINT DF_PurchaseOrder_SubTotal DEFAULT (0),
+    TaxAmount DECIMAL(18,2) NOT NULL
+        CONSTRAINT DF_PurchaseOrder_TaxAmount DEFAULT (0),
+    TotalAmount DECIMAL(18,2) NOT NULL
+        CONSTRAINT DF_PurchaseOrder_TotalAmount DEFAULT (0),
+    IsDeleted BIT NOT NULL
+        CONSTRAINT DF_PurchaseOrder_IsDeleted DEFAULT (0),
+    CreatedBy VARCHAR(100) NULL,
+    CreatedDate DATETIME NOT NULL
+        CONSTRAINT DF_PurchaseOrder_CreatedDate DEFAULT (GETDATE()),
+    UpdatedBy VARCHAR(100) NULL,
+    UpdatedDate DATETIME NULL,
+    CONSTRAINT PK_PurchaseOrder
+        PRIMARY KEY (Id),
+    CONSTRAINT UQ_PurchaseOrder_PONumber
+        UNIQUE (PONumber),
+    CONSTRAINT FK_PurchaseOrder_Vendor
+        FOREIGN KEY (VendorId)
+        REFERENCES dbo.Vendor(Id)
+);
+
+END
+GO
+
+
+/* ============================================================
+   PURCHASEORDERDETAIL
+   ============================================================ */
+IF OBJECT_ID('dbo.PurchaseOrderDetail', 'U') IS NULL
+BEGIN
+   CREATE TABLE dbo.PurchaseOrderDetail
+(
+    Id INT IDENTITY(1,1) NOT NULL,
+    PurchaseOrderId INT NOT NULL,
+    ItemmasterId INT NOT NULL,
+    Quantity DECIMAL(18,2) NOT NULL,
+    Rate DECIMAL(18,2) NOT NULL,
+    DiscountAmount DECIMAL(18,2) NOT NULL
+        CONSTRAINT DF_PurchaseOrderDetail_DiscountAmount DEFAULT (0),
+    TaxPercent DECIMAL(5,2) NOT NULL
+        CONSTRAINT DF_PurchaseOrderDetail_TaxPercent DEFAULT (0),
+    TaxAmount DECIMAL(18,2) NOT NULL
+        CONSTRAINT DF_PurchaseOrderDetail_TaxAmount DEFAULT (0),
+    LineTotal DECIMAL(18,2) NOT NULL
+        CONSTRAINT DF_PurchaseOrderDetail_LineTotal DEFAULT (0),
+    CONSTRAINT PK_PurchaseOrderDetail
+        PRIMARY KEY (Id),
+    CONSTRAINT FK_PurchaseOrderDetail_PurchaseOrder
+        FOREIGN KEY (PurchaseOrderId)
+        REFERENCES dbo.PurchaseOrder(Id),
+    CONSTRAINT FK_PurchaseOrderDetail_Itemmaster
+        FOREIGN KEY (ItemmasterId)
+        REFERENCES dbo.Itemmaster(Id)
+);
+END
+GO
+-- ====  Purchase Order Insert ======= 
+CREATE OR ALTER PROCEDURE dbo.sp_PurchaseOrder_Insert
+(
+    @PONumber       VARCHAR(30),
+    @PODate         DATETIME,
+    @VendorId       INT,
+    @Status         VARCHAR(20),
+    @Notes          NVARCHAR(500) = NULL,
+    @SubTotal       DECIMAL(18,2),
+    @TaxAmount      DECIMAL(18,2),
+    @TotalAmount    DECIMAL(18,2),
+    @CreatedBy      VARCHAR(100) = NULL
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO dbo.PurchaseOrder
+    (
+        PONumber,
+        PODate,
+        VendorId,
+        Status,
+        Notes,
+        SubTotal,
+        TaxAmount,
+        TotalAmount,
+        IsDeleted,
+        CreatedBy,
+        CreatedDate
+    )
+    VALUES
+    (
+        @PONumber,
+        @PODate,
+        @VendorId,
+        @Status,
+        @Notes,
+        @SubTotal,
+        @TaxAmount,
+        @TotalAmount,
+        0,
+        @CreatedBy,
+        GETDATE()
+    );
+
+    -- Return newly created Purchase Order Id
+    SELECT CAST(SCOPE_IDENTITY() AS INT) AS Id;
+END;
+GO
+--===  GetAll Purchase Order ===
+CREATE OR ALTER PROCEDURE dbo.sp_PurchaseOrder_GetAll
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        Id,
+        PONumber,
+        PODate,
+        VendorId,
+        Status,
+        Notes,
+        SubTotal,
+        TaxAmount,
+        TotalAmount,
+        IsDeleted,
+        CreatedBy,
+        CreatedDate,
+        UpdatedBy,
+        UpdatedDate
+    FROM dbo.PurchaseOrder
+    WHERE IsDeleted = 0
+    ORDER BY Id DESC;
+END;
+GO
+--===  Get PO by ID =============
+CREATE OR ALTER PROCEDURE dbo.sp_PurchaseOrder_GetById
+(
+    @Id INT
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        Id,
+        PONumber,
+        PODate,
+        VendorId,
+        Status,
+        Notes,
+        SubTotal,
+        TaxAmount,
+        TotalAmount,
+        IsDeleted,
+        CreatedBy,
+        CreatedDate,
+        UpdatedBy,
+        UpdatedDate
+    FROM dbo.PurchaseOrder
+    WHERE Id = @Id
+      AND IsDeleted = 0;
+END;
+GO
+--==== Update PO ======
+CREATE OR ALTER PROCEDURE dbo.sp_PurchaseOrder_Update
+(
+    @Id             INT,
+    @PONumber       VARCHAR(30),
+    @PODate         DATETIME,
+    @VendorId       INT,
+    @Status         VARCHAR(20),
+    @Notes          NVARCHAR(500) = NULL,
+    @SubTotal       DECIMAL(18,2),
+    @TaxAmount      DECIMAL(18,2),
+    @TotalAmount    DECIMAL(18,2),
+    @UpdatedBy      VARCHAR(100) = NULL
+)
+AS
+BEGIN
+    SET NOCOUNT OFF;
+
+    UPDATE dbo.PurchaseOrder
+    SET
+        PONumber = @PONumber,
+        PODate = @PODate,
+        VendorId = @VendorId,
+        Status = @Status,
+        Notes = @Notes,
+        SubTotal = @SubTotal,
+        TaxAmount = @TaxAmount,
+        TotalAmount = @TotalAmount,
+        UpdatedBy = @UpdatedBy,
+        UpdatedDate = GETDATE()
+    WHERE Id = @Id
+      AND IsDeleted = 0;
+END;
+GO
+-- ====  Delete PO =======
+CREATE OR ALTER PROCEDURE dbo.sp_PurchaseOrder_Delete
+(
+    @Id INT
+)
+AS
+BEGIN
+    SET NOCOUNT OFF;
+
+    UPDATE dbo.PurchaseOrder
+    SET
+        IsDeleted = 1,
+        UpdatedDate = GETDATE()
+    WHERE Id = @Id
+      AND IsDeleted = 0;
+END;
+GO
+-- ==== GetPaged PO ======
+CREATE OR ALTER PROCEDURE dbo.sp_PurchaseOrder_GetPaged
+(
+    @PONumber       VARCHAR(30) = NULL,
+    @VendorId       INT = NULL,
+    @Status         VARCHAR(20) = NULL,
+    @PageNumber     INT = 1,
+    @PageSize       INT = 10
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Safety
+    IF @PageNumber < 1
+        SET @PageNumber = 1;
+
+    IF @PageSize < 1
+        SET @PageSize = 10;
+
+    DECLARE @Offset INT;
+
+    SET @Offset =
+        (@PageNumber - 1) * @PageSize;
+
+    -- ============================================================
+    -- RESULT SET 1 - PAGED DATA
+    -- ============================================================
+
+    SELECT
+        Id,
+        PONumber,
+        PODate,
+        VendorId,
+        Status,
+        Notes,
+        SubTotal,
+        TaxAmount,
+        TotalAmount,
+        IsDeleted,
+        CreatedBy,
+        CreatedDate,
+        UpdatedBy,
+        UpdatedDate
+    FROM dbo.PurchaseOrder
+    WHERE IsDeleted = 0
+
+      AND
+      (
+          @PONumber IS NULL
+          OR PONumber LIKE '%' + @PONumber + '%'
+      )
+
+      AND
+      (
+          @VendorId IS NULL
+          OR VendorId = @VendorId
+      )
+
+      AND
+      (
+          @Status IS NULL
+          OR Status = @Status
+      )
+
+    ORDER BY Id DESC
+
+    OFFSET @Offset ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+
+
+    -- ============================================================
+    -- RESULT SET 2 - TOTAL RECORDS
+    -- ============================================================
+
+    SELECT COUNT(*) AS TotalRecords
+    FROM dbo.PurchaseOrder
+    WHERE IsDeleted = 0
+
+      AND
+      (
+          @PONumber IS NULL
+          OR PONumber LIKE '%' + @PONumber + '%'
+      )
+
+      AND
+      (
+          @VendorId IS NULL
+          OR VendorId = @VendorId
+      )
+
+      AND
+      (
+          @Status IS NULL
+          OR Status = @Status
+      );
+END;
+GO
+--====  PO Details insert ===
+CREATE OR ALTER PROCEDURE dbo.sp_PurchaseOrderDetail_Insert
+(
+    @PurchaseOrderId   INT,
+    @ItemmasterId      INT,
+    @Quantity          DECIMAL(18,2),
+    @Rate              DECIMAL(18,2),
+    @DiscountAmount    DECIMAL(18,2),
+    @TaxPercent        DECIMAL(5,2),
+    @TaxAmount         DECIMAL(18,2),
+    @LineTotal         DECIMAL(18,2)
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO dbo.PurchaseOrderDetail
+    (
+        PurchaseOrderId,
+        ItemmasterId,
+        Quantity,
+        Rate,
+        DiscountAmount,
+        TaxPercent,
+        TaxAmount,
+        LineTotal
+    )
+    VALUES
+    (
+        @PurchaseOrderId,
+        @ItemmasterId,
+        @Quantity,
+        @Rate,
+        @DiscountAmount,
+        @TaxPercent,
+        @TaxAmount,
+        @LineTotal
+    );
+
+    SELECT CAST(SCOPE_IDENTITY() AS INT) AS Id;
+END;
+GO
+--====  Get PO Details by PO ID =====
+CREATE OR ALTER PROCEDURE dbo.sp_PurchaseOrderDetail_GetByPurchaseOrderId
+(
+    @PurchaseOrderId INT
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        Id,
+        PurchaseOrderId,
+        ItemmasterId,
+        Quantity,
+        Rate,
+        DiscountAmount,
+        TaxPercent,
+        TaxAmount,
+        LineTotal
+    FROM dbo.PurchaseOrderDetail
+    WHERE PurchaseOrderId = @PurchaseOrderId
+    ORDER BY Id;
+END;
+GO
+--====  Get PO Details by Details ID ====
+CREATE OR ALTER PROCEDURE dbo.sp_PurchaseOrderDetail_GetById
+(
+    @Id INT
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        Id,
+        PurchaseOrderId,
+        ItemmasterId,
+        Quantity,
+        Rate,
+        DiscountAmount,
+        TaxPercent,
+        TaxAmount,
+        LineTotal
+    FROM dbo.PurchaseOrderDetail
+    WHERE Id = @Id;
+END;
+GO
+--===  PO Details update ====  
+CREATE OR ALTER PROCEDURE dbo.sp_PurchaseOrderDetail_Update
+(
+    @Id                INT,
+    @ItemmasterId      INT,
+    @Quantity          DECIMAL(18,2),
+    @Rate              DECIMAL(18,2),
+    @DiscountAmount    DECIMAL(18,2),
+    @TaxPercent        DECIMAL(5,2),
+    @TaxAmount         DECIMAL(18,2),
+    @LineTotal         DECIMAL(18,2)
+)
+AS
+BEGIN
+    SET NOCOUNT OFF;
+
+    UPDATE dbo.PurchaseOrderDetail
+    SET
+        ItemmasterId = @ItemmasterId,
+        Quantity = @Quantity,
+        Rate = @Rate,
+        DiscountAmount = @DiscountAmount,
+        TaxPercent = @TaxPercent,
+        TaxAmount = @TaxAmount,
+        LineTotal = @LineTotal
+    WHERE Id = @Id;
+END;
+GO
+--====  PO Details Delete =======
+CREATE OR ALTER PROCEDURE dbo.sp_PurchaseOrderDetail_Delete
+(
+    @Id INT
+)
+AS
+BEGIN
+    SET NOCOUNT OFF;
+
+    DELETE FROM dbo.PurchaseOrderDetail
+    WHERE Id = @Id;
+END;
+GO
+--====  Delete PO Details by PO ID =====
+CREATE OR ALTER PROCEDURE dbo.sp_PurchaseOrderDetail_DeleteByPurchaseOrderId
+(
+    @PurchaseOrderId INT
+)
+AS
+BEGIN
+    SET NOCOUNT OFF;
+
+    DELETE FROM dbo.PurchaseOrderDetail
+    WHERE PurchaseOrderId = @PurchaseOrderId;
+END;
+GO
+
+
+
+
