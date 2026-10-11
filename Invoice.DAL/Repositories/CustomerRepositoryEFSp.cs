@@ -48,41 +48,63 @@ public class CustomerRepositoryEFSp : ICustomerRepository
     }
     public async Task<bool> UpdateAsync(CustomerEntity customer)
     {
-        var affectedRows = await _dbContext.Database.ExecuteSqlRawAsync(
-            @"EXEC sp_Customer_Update
-            @Id,
-            @CustomerCode,
-            @CustomerName,
-            @ContactPerson,
-            @MobileNo,
-            @Email,
-            @Address1,
-            @Address2,
-            @City,
-            @State,
-            @Country,
-            @ZipCode,
-            @GstNo,
-            @IsActive,
-            @IsDeleted",
+        var rowsAffected = new SqlParameter("@RowsAffected", SqlDbType.Int)
+        {
+            Direction = ParameterDirection.Output
+        };
+
+        await _dbContext.Database.ExecuteSqlRawAsync(
+            @"EXEC dbo.sp_Customer_Update
+            @Id = @Id,
+            @CustomerCode = @CustomerCode,
+            @CustomerName = @CustomerName,
+            @ContactPerson = @ContactPerson,
+            @MobileNo = @MobileNo,
+            @Email = @Email,
+            @Address1 = @Address1,
+            @Address2 = @Address2,
+            @City = @City,
+            @State = @State,
+            @Country = @Country,
+            @ZipCode = @ZipCode,
+            @GstNo = @GstNo,
+            @IsActive = @IsActive,
+            @IsDeleted = @IsDeleted,
+            @RowsAffected = @RowsAffected OUTPUT",
+
             new SqlParameter("@Id", customer.Id),
             new SqlParameter("@CustomerCode", customer.CustomerCode),
             new SqlParameter("@CustomerName", customer.CustomerName),
-            new SqlParameter("@ContactPerson", (object?)customer.ContactPerson ?? DBNull.Value),
-            new SqlParameter("@MobileNo", (object?)customer.MobileNo ?? DBNull.Value),
-            new SqlParameter("@Email", (object?)customer.Email ?? DBNull.Value),
-            new SqlParameter("@Address1", (object?)customer.Address1 ?? DBNull.Value),
-            new SqlParameter("@Address2", (object?)customer.Address2 ?? DBNull.Value),
-            new SqlParameter("@City", (object?)customer.City ?? DBNull.Value),
-            new SqlParameter("@State", (object?)customer.State ?? DBNull.Value),
-            new SqlParameter("@Country", (object?)customer.Country ?? DBNull.Value),
-            new SqlParameter("@ZipCode", (object?)customer.ZipCode ?? DBNull.Value),
-            new SqlParameter("@GstNo", (object?)customer.GstNo ?? DBNull.Value),
-            new SqlParameter("@IsActive", (object?)customer.IsActive ?? DBNull.Value),
-            new SqlParameter("@IsDeleted", (object?)customer.IsDeleted ?? DBNull.Value)
-            );
-        return affectedRows > 0;
+            new SqlParameter("@ContactPerson",
+                (object?)customer.ContactPerson ?? DBNull.Value),
+            new SqlParameter("@MobileNo",
+                (object?)customer.MobileNo ?? DBNull.Value),
+            new SqlParameter("@Email",
+                (object?)customer.Email ?? DBNull.Value),
+            new SqlParameter("@Address1",
+                (object?)customer.Address1 ?? DBNull.Value),
+            new SqlParameter("@Address2",
+                (object?)customer.Address2 ?? DBNull.Value),
+            new SqlParameter("@City",
+                (object?)customer.City ?? DBNull.Value),
+            new SqlParameter("@State",
+                (object?)customer.State ?? DBNull.Value),
+            new SqlParameter("@Country",
+                (object?)customer.Country ?? DBNull.Value),
+            new SqlParameter("@ZipCode",
+                (object?)customer.ZipCode ?? DBNull.Value),
+            new SqlParameter("@GstNo",
+                (object?)customer.GstNo ?? DBNull.Value),
+            new SqlParameter("@IsActive",
+                (object?)customer.IsActive ?? DBNull.Value),
+            new SqlParameter("@IsDeleted",
+                (object?)customer.IsDeleted ?? DBNull.Value),
+            rowsAffected
+        );
+
+        return Convert.ToInt32(rowsAffected.Value) > 0;
     }
+    
     public async Task<CustomerEntity?> GetByIdAsync(int id)
     {
         var customers = await _dbContext.Customers.FromSqlRaw(
@@ -101,10 +123,20 @@ public class CustomerRepositoryEFSp : ICustomerRepository
     }
     public async Task<bool> DeleteAsync(int id)
     {
-        var affectedRows = await _dbContext.Database.ExecuteSqlRawAsync(
-            @"EXEC sp_Customer_Delete @Id",
-            new SqlParameter("@Id", id));
-        return affectedRows > 0;
+        var rowsAffected = new SqlParameter("@RowsAffected", SqlDbType.Int)
+        {
+            Direction = ParameterDirection.Output
+        };
+
+        await _dbContext.Database.ExecuteSqlRawAsync(
+            @"EXEC dbo.sp_Customer_Delete
+            @Id = @Id,
+            @RowsAffected = @RowsAffected OUTPUT",
+            new SqlParameter("@Id", id),
+            rowsAffected
+        );
+
+        return Convert.ToInt32(rowsAffected.Value) > 0;
     }
     public async Task<PagedResultDto<CustomerEntity>> GetAllPagedAsync(
         string? CustomerCode,

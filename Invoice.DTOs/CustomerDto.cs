@@ -17,7 +17,7 @@ public class CustomerDto
     public string? ZipCode { get; set; }
     public string? GstNo { get; set; }
     public bool? IsActive { get; set; }
-    public bool? IsDeleted { get; set; }
+    public bool? IsDeleted { get; set; } = false;
     public string? CreatedBy { get; set; }
     public DateTime? CreatedDate { get; set; }
     public string? UpdatedBy { get; set; }
