@@ -591,11 +591,8 @@ BEGIN
     WHERE Id = @Id;
 
     SET @RowsAffected = @@ROWCOUNT;
-END
+END;
 GO
-/* ============================================================
-   ITEMMASTER PROCEDURES
-   ============================================================ */
 
 CREATE OR ALTER PROCEDURE dbo.sp_Customer_Delete
     @Id INT,
@@ -604,17 +601,11 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    UPDATE dbo.Customer
-    SET
-        IsDeleted = 1,
-        IsActive = 0,
-        UpdatedBy = SYSTEM_USER,
-        UpdatedDate = GETDATE()
-    WHERE Id = @Id
-      AND IsDeleted = 0;
+    DELETE FROM dbo.Customer
+    WHERE Id = @Id;
 
     SET @RowsAffected = @@ROWCOUNT;
-END
+END;
 GO
 
 CREATE OR ALTER PROCEDURE dbo.sp_Itemmaster_GetActiveCountByCategory
