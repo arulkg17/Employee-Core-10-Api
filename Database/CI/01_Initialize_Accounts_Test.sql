@@ -119,7 +119,14 @@ BEGIN
     );
 END
 GO
-
+IF COL_LENGTH('dbo.Itemmaster', 'IsDeleted') IS NULL
+BEGIN
+    ALTER TABLE dbo.Itemmaster
+    ADD IsDeleted BIT NOT NULL
+        CONSTRAINT DF_Itemmaster_IsDeleted DEFAULT (0)
+        WITH VALUES;
+END;
+GO
 
 /* ============================================================
    PRODUCTS
