@@ -864,6 +864,7 @@ BEGIN
 
     SELECT @Id AS Id;
 END
+GO
 CREATE OR ALTER PROCEDURE dbo.sp_Itemmaster_Delete
     @Id INT
 AS
