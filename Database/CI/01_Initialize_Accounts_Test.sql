@@ -564,7 +564,8 @@ CREATE OR ALTER PROCEDURE dbo.sp_Customer_Update
     @ZipCode VARCHAR(20) = NULL,
     @GstNo VARCHAR(50) = NULL,
     @IsActive BIT,
-    @IsDeleted BIT
+    @IsDeleted BIT,
+    @RowsAffected INT OUTPUT
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -588,27 +589,33 @@ BEGIN
         UpdatedBy = SYSTEM_USER,
         UpdatedDate = GETDATE()
     WHERE Id = @Id;
+
+    SET @RowsAffected = @@ROWCOUNT;
 END
 GO
-
-
 /* ============================================================
    ITEMMASTER PROCEDURES
    ============================================================ */
 
-CREATE OR ALTER PROCEDURE dbo.sp_Itemmaster_Delete
-    @Id INT
+CREATE OR ALTER PROCEDURE dbo.sp_Customer_Delete
+    @Id INT,
+    @RowsAffected INT OUTPUT
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    DELETE FROM dbo.Itemmaster
-    WHERE Id = @Id;
+    UPDATE dbo.Customer
+    SET
+        IsDeleted = 1,
+        IsActive = 0,
+        UpdatedBy = SYSTEM_USER,
+        UpdatedDate = GETDATE()
+    WHERE Id = @Id
+      AND IsDeleted = 0;
 
-    SELECT @Id AS Id;
+    SET @RowsAffected = @@ROWCOUNT;
 END
 GO
-
 
 CREATE OR ALTER PROCEDURE dbo.sp_Itemmaster_GetActiveCountByCategory
     @CategoryId INT
