@@ -1,0 +1,457 @@
+2026-10-15 13:22:50.181 -05:00 [INF] User profile is available. Using 'C:\Users\arulg\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-10-15 13:22:50.904 -05:00 [INF] Now listening on: http://localhost:5063
+2026-10-15 13:22:51.535 -05:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-10-15 13:22:51.535 -05:00 [INF] Hosting environment: Development
+2026-10-15 13:22:51.535 -05:00 [INF] Content root path: D:\Projects\NetCore\Employee-Core10-Api\Employee-Core10-API\Invoice.CoreAPI
+2026-10-15 13:22:51.978 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.html - null null
+2026-10-15 13:22:52.743 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.html - 304 null null 781.6678ms
+2026-10-15 13:22:52.775 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui.css - null null
+2026-10-15 13:22:52.775 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.css - null null
+2026-10-15 13:22:52.776 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-bundle.js - null null
+2026-10-15 13:22:52.803 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/_framework/aspnetcore-browser-refresh.js - null null
+2026-10-15 13:22:52.806 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-standalone-preset.js - null null
+2026-10-15 13:22:52.808 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/_framework/aspnetcore-browser-refresh.js - 200 14935 application/javascript; charset=utf-8 5.1274ms
+2026-10-15 13:22:52.809 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.js - null null
+2026-10-15 13:22:52.810 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.js - 304 null null 0.8825ms
+2026-10-15 13:22:52.833 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/_vs/browserLink - null null
+2026-10-15 13:22:52.844 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.css - 304 null null 70.9844ms
+2026-10-15 13:22:52.844 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-bundle.js - 304 null null 68.6463ms
+2026-10-15 13:22:52.851 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-standalone-preset.js - 304 null null 45.2659ms
+2026-10-15 13:22:52.862 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui.css - 304 null null 88.1417ms
+2026-10-15 13:22:53.023 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/_vs/browserLink - 200 null text/javascript; charset=UTF-8 189.5216ms
+2026-10-15 13:22:53.117 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/v1/swagger.json - null null
+2026-10-15 13:22:53.256 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 139.4489ms
+2026-10-15 13:33:09.049 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/AsyncDemo/run-all - null null
+2026-10-15 13:33:10.393 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.AsyncDemoController.RunAllAsync (Invoice.CoreAPI)'
+2026-10-15 13:33:10.430 -05:00 [INF] Route matched with {action = "RunAll", controller = "AsyncDemo"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] RunAllAsync() on controller Invoice.CoreAPI.Controllers.AsyncDemoController (Invoice.CoreAPI).
+2026-10-15 13:33:14.494 -05:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`4[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[Invoice.Model.ApiTaskResult[], Invoice.Model, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-10-15 13:33:14.516 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.AsyncDemoController.RunAllAsync (Invoice.CoreAPI) in 4081.4661ms
+2026-10-15 13:33:14.517 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.AsyncDemoController.RunAllAsync (Invoice.CoreAPI)'
+2026-10-15 13:33:14.521 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/AsyncDemo/run-all - 200 null application/json; charset=utf-8 5471.8679ms
+2026-10-15 14:17:59.152 -05:00 [INF] User profile is available. Using 'C:\Users\arulg\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-10-15 14:17:59.444 -05:00 [INF] Now listening on: http://localhost:5063
+2026-10-15 14:17:59.602 -05:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-10-15 14:17:59.602 -05:00 [INF] Hosting environment: Development
+2026-10-15 14:17:59.602 -05:00 [INF] Content root path: D:\Projects\NetCore\Employee-Core10-Api\Employee-Core10-API\Invoice.CoreAPI
+2026-10-15 14:18:00.374 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.html - null null
+2026-10-15 14:18:01.029 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.html - 304 null null 674.1601ms
+2026-10-15 14:18:01.071 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/_framework/aspnetcore-browser-refresh.js - null null
+2026-10-15 14:18:01.071 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui.css - null null
+2026-10-15 14:18:01.075 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/_framework/aspnetcore-browser-refresh.js - 200 14935 application/javascript; charset=utf-8 5.7919ms
+2026-10-15 14:18:01.088 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.css - null null
+2026-10-15 14:18:01.090 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-bundle.js - null null
+2026-10-15 14:18:01.092 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-standalone-preset.js - null null
+2026-10-15 14:18:01.093 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.js - null null
+2026-10-15 14:18:01.095 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.js - 304 null null 2.0861ms
+2026-10-15 14:18:01.108 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/_vs/browserLink - null null
+2026-10-15 14:18:01.113 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-standalone-preset.js - 304 null null 21.1556ms
+2026-10-15 14:18:01.113 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui.css - 304 null null 43.7825ms
+2026-10-15 14:18:01.113 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.css - 304 null null 25.664ms
+2026-10-15 14:18:01.114 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-bundle.js - 304 null null 23.2708ms
+2026-10-15 14:18:01.262 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/_vs/browserLink - 200 null text/javascript; charset=UTF-8 153.801ms
+2026-10-15 14:18:01.377 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/v1/swagger.json - null null
+2026-10-15 14:18:01.550 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 173.3013ms
+2026-10-15 14:18:32.147 -05:00 [INF] Request starting HTTP/1.1 POST http://localhost:5063/api/v1/Login - application/json 54
+2026-10-15 14:18:32.171 -05:00 [INF] CORS policy execution failed.
+2026-10-15 14:18:32.172 -05:00 [INF] Request origin http://localhost:5063 does not have permission to access the resource.
+2026-10-15 14:18:33.672 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.LoginController.Login (Invoice.CoreAPI)'
+2026-10-15 14:18:33.726 -05:00 [INF] Route matched with {action = "Login", controller = "Login"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(Invoice.DTOs.LoginRequestDto) on controller Invoice.CoreAPI.Controllers.LoginController (Invoice.CoreAPI).
+2026-10-15 14:18:36.143 -05:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType7`3[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[Invoice.DTOs.LoginResponseDto, Invoice.DTOs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-10-15 14:18:36.190 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.LoginController.Login (Invoice.CoreAPI) in 2457.4707ms
+2026-10-15 14:18:36.191 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.LoginController.Login (Invoice.CoreAPI)'
+2026-10-15 14:18:36.194 -05:00 [INF] Request finished HTTP/1.1 POST http://localhost:5063/api/v1/Login - 200 null application/json; charset=utf-8 4047.8867ms
+2026-10-15 14:19:05.255 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/v1/Category/GetAll - null null
+2026-10-15 14:19:05.386 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.CategoryController.GetAll (Invoice.CoreAPI)'
+2026-10-15 14:19:05.397 -05:00 [INF] Route matched with {action = "GetAll", controller = "Category"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll() on controller Invoice.CoreAPI.Controllers.CategoryController (Invoice.CoreAPI).
+2026-10-15 14:19:06.435 -05:00 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-10-15 14:19:07.469 -05:00 [WRN] No store type was specified for the decimal property 'OnHandQuantity' on entity type 'ItemStockEntity'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-10-15 14:19:07.469 -05:00 [WRN] No store type was specified for the decimal property 'ReceivedQuantity' on entity type 'ItemStockEntity'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-10-15 14:19:07.469 -05:00 [WRN] No store type was specified for the decimal property 'SoldQuantity' on entity type 'ItemStockEntity'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-10-15 14:19:08.446 -05:00 [INF] Executed DbCommand (12ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+EXEC sp_Category_GetAll
+2026-10-15 14:19:08.562 -05:00 [INF] Executing OkObjectResult, writing value of type 'Invoice.Model.ApiResponse`1[[System.Collections.Generic.IEnumerable`1[[Invoice.DTOs.CategoryDto, Invoice.DTOs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-10-15 14:19:08.579 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.CategoryController.GetAll (Invoice.CoreAPI) in 3181.7271ms
+2026-10-15 14:19:08.579 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.CategoryController.GetAll (Invoice.CoreAPI)'
+2026-10-15 14:19:08.593 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/v1/Category/GetAll - 200 null application/json; charset=utf-8 3338.6129ms
+2026-10-15 14:19:45.084 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/AsyncDemo/run-all - null null
+2026-10-15 14:19:45.097 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.AsyncDemoController.RunAllAsync (Invoice.CoreAPI)'
+2026-10-15 14:19:45.132 -05:00 [INF] Route matched with {action = "RunAll", controller = "AsyncDemo"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] RunAllAsync(System.Threading.CancellationToken) on controller Invoice.CoreAPI.Controllers.AsyncDemoController (Invoice.CoreAPI).
+2026-10-15 14:19:45.152 -05:00 [INF] Executing ObjectResult, writing value of type 'Microsoft.AspNetCore.Mvc.ProblemDetails'.
+2026-10-15 14:19:45.195 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.AsyncDemoController.RunAllAsync (Invoice.CoreAPI) in 63.2852ms
+2026-10-15 14:19:45.195 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.AsyncDemoController.RunAllAsync (Invoice.CoreAPI)'
+2026-10-15 14:19:45.196 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/AsyncDemo/run-all - 500 null application/problem+json; charset=utf-8 111.5147ms
+2026-10-15 14:23:22.898 -05:00 [INF] User profile is available. Using 'C:\Users\arulg\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-10-15 14:23:23.158 -05:00 [INF] Now listening on: http://localhost:5063
+2026-10-15 14:23:23.381 -05:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-10-15 14:23:23.381 -05:00 [INF] Hosting environment: Development
+2026-10-15 14:23:23.381 -05:00 [INF] Content root path: D:\Projects\NetCore\Employee-Core10-Api\Employee-Core10-API\Invoice.CoreAPI
+2026-10-15 14:23:23.750 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.html - null null
+2026-10-15 14:23:24.305 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.html - 304 null null 630.2633ms
+2026-10-15 14:23:24.368 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui.css - null null
+2026-10-15 14:23:24.368 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/_framework/aspnetcore-browser-refresh.js - null null
+2026-10-15 14:23:24.373 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/_framework/aspnetcore-browser-refresh.js - 200 14935 application/javascript; charset=utf-8 4.1039ms
+2026-10-15 14:23:24.386 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.css - null null
+2026-10-15 14:23:24.387 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-bundle.js - null null
+2026-10-15 14:23:24.392 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-standalone-preset.js - null null
+2026-10-15 14:23:24.394 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.js - null null
+2026-10-15 14:23:24.395 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.js - 304 null null 1.0879ms
+2026-10-15 14:23:24.396 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/_vs/browserLink - null null
+2026-10-15 14:23:24.403 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui.css - 304 null null 36.5911ms
+2026-10-15 14:23:24.403 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-standalone-preset.js - 304 null null 11.1705ms
+2026-10-15 14:23:24.403 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-bundle.js - 304 null null 16.0173ms
+2026-10-15 14:23:24.403 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.css - 304 null null 17.2147ms
+2026-10-15 14:23:24.511 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/_vs/browserLink - 200 null text/javascript; charset=UTF-8 115.3673ms
+2026-10-15 14:23:24.683 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/v1/swagger.json - null null
+2026-10-15 14:23:24.777 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 93.5413ms
+2026-10-15 14:23:49.837 -05:00 [INF] Request starting HTTP/1.1 POST http://localhost:5063/api/v1/Login - application/json 54
+2026-10-15 14:23:49.861 -05:00 [INF] CORS policy execution failed.
+2026-10-15 14:23:49.861 -05:00 [INF] Request origin http://localhost:5063 does not have permission to access the resource.
+2026-10-15 14:23:51.068 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.LoginController.Login (Invoice.CoreAPI)'
+2026-10-15 14:23:51.102 -05:00 [INF] Route matched with {action = "Login", controller = "Login"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(Invoice.DTOs.LoginRequestDto) on controller Invoice.CoreAPI.Controllers.LoginController (Invoice.CoreAPI).
+2026-10-15 14:23:52.930 -05:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType7`3[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[Invoice.DTOs.LoginResponseDto, Invoice.DTOs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-10-15 14:23:52.969 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.LoginController.Login (Invoice.CoreAPI) in 1861.9422ms
+2026-10-15 14:23:52.970 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.LoginController.Login (Invoice.CoreAPI)'
+2026-10-15 14:23:52.973 -05:00 [INF] Request finished HTTP/1.1 POST http://localhost:5063/api/v1/Login - 200 null application/json; charset=utf-8 3135.918ms
+2026-10-15 14:24:20.649 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/AsyncDemo/run-all - null null
+2026-10-15 14:24:20.704 -05:00 [INF] Failed to validate the token.
+System.ArgumentException: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+ ---> System.FormatException: IDX10400: Unable to decode: '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64url encoded string.
+   at Microsoft.IdentityModel.Tokens.Base64UrlEncoding.ValidateAndGetOutputSize(ReadOnlySpan`1 strSpan, Int32 offset, Int32 length)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.CreateClaimSet(ReadOnlySpan`1 strSpan, Int32 startIndex, Int32 length, Boolean createHeaderClaimSet)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   --- End of inner exception stack trace ---
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken..ctor(String jwtEncodedString, TryReadJwtClaim tryReadJwtClaim)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ReadToken(String token, TokenValidationParameters validationParameters)
+2026-10-15 14:24:20.723 -05:00 [INF] Bearer was not authenticated. Failure message: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+2026-10-15 14:24:20.724 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.AsyncDemoController.RunAllAsync (Invoice.CoreAPI)'
+2026-10-15 14:24:20.734 -05:00 [INF] Route matched with {action = "RunAll", controller = "AsyncDemo"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] RunAllAsync(System.Threading.CancellationToken) on controller Invoice.CoreAPI.Controllers.AsyncDemoController (Invoice.CoreAPI).
+2026-10-15 14:24:20.750 -05:00 [INF] Start processing HTTP request GET http://localhost:5063/api/v1/Category
+2026-10-15 14:24:20.752 -05:00 [INF] Sending HTTP request GET http://localhost:5063/api/v1/Category
+2026-10-15 14:24:20.757 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/v1/Category - null null
+2026-10-15 14:24:20.757 -05:00 [INF] Start processing HTTP request GET http://localhost:5063/api/v1/Itemmaster
+2026-10-15 14:24:20.757 -05:00 [INF] Sending HTTP request GET http://localhost:5063/api/v1/Itemmaster
+2026-10-15 14:24:20.759 -05:00 [INF] Start processing HTTP request GET http://localhost:5063/api/v1/Customer
+2026-10-15 14:24:20.759 -05:00 [INF] Sending HTTP request GET http://localhost:5063/api/v1/Customer
+2026-10-15 14:24:20.760 -05:00 [INF] Start processing HTTP request GET http://localhost:5063/api/v1/Vendor
+2026-10-15 14:24:20.761 -05:00 [INF] Sending HTTP request GET http://localhost:5063/api/v1/Vendor
+2026-10-15 14:24:20.761 -05:00 [INF] Start processing HTTP request GET http://localhost:5063/api/v1/User
+2026-10-15 14:24:20.761 -05:00 [INF] Sending HTTP request GET http://localhost:5063/api/v1/User
+2026-10-15 14:24:20.767 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/v1/Customer - null null
+2026-10-15 14:24:20.767 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/v1/User - null null
+2026-10-15 14:24:20.768 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/v1/Itemmaster - null null
+2026-10-15 14:24:20.768 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/v1/Vendor - null null
+2026-10-15 14:24:20.769 -05:00 [INF] Failed to validate the token.
+System.ArgumentException: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+ ---> System.FormatException: IDX10400: Unable to decode: '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64url encoded string.
+   at Microsoft.IdentityModel.Tokens.Base64UrlEncoding.ValidateAndGetOutputSize(ReadOnlySpan`1 strSpan, Int32 offset, Int32 length)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.CreateClaimSet(ReadOnlySpan`1 strSpan, Int32 startIndex, Int32 length, Boolean createHeaderClaimSet)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   --- End of inner exception stack trace ---
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken..ctor(String jwtEncodedString, TryReadJwtClaim tryReadJwtClaim)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ReadToken(String token, TokenValidationParameters validationParameters)
+2026-10-15 14:24:20.769 -05:00 [INF] Failed to validate the token.
+System.ArgumentException: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+ ---> System.FormatException: IDX10400: Unable to decode: '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64url encoded string.
+   at Microsoft.IdentityModel.Tokens.Base64UrlEncoding.ValidateAndGetOutputSize(ReadOnlySpan`1 strSpan, Int32 offset, Int32 length)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.CreateClaimSet(ReadOnlySpan`1 strSpan, Int32 startIndex, Int32 length, Boolean createHeaderClaimSet)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   --- End of inner exception stack trace ---
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken..ctor(String jwtEncodedString, TryReadJwtClaim tryReadJwtClaim)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ReadToken(String token, TokenValidationParameters validationParameters)
+2026-10-15 14:24:20.769 -05:00 [INF] Failed to validate the token.
+System.ArgumentException: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+ ---> System.FormatException: IDX10400: Unable to decode: '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64url encoded string.
+   at Microsoft.IdentityModel.Tokens.Base64UrlEncoding.ValidateAndGetOutputSize(ReadOnlySpan`1 strSpan, Int32 offset, Int32 length)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.CreateClaimSet(ReadOnlySpan`1 strSpan, Int32 startIndex, Int32 length, Boolean createHeaderClaimSet)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   --- End of inner exception stack trace ---
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken..ctor(String jwtEncodedString, TryReadJwtClaim tryReadJwtClaim)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ReadToken(String token, TokenValidationParameters validationParameters)
+2026-10-15 14:24:20.769 -05:00 [INF] Failed to validate the token.
+System.ArgumentException: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+ ---> System.FormatException: IDX10400: Unable to decode: '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64url encoded string.
+   at Microsoft.IdentityModel.Tokens.Base64UrlEncoding.ValidateAndGetOutputSize(ReadOnlySpan`1 strSpan, Int32 offset, Int32 length)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.CreateClaimSet(ReadOnlySpan`1 strSpan, Int32 startIndex, Int32 length, Boolean createHeaderClaimSet)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   --- End of inner exception stack trace ---
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken..ctor(String jwtEncodedString, TryReadJwtClaim tryReadJwtClaim)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ReadToken(String token, TokenValidationParameters validationParameters)
+2026-10-15 14:24:20.769 -05:00 [INF] Failed to validate the token.
+System.ArgumentException: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+ ---> System.FormatException: IDX10400: Unable to decode: '[PII of type 'System.String' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64url encoded string.
+   at Microsoft.IdentityModel.Tokens.Base64UrlEncoding.ValidateAndGetOutputSize(ReadOnlySpan`1 strSpan, Int32 offset, Int32 length)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.CreateClaimSet(ReadOnlySpan`1 strSpan, Int32 startIndex, Int32 length, Boolean createHeaderClaimSet)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   --- End of inner exception stack trace ---
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken..ctor(String jwtEncodedString, TryReadJwtClaim tryReadJwtClaim)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ReadToken(String token, TokenValidationParameters validationParameters)
+2026-10-15 14:24:20.769 -05:00 [INF] Bearer was not authenticated. Failure message: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+2026-10-15 14:24:20.770 -05:00 [INF] Bearer was not authenticated. Failure message: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+2026-10-15 14:24:20.769 -05:00 [INF] Bearer was not authenticated. Failure message: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+2026-10-15 14:24:20.770 -05:00 [INF] Bearer was not authenticated. Failure message: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+2026-10-15 14:24:20.769 -05:00 [INF] Bearer was not authenticated. Failure message: IDX14102: Unable to decode the header '[PII of type 'Microsoft.IdentityModel.Logging.SecurityArtifact' is hidden. For more details, see https://aka.ms/IdentityModel/PII.]' as Base64Url encoded string.
+2026-10-15 14:24:20.770 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/v1/Customer - 404 0 null 3.049ms
+2026-10-15 14:24:20.770 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/v1/User - 404 0 null 2.5531ms
+2026-10-15 14:24:20.770 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/v1/Vendor - 404 0 null 2.3355ms
+2026-10-15 14:24:20.770 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/v1/Category - 404 0 null 13.5669ms
+2026-10-15 14:24:20.770 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/v1/Itemmaster - 404 0 null 2.5931ms
+2026-10-15 14:24:20.771 -05:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5063/api/v1/Itemmaster, Response status code: 404
+2026-10-15 14:24:20.771 -05:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5063/api/v1/Customer, Response status code: 404
+2026-10-15 14:24:20.771 -05:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5063/api/v1/User, Response status code: 404
+2026-10-15 14:24:20.771 -05:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5063/api/v1/Vendor, Response status code: 404
+2026-10-15 14:24:20.771 -05:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5063/api/v1/Category, Response status code: 404
+2026-10-15 14:24:20.778 -05:00 [INF] Received HTTP response headers after 13.5876ms - 404
+2026-10-15 14:24:20.778 -05:00 [INF] Received HTTP response headers after 17.454ms - 404
+2026-10-15 14:24:20.778 -05:00 [INF] Received HTTP response headers after 22.7873ms - 404
+2026-10-15 14:24:20.778 -05:00 [INF] Received HTTP response headers after 14.1814ms - 404
+2026-10-15 14:24:20.778 -05:00 [INF] Received HTTP response headers after 15.8533ms - 404
+2026-10-15 14:24:20.779 -05:00 [INF] End processing HTTP request after 21.9583ms - 404
+2026-10-15 14:24:20.779 -05:00 [INF] End processing HTTP request after 20.6063ms - 404
+2026-10-15 14:24:20.779 -05:00 [INF] End processing HTTP request after 30.8629ms - 404
+2026-10-15 14:24:20.779 -05:00 [INF] End processing HTTP request after 18.0805ms - 404
+2026-10-15 14:24:20.779 -05:00 [INF] End processing HTTP request after 18.8473ms - 404
+2026-10-15 14:24:20.787 -05:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`5[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Double, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[Invoice.Model.ApiTaskResult[], Invoice.Model, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-10-15 14:24:20.806 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.AsyncDemoController.RunAllAsync (Invoice.CoreAPI) in 70.9704ms
+2026-10-15 14:24:20.806 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.AsyncDemoController.RunAllAsync (Invoice.CoreAPI)'
+2026-10-15 14:24:20.806 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/AsyncDemo/run-all - 200 null application/json; charset=utf-8 157.1558ms
+2026-10-15 14:29:40.722 -05:00 [INF] User profile is available. Using 'C:\Users\arulg\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-10-15 14:29:41.007 -05:00 [INF] Now listening on: http://localhost:5063
+2026-10-15 14:29:41.200 -05:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-10-15 14:29:41.200 -05:00 [INF] Hosting environment: Development
+2026-10-15 14:29:41.200 -05:00 [INF] Content root path: D:\Projects\NetCore\Employee-Core10-Api\Employee-Core10-API\Invoice.CoreAPI
+2026-10-15 14:29:41.627 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.html - null null
+2026-10-15 14:29:42.133 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.html - 304 null null 539.6363ms
+2026-10-15 14:29:42.192 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/_framework/aspnetcore-browser-refresh.js - null null
+2026-10-15 14:29:42.192 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-standalone-preset.js - null null
+2026-10-15 14:29:42.192 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-bundle.js - null null
+2026-10-15 14:29:42.192 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.js - null null
+2026-10-15 14:29:42.192 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui.css - null null
+2026-10-15 14:29:42.196 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/_framework/aspnetcore-browser-refresh.js - 200 14935 application/javascript; charset=utf-8 5.6301ms
+2026-10-15 14:29:42.197 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.js - 304 null null 5.6449ms
+2026-10-15 14:29:42.200 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.css - null null
+2026-10-15 14:29:42.221 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/_vs/browserLink - null null
+2026-10-15 14:29:42.231 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.css - 304 null null 33.211ms
+2026-10-15 14:29:42.231 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-standalone-preset.js - 304 null null 39.3292ms
+2026-10-15 14:29:42.231 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-bundle.js - 304 null null 39.3501ms
+2026-10-15 14:29:42.231 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui.css - 304 null null 40.7431ms
+2026-10-15 14:29:42.378 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/_vs/browserLink - 200 null text/javascript; charset=UTF-8 157.1787ms
+2026-10-15 14:29:42.506 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/v1/swagger.json - null null
+2026-10-15 14:29:42.601 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 95.0141ms
+2026-10-15 14:30:08.599 -05:00 [INF] Request starting HTTP/1.1 POST http://localhost:5063/api/v1/Login - application/json 54
+2026-10-15 14:30:08.635 -05:00 [INF] CORS policy execution failed.
+2026-10-15 14:30:08.635 -05:00 [INF] Request origin http://localhost:5063 does not have permission to access the resource.
+2026-10-15 14:30:08.705 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.LoginController.Login (Invoice.CoreAPI)'
+2026-10-15 14:30:08.743 -05:00 [INF] Route matched with {action = "Login", controller = "Login"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(Invoice.DTOs.LoginRequestDto) on controller Invoice.CoreAPI.Controllers.LoginController (Invoice.CoreAPI).
+2026-10-15 14:30:09.811 -05:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType7`3[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[Invoice.DTOs.LoginResponseDto, Invoice.DTOs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-10-15 14:30:09.853 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.LoginController.Login (Invoice.CoreAPI) in 1105.6135ms
+2026-10-15 14:30:09.854 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.LoginController.Login (Invoice.CoreAPI)'
+2026-10-15 14:30:09.858 -05:00 [INF] Request finished HTTP/1.1 POST http://localhost:5063/api/v1/Login - 200 null application/json; charset=utf-8 1259.6745ms
+2026-10-15 14:31:07.231 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/v1/Category/GetAll - null null
+2026-10-15 14:31:07.375 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.CategoryController.GetAll (Invoice.CoreAPI)'
+2026-10-15 14:31:07.387 -05:00 [INF] Route matched with {action = "GetAll", controller = "Category"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll() on controller Invoice.CoreAPI.Controllers.CategoryController (Invoice.CoreAPI).
+2026-10-15 14:31:08.552 -05:00 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-10-15 14:31:10.054 -05:00 [WRN] No store type was specified for the decimal property 'OnHandQuantity' on entity type 'ItemStockEntity'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-10-15 14:31:10.054 -05:00 [WRN] No store type was specified for the decimal property 'ReceivedQuantity' on entity type 'ItemStockEntity'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-10-15 14:31:10.054 -05:00 [WRN] No store type was specified for the decimal property 'SoldQuantity' on entity type 'ItemStockEntity'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-10-15 14:31:11.056 -05:00 [INF] Executed DbCommand (15ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+EXEC sp_Category_GetAll
+2026-10-15 14:31:11.159 -05:00 [INF] Executing OkObjectResult, writing value of type 'Invoice.Model.ApiResponse`1[[System.Collections.Generic.IEnumerable`1[[Invoice.DTOs.CategoryDto, Invoice.DTOs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-10-15 14:31:11.189 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.CategoryController.GetAll (Invoice.CoreAPI) in 3801.7718ms
+2026-10-15 14:31:11.190 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.CategoryController.GetAll (Invoice.CoreAPI)'
+2026-10-15 14:31:11.203 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/v1/Category/GetAll - 200 null application/json; charset=utf-8 3971.6032ms
+2026-10-15 14:31:23.715 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/AsyncDemo/run-all - null null
+2026-10-15 14:31:23.732 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.AsyncDemoController.RunAllAsync (Invoice.CoreAPI)'
+2026-10-15 14:31:23.751 -05:00 [INF] Route matched with {action = "RunAll", controller = "AsyncDemo"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] RunAllAsync(System.Threading.CancellationToken) on controller Invoice.CoreAPI.Controllers.AsyncDemoController (Invoice.CoreAPI).
+2026-10-15 14:31:23.771 -05:00 [INF] Start processing HTTP request GET http://localhost:5063/api/v1/Category/GetAll
+2026-10-15 14:31:23.776 -05:00 [INF] Sending HTTP request GET http://localhost:5063/api/v1/Category/GetAll
+2026-10-15 14:31:23.782 -05:00 [INF] Start processing HTTP request GET http://localhost:5063/api/v1/Itemmaster/GetAll
+2026-10-15 14:31:23.782 -05:00 [INF] Sending HTTP request GET http://localhost:5063/api/v1/Itemmaster/GetAll
+2026-10-15 14:31:23.782 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/v1/Category/GetAll - null null
+2026-10-15 14:31:23.783 -05:00 [INF] Start processing HTTP request GET http://localhost:5063/api/v1/Customer/GetAll
+2026-10-15 14:31:23.783 -05:00 [INF] Sending HTTP request GET http://localhost:5063/api/v1/Customer/GetAll
+2026-10-15 14:31:23.783 -05:00 [INF] Start processing HTTP request GET http://localhost:5063/api/v1/Vendor/GetAll
+2026-10-15 14:31:23.783 -05:00 [INF] Sending HTTP request GET http://localhost:5063/api/v1/Vendor/GetAll
+2026-10-15 14:31:23.784 -05:00 [INF] Start processing HTTP request GET http://localhost:5063/api/v1/User
+2026-10-15 14:31:23.784 -05:00 [INF] Sending HTTP request GET http://localhost:5063/api/v1/User
+2026-10-15 14:31:23.810 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.CategoryController.GetAll (Invoice.CoreAPI)'
+2026-10-15 14:31:23.810 -05:00 [INF] Route matched with {action = "GetAll", controller = "Category"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll() on controller Invoice.CoreAPI.Controllers.CategoryController (Invoice.CoreAPI).
+2026-10-15 14:31:23.835 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/v1/User - null null
+2026-10-15 14:31:23.836 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/v1/User - 404 0 null 1.2122ms
+2026-10-15 14:31:23.859 -05:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5063/api/v1/User, Response status code: 404
+2026-10-15 14:31:23.860 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/v1/Vendor/GetAll - null null
+2026-10-15 14:31:23.860 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/v1/Itemmaster/GetAll - null null
+2026-10-15 14:31:23.861 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/v1/Customer/GetAll - null null
+2026-10-15 14:31:23.865 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.CustomerController.GetAll (Invoice.CoreAPI)'
+2026-10-15 14:31:23.867 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.ItemmasterController.GetAll (Invoice.CoreAPI)'
+2026-10-15 14:31:23.868 -05:00 [INF] Received HTTP response headers after 79.311ms - 404
+2026-10-15 14:31:23.869 -05:00 [INF] End processing HTTP request after 85.541ms - 404
+2026-10-15 14:31:23.865 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.VendorController.GetAll (Invoice.CoreAPI)'
+2026-10-15 14:31:23.877 -05:00 [INF] Route matched with {action = "GetAll", controller = "Customer"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll() on controller Invoice.CoreAPI.Controllers.CustomerController (Invoice.CoreAPI).
+2026-10-15 14:31:23.880 -05:00 [INF] Route matched with {action = "GetAll", controller = "Itemmaster"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll() on controller Invoice.CoreAPI.Controllers.ItemmasterController (Invoice.CoreAPI).
+2026-10-15 14:31:23.886 -05:00 [INF] Route matched with {action = "GetAll", controller = "Vendor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll() on controller Invoice.CoreAPI.Controllers.VendorController (Invoice.CoreAPI).
+2026-10-15 14:31:23.985 -05:00 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+EXEC sp_Category_GetAll
+2026-10-15 14:31:23.988 -05:00 [INF] Executing OkObjectResult, writing value of type 'Invoice.Model.ApiResponse`1[[System.Collections.Generic.IEnumerable`1[[Invoice.DTOs.CategoryDto, Invoice.DTOs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-10-15 14:31:23.989 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.CategoryController.GetAll (Invoice.CoreAPI) in 178.3855ms
+2026-10-15 14:31:23.989 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.CategoryController.GetAll (Invoice.CoreAPI)'
+2026-10-15 14:31:23.989 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/v1/Category/GetAll - 200 null application/json; charset=utf-8 207.7977ms
+2026-10-15 14:31:23.993 -05:00 [INF] Received HTTP response headers after 217.1725ms - 200
+2026-10-15 14:31:23.993 -05:00 [INF] End processing HTTP request after 224.1185ms - 200
+2026-10-15 14:31:24.020 -05:00 [INF] Executed DbCommand (26ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+EXEC sp_Customer_GetAll
+2026-10-15 14:31:24.075 -05:00 [INF] Executing OkObjectResult, writing value of type 'Invoice.Model.ApiResponse`1[[System.Collections.Generic.IEnumerable`1[[Invoice.DTOs.CustomerDto, Invoice.DTOs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-10-15 14:31:24.086 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.CustomerController.GetAll (Invoice.CoreAPI) in 208.9291ms
+2026-10-15 14:31:24.086 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.CustomerController.GetAll (Invoice.CoreAPI)'
+2026-10-15 14:31:24.086 -05:00 [INF] Received HTTP response headers after 303.402ms - 200
+2026-10-15 14:31:24.086 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/v1/Customer/GetAll - 200 null application/json; charset=utf-8 225.1165ms
+2026-10-15 14:31:24.086 -05:00 [INF] End processing HTTP request after 303.7597ms - 200
+2026-10-15 14:31:24.322 -05:00 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+EXEC sp_Vendor_GetAll
+2026-10-15 14:31:24.327 -05:00 [INF] Executed DbCommand (11ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+EXEC dbo.sp_Itemmaster_GetAll
+2026-10-15 14:31:24.343 -05:00 [INF] Executing OkObjectResult, writing value of type 'Invoice.Model.ApiResponse`1[[System.Collections.Generic.IEnumerable`1[[Invoice.DTOs.ItemmasterDto, Invoice.DTOs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-10-15 14:31:24.372 -05:00 [INF] Received HTTP response headers after 589.5443ms - 200
+2026-10-15 14:31:24.372 -05:00 [INF] End processing HTTP request after 589.9114ms - 200
+2026-10-15 14:31:24.372 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.ItemmasterController.GetAll (Invoice.CoreAPI) in 492.3524ms
+2026-10-15 14:31:24.372 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.ItemmasterController.GetAll (Invoice.CoreAPI)'
+2026-10-15 14:31:24.373 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/v1/Itemmaster/GetAll - 200 null application/json; charset=utf-8 512.6524ms
+2026-10-15 14:31:24.387 -05:00 [INF] Executing OkObjectResult, writing value of type 'Invoice.Model.ApiResponse`1[[System.Collections.Generic.IEnumerable`1[[Invoice.DTOs.VendorDto, Invoice.DTOs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-10-15 14:31:24.395 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.VendorController.GetAll (Invoice.CoreAPI) in 508.2244ms
+2026-10-15 14:31:24.395 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.VendorController.GetAll (Invoice.CoreAPI)'
+2026-10-15 14:31:24.395 -05:00 [INF] Received HTTP response headers after 611.6604ms - 200
+2026-10-15 14:31:24.395 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/v1/Vendor/GetAll - 200 null application/json; charset=utf-8 535.3504ms
+2026-10-15 14:31:24.395 -05:00 [INF] End processing HTTP request after 611.9245ms - 200
+2026-10-15 14:31:24.398 -05:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`5[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Double, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[Invoice.Model.ApiTaskResult[], Invoice.Model, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-10-15 14:31:24.409 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.AsyncDemoController.RunAllAsync (Invoice.CoreAPI) in 657.016ms
+2026-10-15 14:31:24.409 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.AsyncDemoController.RunAllAsync (Invoice.CoreAPI)'
+2026-10-15 14:31:24.409 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/AsyncDemo/run-all - 200 null application/json; charset=utf-8 694.2147ms
+2026-10-15 14:46:35.112 -05:00 [INF] User profile is available. Using 'C:\Users\arulg\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-10-15 14:46:35.442 -05:00 [INF] Now listening on: http://localhost:5063
+2026-10-15 14:46:35.712 -05:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-10-15 14:46:35.712 -05:00 [INF] Hosting environment: Development
+2026-10-15 14:46:35.712 -05:00 [INF] Content root path: D:\Projects\NetCore\Employee-Core10-Api\Employee-Core10-API\Invoice.CoreAPI
+2026-10-15 14:46:36.066 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.html - null null
+2026-10-15 14:46:36.751 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.html - 304 null null 715.5109ms
+2026-10-15 14:46:36.805 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui.css - null null
+2026-10-15 14:46:36.806 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/_framework/aspnetcore-browser-refresh.js - null null
+2026-10-15 14:46:36.818 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.css - null null
+2026-10-15 14:46:36.831 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-bundle.js - null null
+2026-10-15 14:46:36.832 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/_framework/aspnetcore-browser-refresh.js - 200 14935 application/javascript; charset=utf-8 26.1737ms
+2026-10-15 14:46:36.833 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-standalone-preset.js - null null
+2026-10-15 14:46:36.835 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.js - null null
+2026-10-15 14:46:36.844 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.js - 304 null null 8.4872ms
+2026-10-15 14:46:36.856 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/_vs/browserLink - null null
+2026-10-15 14:46:36.856 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-standalone-preset.js - 304 null null 23.3239ms
+2026-10-15 14:46:36.857 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui.css - 304 null null 55.2899ms
+2026-10-15 14:46:36.858 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.css - 304 null null 40.6872ms
+2026-10-15 14:46:36.860 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-bundle.js - 304 null null 29.2391ms
+2026-10-15 14:46:37.120 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/_vs/browserLink - 200 null text/javascript; charset=UTF-8 264.0819ms
+2026-10-15 14:46:37.328 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/v1/swagger.json - null null
+2026-10-15 14:46:37.407 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 79.098ms
+2026-10-15 14:47:02.209 -05:00 [INF] Request starting HTTP/1.1 POST http://localhost:5063/api/v1/Login - application/json 54
+2026-10-15 14:47:02.255 -05:00 [INF] CORS policy execution failed.
+2026-10-15 14:47:02.256 -05:00 [INF] Request origin http://localhost:5063 does not have permission to access the resource.
+2026-10-15 14:47:02.325 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.LoginController.Login (Invoice.CoreAPI)'
+2026-10-15 14:47:02.368 -05:00 [INF] Route matched with {action = "Login", controller = "Login"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(Invoice.DTOs.LoginRequestDto) on controller Invoice.CoreAPI.Controllers.LoginController (Invoice.CoreAPI).
+2026-10-15 14:47:03.466 -05:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType7`3[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[Invoice.DTOs.LoginResponseDto, Invoice.DTOs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-10-15 14:47:03.504 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.LoginController.Login (Invoice.CoreAPI) in 1127.0342ms
+2026-10-15 14:47:03.505 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.LoginController.Login (Invoice.CoreAPI)'
+2026-10-15 14:47:03.510 -05:00 [INF] Request finished HTTP/1.1 POST http://localhost:5063/api/v1/Login - 200 null application/json; charset=utf-8 1301.1505ms
+2026-10-15 14:47:29.084 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/v1/Category/GetAll - null null
+2026-10-15 14:47:29.111 -05:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenMalformedException: IDX14120: JWT is not well formed, there is only one dot (.).
+The token needs to be in JWS or JWE Compact Serialization Format. (JWS): 'EncodedHeader.EncodedPayload.EncodedSignature'. (JWE): 'EncodedProtectedHeader.EncodedEncryptedKey.EncodedInitializationVector.EncodedCiphertext.EncodedAuthenticationTag'.
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken.ReadToken(ReadOnlyMemory`1 encodedTokenMemory)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebToken..ctor(String jwtEncodedString, TryReadJwtClaim tryReadJwtClaim)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ReadToken(String token, TokenValidationParameters validationParameters)
+2026-10-15 14:47:29.129 -05:00 [INF] Bearer was not authenticated. Failure message: IDX14120: JWT is not well formed, there is only one dot (.).
+The token needs to be in JWS or JWE Compact Serialization Format. (JWS): 'EncodedHeader.EncodedPayload.EncodedSignature'. (JWE): 'EncodedProtectedHeader.EncodedEncryptedKey.EncodedInitializationVector.EncodedCiphertext.EncodedAuthenticationTag'.
+2026-10-15 14:47:29.145 -05:00 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+2026-10-15 14:47:29.157 -05:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-10-15 14:47:29.157 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/v1/Category/GetAll - 401 0 null 73.4912ms
+2026-10-15 14:48:06.051 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/v1/Category/GetAll - null null
+2026-10-15 14:48:06.163 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.CategoryController.GetAll (Invoice.CoreAPI)'
+2026-10-15 14:48:06.176 -05:00 [INF] Route matched with {action = "GetAll", controller = "Category"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll() on controller Invoice.CoreAPI.Controllers.CategoryController (Invoice.CoreAPI).
+2026-10-15 14:48:06.644 -05:00 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-10-15 14:48:07.738 -05:00 [WRN] No store type was specified for the decimal property 'OnHandQuantity' on entity type 'ItemStockEntity'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-10-15 14:48:07.743 -05:00 [WRN] No store type was specified for the decimal property 'ReceivedQuantity' on entity type 'ItemStockEntity'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-10-15 14:48:07.743 -05:00 [WRN] No store type was specified for the decimal property 'SoldQuantity' on entity type 'ItemStockEntity'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-10-15 14:48:08.882 -05:00 [INF] Executed DbCommand (19ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+EXEC sp_Category_GetAll
+2026-10-15 14:48:09.015 -05:00 [INF] Executing OkObjectResult, writing value of type 'Invoice.Model.ApiResponse`1[[System.Collections.Generic.IEnumerable`1[[Invoice.DTOs.CategoryDto, Invoice.DTOs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-10-15 14:48:09.034 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.CategoryController.GetAll (Invoice.CoreAPI) in 2857.1697ms
+2026-10-15 14:48:09.034 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.CategoryController.GetAll (Invoice.CoreAPI)'
+2026-10-15 14:48:09.057 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/v1/Category/GetAll - 200 null application/json; charset=utf-8 3006.2304ms
+2026-10-15 14:48:19.823 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/AsyncDemo/run-all - null null
+2026-10-15 14:48:19.828 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.AsyncDemoController.RunAllAsync (Invoice.CoreAPI)'
+2026-10-15 14:48:19.846 -05:00 [INF] Route matched with {action = "RunAll", controller = "AsyncDemo"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] RunAllAsync(System.Threading.CancellationToken) on controller Invoice.CoreAPI.Controllers.AsyncDemoController (Invoice.CoreAPI).
+2026-10-15 14:48:19.872 -05:00 [INF] Start processing HTTP request GET http://localhost:5063/api/v1/Category/GetAll
+2026-10-15 14:48:19.874 -05:00 [INF] Sending HTTP request GET http://localhost:5063/api/v1/Category/GetAll
+2026-10-15 14:48:19.880 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/v1/Category/GetAll - null null
+2026-10-15 14:48:19.881 -05:00 [INF] Start processing HTTP request GET http://localhost:5063/api/v1/Itemmaster/GetAll
+2026-10-15 14:48:19.881 -05:00 [INF] Sending HTTP request GET http://localhost:5063/api/v1/Itemmaster/GetAll
+2026-10-15 14:48:19.883 -05:00 [INF] Start processing HTTP request GET http://localhost:5063/api/v1/Customer/GetAll
+2026-10-15 14:48:19.883 -05:00 [INF] Sending HTTP request GET http://localhost:5063/api/v1/Customer/GetAll
+2026-10-15 14:48:19.883 -05:00 [INF] Start processing HTTP request GET http://localhost:5063/api/v1/Vendor/GetAll
+2026-10-15 14:48:19.883 -05:00 [INF] Sending HTTP request GET http://localhost:5063/api/v1/Vendor/GetAll
+2026-10-15 14:48:19.884 -05:00 [INF] Start processing HTTP request GET http://localhost:5063/api/v1/User
+2026-10-15 14:48:19.884 -05:00 [INF] Sending HTTP request GET http://localhost:5063/api/v1/User
+2026-10-15 14:48:19.885 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.CategoryController.GetAll (Invoice.CoreAPI)'
+2026-10-15 14:48:19.885 -05:00 [INF] Route matched with {action = "GetAll", controller = "Category"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll() on controller Invoice.CoreAPI.Controllers.CategoryController (Invoice.CoreAPI).
+2026-10-15 14:48:19.935 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/v1/Customer/GetAll - null null
+2026-10-15 14:48:19.936 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/v1/Itemmaster/GetAll - null null
+2026-10-15 14:48:19.937 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/v1/Vendor/GetAll - null null
+2026-10-15 14:48:19.937 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.CustomerController.GetAll (Invoice.CoreAPI)'
+2026-10-15 14:48:19.937 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.ItemmasterController.GetAll (Invoice.CoreAPI)'
+2026-10-15 14:48:19.938 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.VendorController.GetAll (Invoice.CoreAPI)'
+2026-10-15 14:48:19.951 -05:00 [INF] Route matched with {action = "GetAll", controller = "Vendor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll() on controller Invoice.CoreAPI.Controllers.VendorController (Invoice.CoreAPI).
+2026-10-15 14:48:19.952 -05:00 [INF] Route matched with {action = "GetAll", controller = "Customer"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll() on controller Invoice.CoreAPI.Controllers.CustomerController (Invoice.CoreAPI).
+2026-10-15 14:48:19.960 -05:00 [INF] Route matched with {action = "GetAll", controller = "Itemmaster"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll() on controller Invoice.CoreAPI.Controllers.ItemmasterController (Invoice.CoreAPI).
+2026-10-15 14:48:19.994 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/v1/User - null null
+2026-10-15 14:48:19.995 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/v1/User - 404 0 null 1.2082ms
+2026-10-15 14:48:19.996 -05:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5063/api/v1/User, Response status code: 404
+2026-10-15 14:48:20.004 -05:00 [INF] Received HTTP response headers after 114.3406ms - 404
+2026-10-15 14:48:20.006 -05:00 [INF] End processing HTTP request after 121.9796ms - 404
+2026-10-15 14:48:20.143 -05:00 [INF] Executed DbCommand (44ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+EXEC sp_Category_GetAll
+2026-10-15 14:48:20.147 -05:00 [INF] Executing OkObjectResult, writing value of type 'Invoice.Model.ApiResponse`1[[System.Collections.Generic.IEnumerable`1[[Invoice.DTOs.CategoryDto, Invoice.DTOs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-10-15 14:48:20.148 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.CategoryController.GetAll (Invoice.CoreAPI) in 262.1683ms
+2026-10-15 14:48:20.148 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.CategoryController.GetAll (Invoice.CoreAPI)'
+2026-10-15 14:48:20.148 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/v1/Category/GetAll - 200 null application/json; charset=utf-8 270.5111ms
+2026-10-15 14:48:20.151 -05:00 [INF] Received HTTP response headers after 276.433ms - 200
+2026-10-15 14:48:20.151 -05:00 [INF] End processing HTTP request after 281.9857ms - 200
+2026-10-15 14:48:20.172 -05:00 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+EXEC dbo.sp_Itemmaster_GetAll
+2026-10-15 14:48:20.190 -05:00 [INF] Executing OkObjectResult, writing value of type 'Invoice.Model.ApiResponse`1[[System.Collections.Generic.IEnumerable`1[[Invoice.DTOs.ItemmasterDto, Invoice.DTOs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-10-15 14:48:20.221 -05:00 [INF] Received HTTP response headers after 340.0626ms - 200
+2026-10-15 14:48:20.221 -05:00 [INF] End processing HTTP request after 340.5249ms - 200
+2026-10-15 14:48:20.222 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.ItemmasterController.GetAll (Invoice.CoreAPI) in 261.9921ms
+2026-10-15 14:48:20.222 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.ItemmasterController.GetAll (Invoice.CoreAPI)'
+2026-10-15 14:48:20.222 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/v1/Itemmaster/GetAll - 200 null application/json; charset=utf-8 286.5066ms
+2026-10-15 14:48:20.424 -05:00 [INF] Executed DbCommand (9ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+EXEC sp_Customer_GetAll
+2026-10-15 14:48:20.424 -05:00 [INF] Executed DbCommand (9ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+EXEC sp_Vendor_GetAll
+2026-10-15 14:48:20.483 -05:00 [INF] Executing OkObjectResult, writing value of type 'Invoice.Model.ApiResponse`1[[System.Collections.Generic.IEnumerable`1[[Invoice.DTOs.VendorDto, Invoice.DTOs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-10-15 14:48:20.487 -05:00 [INF] Executing OkObjectResult, writing value of type 'Invoice.Model.ApiResponse`1[[System.Collections.Generic.IEnumerable`1[[Invoice.DTOs.CustomerDto, Invoice.DTOs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-10-15 14:48:20.494 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.VendorController.GetAll (Invoice.CoreAPI) in 543.3124ms
+2026-10-15 14:48:20.494 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.VendorController.GetAll (Invoice.CoreAPI)'
+2026-10-15 14:48:20.495 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/v1/Vendor/GetAll - 200 null application/json; charset=utf-8 557.8037ms
+2026-10-15 14:48:20.495 -05:00 [INF] Received HTTP response headers after 611.2196ms - 200
+2026-10-15 14:48:20.495 -05:00 [INF] End processing HTTP request after 611.601ms - 200
+2026-10-15 14:48:20.495 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.CustomerController.GetAll (Invoice.CoreAPI) in 542.9716ms
+2026-10-15 14:48:20.495 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.CustomerController.GetAll (Invoice.CoreAPI)'
+2026-10-15 14:48:20.495 -05:00 [INF] Received HTTP response headers after 612.5516ms - 200
+2026-10-15 14:48:20.495 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/v1/Customer/GetAll - 200 null application/json; charset=utf-8 560.2247ms
+2026-10-15 14:48:20.495 -05:00 [INF] End processing HTTP request after 613.005ms - 200
+2026-10-15 14:48:20.500 -05:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`5[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Double, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[Invoice.Model.ApiTaskResult[], Invoice.Model, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-10-15 14:48:20.511 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.AsyncDemoController.RunAllAsync (Invoice.CoreAPI) in 664.5433ms
+2026-10-15 14:48:20.512 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.AsyncDemoController.RunAllAsync (Invoice.CoreAPI)'
+2026-10-15 14:48:20.512 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/AsyncDemo/run-all - 200 null application/json; charset=utf-8 689.1492ms

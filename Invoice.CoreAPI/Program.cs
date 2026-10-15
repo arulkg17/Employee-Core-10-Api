@@ -268,6 +268,23 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddInvoiceAI(builder.Configuration);
 
+// Test AsyncDemoController 
+builder.Services.AddHttpClient("InvoiceApi", client =>
+{
+    var apiBaseUrl = builder.Configuration["ApiBaseUrl"];
+
+    if (string.IsNullOrWhiteSpace(apiBaseUrl) ||
+        !Uri.TryCreate(apiBaseUrl, UriKind.Absolute, out var baseUri) ||
+        (baseUri.Scheme != Uri.UriSchemeHttp &&
+         baseUri.Scheme != Uri.UriSchemeHttps))
+    {
+        throw new InvalidOperationException(
+            "ApiBaseUrl must be an absolute HTTP or HTTPS URL.");
+    }
+
+    client.BaseAddress = baseUri;
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
 
 // ============================================================
 // Build Application

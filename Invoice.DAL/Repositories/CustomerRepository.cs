@@ -107,12 +107,14 @@ public class CustomerRepository : ICustomerRepository
 
     public async Task<int> GetCustomerCountAsync(bool? activeOnly)
     {
-        var query = _dbContext.Customers.AsQueryable();
+        var query = _dbContext.Customers.AsQueryable()
+            .Where(x => x.IsDeleted != true); // treat null as not deleted
 
         if (activeOnly.HasValue)
         {
-            query = query.Where(x =>
-                x.IsActive == activeOnly.Value);
+            var value = activeOnly.Value;
+            // treat null IsActive as false; adjust if you want different semantics
+            query = query.Where(x => (x.IsActive ?? false) == value);
         }
 
         return await query.CountAsync();
