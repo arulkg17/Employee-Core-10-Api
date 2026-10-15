@@ -864,8 +864,18 @@ BEGIN
 
     SELECT @Id AS Id;
 END
-GO
+CREATE OR ALTER PROCEDURE dbo.sp_Itemmaster_Delete
+    @Id INT
+AS
+BEGIN
+    SET NOCOUNT ON;
 
+    UPDATE dbo.Itemmaster
+    SET IsDeleted = 1
+    WHERE Id = @Id
+      AND ISNULL(IsDeleted, 0) = 0;
+END;
+GO
 
 /* ============================================================
    PRODUCT PROCEDURES
