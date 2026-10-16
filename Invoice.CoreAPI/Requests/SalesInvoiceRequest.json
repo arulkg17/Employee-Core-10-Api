@@ -1,0 +1,22 @@
+{
+  "invoiceDate": "2026-10-07T00:00:00",
+  "dueDate": "2026-11-06T00:00:00",
+  "customerId": 1,
+  "notes": "Test Sales Invoice",
+  "details": [
+    {
+      "itemmasterId": 1,
+      "quantity": 4,
+      "rate": 150,
+      "discountAmount": 0,
+      "taxPercent": 10
+    },
+    {
+      "itemmasterId": 2,
+      "quantity": 1,
+      "rate": 250,
+      "discountAmount": 10,
+      "taxPercent": 10
+    }
+  ]
+}

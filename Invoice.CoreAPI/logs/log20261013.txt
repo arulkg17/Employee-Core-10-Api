@@ -1,0 +1,77 @@
+2026-10-13 14:21:32.343 -05:00 [INF] User profile is available. Using 'C:\Users\arulg\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-10-13 14:21:33.022 -05:00 [INF] Now listening on: http://localhost:5063
+2026-10-13 14:21:33.354 -05:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-10-13 14:21:33.354 -05:00 [INF] Hosting environment: Development
+2026-10-13 14:21:33.355 -05:00 [INF] Content root path: D:\Projects\NetCore\Employee-Core10-Api\Employee-Core10-API\Invoice.CoreAPI
+2026-10-13 14:21:38.685 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.html - null null
+2026-10-13 14:21:39.300 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.html - 304 null null 645.3516ms
+2026-10-13 14:21:39.339 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui.css - null null
+2026-10-13 14:21:39.341 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-bundle.js - null null
+2026-10-13 14:21:39.342 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.js - null null
+2026-10-13 14:21:39.373 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.js - 304 null null 8.0836ms
+2026-10-13 14:21:39.373 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-standalone-preset.js - null null
+2026-10-13 14:21:39.374 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/_framework/aspnetcore-browser-refresh.js - null null
+2026-10-13 14:21:39.374 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.css - null null
+2026-10-13 14:21:39.378 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/_framework/aspnetcore-browser-refresh.js - 200 14935 application/javascript; charset=utf-8 4.0892ms
+2026-10-13 14:21:39.385 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/_vs/browserLink - null null
+2026-10-13 14:21:39.401 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.css - 304 null null 26.9068ms
+2026-10-13 14:21:39.401 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-standalone-preset.js - 304 null null 27.5884ms
+2026-10-13 14:21:39.401 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui.css - 304 null null 62.4478ms
+2026-10-13 14:21:39.409 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-bundle.js - 304 null null 68.4298ms
+2026-10-13 14:21:39.554 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/_vs/browserLink - 200 null text/javascript; charset=UTF-8 168.9207ms
+2026-10-13 14:21:39.642 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/v1/swagger.json - null null
+2026-10-13 14:21:39.741 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 98.3245ms
+2026-10-13 14:22:35.865 -05:00 [INF] Request starting HTTP/1.1 POST http://localhost:5063/api/v1/Login - application/json 54
+2026-10-13 14:22:35.889 -05:00 [INF] CORS policy execution failed.
+2026-10-13 14:22:35.889 -05:00 [INF] Request origin http://localhost:5063 does not have permission to access the resource.
+2026-10-13 14:22:37.204 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.LoginController.Login (Invoice.CoreAPI)'
+2026-10-13 14:22:37.257 -05:00 [INF] Route matched with {action = "Login", controller = "Login"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(Invoice.DTOs.LoginRequestDto) on controller Invoice.CoreAPI.Controllers.LoginController (Invoice.CoreAPI).
+2026-10-13 14:22:39.293 -05:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType6`3[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[Invoice.DTOs.LoginResponseDto, Invoice.DTOs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-10-13 14:22:39.347 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.LoginController.Login (Invoice.CoreAPI) in 2084.5912ms
+2026-10-13 14:22:39.348 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.LoginController.Login (Invoice.CoreAPI)'
+2026-10-13 14:22:39.352 -05:00 [INF] Request finished HTTP/1.1 POST http://localhost:5063/api/v1/Login - 200 null application/json; charset=utf-8 3487.239ms
+2026-10-13 14:23:55.802 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/api/v1/Customer/GetAll - null null
+2026-10-13 14:23:55.937 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.CustomerController.GetAll (Invoice.CoreAPI)'
+2026-10-13 14:23:55.947 -05:00 [INF] Route matched with {action = "GetAll", controller = "Customer"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll() on controller Invoice.CoreAPI.Controllers.CustomerController (Invoice.CoreAPI).
+2026-10-13 14:23:56.971 -05:00 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-10-13 14:23:58.042 -05:00 [WRN] No store type was specified for the decimal property 'OnHandQuantity' on entity type 'ItemStockEntity'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-10-13 14:23:58.042 -05:00 [WRN] No store type was specified for the decimal property 'ReceivedQuantity' on entity type 'ItemStockEntity'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-10-13 14:23:58.042 -05:00 [WRN] No store type was specified for the decimal property 'SoldQuantity' on entity type 'ItemStockEntity'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values in 'OnModelCreating' using 'HasColumnType', specify precision and scale using 'HasPrecision', or configure a value converter using 'HasConversion'.
+2026-10-13 14:23:58.917 -05:00 [INF] Executed DbCommand (9ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+EXEC sp_Customer_GetAll
+2026-10-13 14:23:59.046 -05:00 [INF] Executing OkObjectResult, writing value of type 'Invoice.Model.ApiResponse`1[[System.Collections.Generic.IEnumerable`1[[Invoice.DTOs.CustomerDto, Invoice.DTOs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-10-13 14:23:59.076 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.CustomerController.GetAll (Invoice.CoreAPI) in 3128.7528ms
+2026-10-13 14:23:59.077 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.CustomerController.GetAll (Invoice.CoreAPI)'
+2026-10-13 14:23:59.089 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/api/v1/Customer/GetAll - 200 null application/json; charset=utf-8 3286.8873ms
+2026-10-13 14:56:29.587 -05:00 [INF] User profile is available. Using 'C:\Users\arulg\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-10-13 14:56:30.117 -05:00 [INF] Now listening on: http://localhost:5063
+2026-10-13 14:56:30.441 -05:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-10-13 14:56:30.442 -05:00 [INF] Hosting environment: Development
+2026-10-13 14:56:30.442 -05:00 [INF] Content root path: D:\Projects\NetCore\Employee-Core10-Api\Employee-Core10-API\Invoice.CoreAPI
+2026-10-13 14:56:31.143 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.html - null null
+2026-10-13 14:56:31.771 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.html - 304 null null 644.9574ms
+2026-10-13 14:56:31.835 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui.css - null null
+2026-10-13 14:56:31.835 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.css - null null
+2026-10-13 14:56:31.835 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-bundle.js - null null
+2026-10-13 14:56:31.835 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/_framework/aspnetcore-browser-refresh.js - null null
+2026-10-13 14:56:31.835 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-standalone-preset.js - null null
+2026-10-13 14:56:31.840 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/_framework/aspnetcore-browser-refresh.js - 200 14935 application/javascript; charset=utf-8 6.7536ms
+2026-10-13 14:56:31.843 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/index.js - null null
+2026-10-13 14:56:31.844 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.js - 304 null null 0.9664ms
+2026-10-13 14:56:31.852 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/_vs/browserLink - null null
+2026-10-13 14:56:31.866 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/index.css - 304 null null 31.742ms
+2026-10-13 14:56:31.866 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-bundle.js - 304 null null 32.3291ms
+2026-10-13 14:56:31.866 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui-standalone-preset.js - 304 null null 30.961ms
+2026-10-13 14:56:31.866 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/swagger-ui.css - 304 null null 32.8356ms
+2026-10-13 14:56:31.965 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/_vs/browserLink - 200 null text/javascript; charset=UTF-8 113.0828ms
+2026-10-13 14:56:32.123 -05:00 [INF] Request starting HTTP/1.1 GET http://localhost:5063/swagger/v1/swagger.json - null null
+2026-10-13 14:56:32.230 -05:00 [INF] Request finished HTTP/1.1 GET http://localhost:5063/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 106.6326ms
+2026-10-13 14:57:06.373 -05:00 [INF] Request starting HTTP/1.1 POST http://localhost:5063/api/v1/Login - application/json 54
+2026-10-13 14:57:06.427 -05:00 [INF] CORS policy execution failed.
+2026-10-13 14:57:06.428 -05:00 [INF] Request origin http://localhost:5063 does not have permission to access the resource.
+2026-10-13 14:57:06.521 -05:00 [INF] Executing endpoint 'Invoice.CoreAPI.Controllers.LoginController.Login (Invoice.CoreAPI)'
+2026-10-13 14:57:06.561 -05:00 [INF] Route matched with {action = "Login", controller = "Login"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(Invoice.DTOs.LoginRequestDto) on controller Invoice.CoreAPI.Controllers.LoginController (Invoice.CoreAPI).
+2026-10-13 14:57:07.583 -05:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType6`3[[System.Boolean, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[Invoice.DTOs.LoginResponseDto, Invoice.DTOs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-10-13 14:57:07.626 -05:00 [INF] Executed action Invoice.CoreAPI.Controllers.LoginController.Login (Invoice.CoreAPI) in 1060.9559ms
+2026-10-13 14:57:07.629 -05:00 [INF] Executed endpoint 'Invoice.CoreAPI.Controllers.LoginController.Login (Invoice.CoreAPI)'
+2026-10-13 14:57:07.634 -05:00 [INF] Request finished HTTP/1.1 POST http://localhost:5063/api/v1/Login - 200 null application/json; charset=utf-8 1260.9845ms

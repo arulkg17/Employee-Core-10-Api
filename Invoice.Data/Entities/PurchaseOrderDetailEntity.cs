@@ -34,4 +34,8 @@ public class PurchaseOrderDetailEntity
 
     [Column(TypeName = "decimal(18,2)")]
     public decimal LineTotal { get; set; }
+
+    // NEW: quantity already received through posted receipts (maintained by sp_Receipt_Post / sp_Receipt_Cancel)
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal ReceivedQuantity { get; set; }
 }

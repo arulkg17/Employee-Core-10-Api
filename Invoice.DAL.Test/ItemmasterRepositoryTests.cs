@@ -356,24 +356,34 @@ public class ItemmasterRepositoryTests
     [Fact]
     public async Task DeleteAsync_ShouldDeleteItem()
     {
+        // Arrange
         await using var context = CreateDbContext();
         await SeedTestDataAsync(context);
 
         var repository = new ItemmasterRepositoryEFSp(context);
 
         var item = await context.Itemmasters
-            .FirstAsync(x => x.ItemCode == "VEIT001");
-
-        var itemId = item.Id;
-
-        await repository.DeleteAsync(itemId);
-
-        // Verify actual database state.
-        var deletedItem = await context.Itemmasters
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == itemId);
+            .FirstAsync(x => x.ItemCode == "RIIT001");
+
+        var id = item.Id;
+
+        // Act
+        await repository.DeleteAsync(id);
+
+        // Assert: Soft-deleted items should not be returned.
+        var deletedItem = await repository.GetByIdAsync(id);
 
         Assert.Null(deletedItem);
+
+        // Verify the database row still exists but is marked deleted.
+        var databaseItem = await context.Itemmasters
+            .IgnoreQueryFilters()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        Assert.NotNull(databaseItem);
+        Assert.True(databaseItem.IsDeleted);
     }
 
     [Fact]

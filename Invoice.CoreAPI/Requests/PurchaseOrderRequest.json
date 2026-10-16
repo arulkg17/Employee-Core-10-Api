@@ -21,3 +21,83 @@
     }
   ]
 }
+
+{
+  "poNumber": "PO-T001",
+  "poDate": "2026-10-10T00:00:00",
+  "vendorId": 1,
+  "notes": "Two lines with discount",
+  "details": [
+    {
+      "itemmasterId": 1,
+      "quantity": 10,
+      "rate": 100,
+      "discountAmount": 0,
+      "taxPercent": 10
+    },
+    {
+      "itemmasterId": 2,
+      "quantity": 5,
+      "rate": 200,
+      "discountAmount": 10,
+      "taxPercent": 10
+    }
+  ]
+}
+
+{
+  "poNumber": "PO-T002",
+  "poDate": "2026-10-10T00:00:00",
+  "vendorId": 1,
+  "notes": "No tax",
+  "details": [
+    {
+      "itemmasterId": 1,
+      "quantity": 4,
+      "rate": 250,
+      "discountAmount": 0,
+      "taxPercent": 0
+    }
+  ]
+}
+
+{
+  "poNumber": "PO-T003",
+  "poDate": "2026-10-10T00:00:00",
+  "vendorId": 1,
+  "notes": "Rounding test",
+  "details": [
+    {
+      "itemmasterId": 2,
+      "quantity": 3,
+      "rate": 33.335,
+      "discountAmount": 0,
+      "taxPercent": 7.5
+    }
+  ]
+}
+
+{
+  "poNumber": "PO-T004",
+  "poDate": "2026-10-10T00:00:00",
+  "vendorId": 1,
+  "notes": "Should fail",
+  "details": []
+}
+
+{
+  "poNumber": "PO-T005",
+  "poDate": "2026-10-10T00:00:00",
+  "vendorId": 1,
+  "notes": "Should fail",
+  "details": [
+    {
+      "itemmasterId": 1,
+      "quantity": 1,
+      "rate": 10,
+      "discountAmount": 50,
+      "taxPercent": 10
+    }
+  ]
+}
+

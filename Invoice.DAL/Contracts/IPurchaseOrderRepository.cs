@@ -21,4 +21,9 @@ public interface IPurchaseOrderRepository
         string? Status,
         int pageNumber,
         int pageSize);
+
+    // NEW: workflow
+    Task<bool> ApproveAsync(int id, string? updatedBy);
+
+    Task<bool> CancelAsync(int id, string? updatedBy);
 }

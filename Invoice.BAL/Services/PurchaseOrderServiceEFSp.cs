@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Invoice.BAL.Common;
 using Invoice.BAL.Contracts;
 using Invoice.DAL.Contracts;
 using Invoice.Data.Entities;
 using Invoice.DTOs;
+using Invoice.Model;
 
 namespace Invoice.BAL.Services;
 
@@ -10,209 +12,194 @@ public class PurchaseOrderServiceEFSp : IPurchaseOrderService
 {
     private readonly IPurchaseOrderRepository _repository;
     private readonly IPurchaseOrderDetailRepository _detailRepository;
+    private readonly ITransactionRunner _transaction;
     private readonly IMapper _mapper;
 
     public PurchaseOrderServiceEFSp(
         IPurchaseOrderRepository repository,
         IPurchaseOrderDetailRepository detailRepository,
+        ITransactionRunner transaction,
         IMapper mapper)
     {
         _repository = repository;
         _detailRepository = detailRepository;
+        _transaction = transaction;
         _mapper = mapper;
     }
 
     // ============================================================
-    // CREATE
+    // CREATE  (always starts as Draft)
     // ============================================================
-    public async Task<int> AddAsync(
-        PurchaseOrderDto dto)
+    public async Task<int> AddAsync(PurchaseOrderDto dto)
     {
-        var entity =
-            _mapper.Map<PurchaseOrderEntity>(dto);
+        ValidateDetails(dto.Details);
 
-        // Calculate totals on server
+        var entity = _mapper.Map<PurchaseOrderEntity>(dto);
+        entity.Status = "Draft";
+
         CalculateTotals(entity);
 
-        var id =
-            await _repository.AddAsync(entity);
-
-        // Add details
-        if (dto.Details != null)
+        return await _transaction.ExecuteAsync(async () =>
         {
-            foreach (var detailDto in dto.Details)
+            var id = await _repository.AddAsync(entity);
+
+            foreach (var detail in entity.Details)
             {
-                var detail =
-                    _mapper.Map<PurchaseOrderDetailEntity>(
-                        detailDto);
-
                 detail.PurchaseOrderId = id;
-
                 await _detailRepository.AddAsync(detail);
             }
-        }
 
-        return id;
+            return id;
+        });
     }
 
     // ============================================================
     // GET ALL
     // ============================================================
-    public async Task<IEnumerable<PurchaseOrderDto>>
-        GetAllAsync()
+    public async Task<IEnumerable<PurchaseOrderDto>> GetAllAsync()
     {
-        var entities =
-            await _repository.GetAllAsync();
+        var entities = (await _repository.GetAllAsync()).ToList();
 
         foreach (var entity in entities)
         {
-            var details =
-                await _detailRepository
-                    .GetByPurchaseOrderIdAsync(entity.Id);
-
+            var details = await _detailRepository.GetByPurchaseOrderIdAsync(entity.Id);
             entity.Details = details.ToList();
         }
 
-        return _mapper.Map<IEnumerable<PurchaseOrderDto>>(
-            entities);
+        return _mapper.Map<IEnumerable<PurchaseOrderDto>>(entities);
     }
 
     // ============================================================
     // GET BY ID
     // ============================================================
-    public async Task<PurchaseOrderDto?>
-        GetByIdAsync(int id)
+    public async Task<PurchaseOrderDto?> GetByIdAsync(int id)
     {
-        var entity =
-            await _repository.GetByIdAsync(id);
+        var entity = await _repository.GetByIdAsync(id);
 
         if (entity == null)
             return null;
 
-        var details =
-            await _detailRepository
-                .GetByPurchaseOrderIdAsync(id);
-
+        var details = await _detailRepository.GetByPurchaseOrderIdAsync(id);
         entity.Details = details.ToList();
 
         return _mapper.Map<PurchaseOrderDto>(entity);
     }
 
     // ============================================================
-    // UPDATE
+    // UPDATE  (Draft only)
     // ============================================================
-    public async Task<bool> UpdateAsync(
-        PurchaseOrderDto dto)
+    public async Task<bool> UpdateAsync(PurchaseOrderDto dto)
     {
-        var entity =
-            _mapper.Map<PurchaseOrderEntity>(dto);
+        var existing = await _repository.GetByIdAsync(dto.Id);
+
+        if (existing == null)
+            return false;
+
+        if (existing.Status != "Draft")
+            throw new BusinessRuleException("Only Draft purchase orders can be edited.");
+
+        ValidateDetails(dto.Details);
+
+        var entity = _mapper.Map<PurchaseOrderEntity>(dto);
 
         CalculateTotals(entity);
 
-        var updated =
-            await _repository.UpdateAsync(entity);
-
-        if (!updated)
-            return false;
-
-        // Replace existing details
-        await _detailRepository
-            .DeleteByPurchaseOrderIdAsync(entity.Id);
-
-        if (dto.Details != null)
+        return await _transaction.ExecuteAsync(async () =>
         {
-            foreach (var detailDto in dto.Details)
+            var updated = await _repository.UpdateAsync(entity);
+
+            if (!updated)
+                return false;
+
+            await _detailRepository.DeleteByPurchaseOrderIdAsync(entity.Id);
+
+            foreach (var detail in entity.Details)
             {
-                var detail =
-                    _mapper.Map<PurchaseOrderDetailEntity>(
-                        detailDto);
-
                 detail.PurchaseOrderId = entity.Id;
-
                 await _detailRepository.AddAsync(detail);
             }
-        }
 
-        return true;
+            return true;
+        });
     }
 
     // ============================================================
-    // DELETE
+    // DELETE  (soft delete of the header; lines are kept for audit)
     // ============================================================
-    public async Task<bool> DeleteAsync(int id)
-    {
-        await _detailRepository
-            .DeleteByPurchaseOrderIdAsync(id);
-
-        return await _repository.DeleteAsync(id);
-    }
+    public Task<bool> DeleteAsync(int id) => _repository.DeleteAsync(id);
 
     // ============================================================
     // PAGED
     // ============================================================
-    public async Task<PagedResultDto<PurchaseOrderDto>>
-        GetAllPagedAsync(
-            string? PONumber,
-            int? VendorId,
-            string? Status,
-            int PageNumber,
-            int PageSize)
+    public async Task<PagedResultDto<PurchaseOrderDto>> GetAllPagedAsync(
+        string? PONumber,
+        int? VendorId,
+        string? Status,
+        int pageNumber,
+        int pageSize)
     {
-        var result =
-            await _repository.GetAllPagedAsync(
-                PONumber,
-                VendorId,
-                Status,
-                PageNumber,
-                PageSize);
+        var result = await _repository.GetAllPagedAsync(
+            PONumber, VendorId, Status, pageNumber, pageSize);
 
         var entities = result.Data.ToList();
 
         foreach (var entity in entities)
         {
-            var details =
-                await _detailRepository
-                    .GetByPurchaseOrderIdAsync(entity.Id);
-
+            var details = await _detailRepository.GetByPurchaseOrderIdAsync(entity.Id);
             entity.Details = details.ToList();
         }
 
         return new PagedResultDto<PurchaseOrderDto>
         {
-            Data = _mapper.Map<IEnumerable<PurchaseOrderDto>>(
-                entities),
-
+            Data = _mapper.Map<IEnumerable<PurchaseOrderDto>>(entities),
             TotalRecords = result.TotalRecords
         };
     }
 
     // ============================================================
-    // CALCULATE TOTALS
+    // WORKFLOW
     // ============================================================
-    private static void CalculateTotals(
-        PurchaseOrderEntity entity)
+    public Task<bool> ApproveAsync(int id, string? updatedBy)
+        => _repository.ApproveAsync(id, updatedBy);
+
+    public Task<bool> CancelAsync(int id, string? updatedBy)
+        => _repository.CancelAsync(id, updatedBy);
+
+    // ============================================================
+    // HELPERS
+    // ============================================================
+    private static void ValidateDetails(List<PurchaseOrderDetailDto>? details)
+    {
+        if (details == null || details.Count == 0)
+            throw new BusinessRuleException("A purchase order must have at least one line.");
+
+        for (var i = 0; i < details.Count; i++)
+        {
+            var d = details[i];
+
+            if (d.ItemmasterId <= 0)
+                throw new BusinessRuleException($"Line {i + 1}: item is required.");
+
+            LineCalculator.Validate(i + 1, d.Quantity, d.Rate, d.DiscountAmount, d.TaxPercent);
+        }
+    }
+
+    private static void CalculateTotals(PurchaseOrderEntity entity)
     {
         decimal subTotal = 0;
         decimal taxAmount = 0;
 
         foreach (var detail in entity.Details)
         {
-            var gross =
-                detail.Quantity * detail.Rate;
+            var amounts = LineCalculator.Calculate(
+                detail.Quantity, detail.Rate, detail.DiscountAmount, detail.TaxPercent);
 
-            var lineTotalBeforeTax =
-                gross - detail.DiscountAmount;
+            detail.TaxAmount = amounts.TaxAmount;
+            detail.LineTotal = amounts.LineTotal;
+            detail.ReceivedQuantity = 0;          // only receipts may change this
 
-            detail.TaxAmount =
-                lineTotalBeforeTax *
-                detail.TaxPercent / 100;
-
-            detail.LineTotal =
-                lineTotalBeforeTax +
-                detail.TaxAmount;
-
-            subTotal += lineTotalBeforeTax;
-            taxAmount += detail.TaxAmount;
+            subTotal += amounts.Taxable;
+            taxAmount += amounts.TaxAmount;
         }
 
         entity.SubTotal = subTotal;

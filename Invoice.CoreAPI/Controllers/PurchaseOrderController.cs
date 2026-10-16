@@ -1,7 +1,6 @@
 ﻿using Asp.Versioning;
 using Invoice.BAL.Contracts;
 using Invoice.DTOs;
-using Invoice.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,7 +10,7 @@ namespace Invoice.CoreAPI.Controllers;
 [ApiVersion(1.0)]
 [ApiController]
 [Authorize]
-public class PurchaseOrderController : ControllerBase
+public class PurchaseOrderController : ApiControllerBase
 {
     private readonly IPurchaseOrderService _service;
     private readonly ILogger<PurchaseOrderController> _logger;
@@ -24,304 +23,100 @@ public class PurchaseOrderController : ControllerBase
         _logger = logger;
     }
 
-    // ============================================================
     // GET: api/v1/PurchaseOrder/GetAll
-    // ============================================================
     [HttpGet("GetAll")]
-    public async Task<IActionResult> GetAll()
-    {
-        try
+    public Task<IActionResult> GetAll() =>
+        RunAsync(async () =>
         {
-            var data =
-                await _service.GetAllAsync();
+            var data = await _service.GetAllAsync();
+            return Ok(Done("Purchase Orders retrieved successfully", data));
+        }, _logger, "Error retrieving Purchase Orders");
 
-            return Ok(
-                new ApiResponse<IEnumerable<PurchaseOrderDto>>
-                {
-                    Success = true,
-                    Message =
-                        "Purchase Orders retrieved successfully",
-                    Data = data
-                });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(
-                ex,
-                "Error retrieving Purchase Orders");
-
-            return StatusCode(
-                500,
-                new ApiResponse<string>
-                {
-                    Success = false,
-                    Message =
-                        "Error retrieving Purchase Orders",
-                    Error = new ApiError
-                    {
-                        Code = "500",
-                        Details = ex.Message
-                    }
-                });
-        }
-    }
-
-    // ============================================================
     // GET: api/v1/PurchaseOrder/GetById/1
-    // ============================================================
     [HttpGet("GetById/{id:int}")]
-    public async Task<IActionResult> GetById(int id)
-    {
-        try
+    public Task<IActionResult> GetById(int id) =>
+        RunAsync(async () =>
         {
-            var data =
-                await _service.GetByIdAsync(id);
+            var data = await _service.GetByIdAsync(id);
 
             if (data == null)
-            {
-                return NotFound(
-                    new ApiResponse<string>
-                    {
-                        Success = false,
-                        Message =
-                            "Purchase Order not found"
-                    });
-            }
+                return NotFound(Fail("Purchase Order not found", "404", "Purchase Order not found"));
 
-            return Ok(
-                new ApiResponse<PurchaseOrderDto>
-                {
-                    Success = true,
-                    Message =
-                        "Purchase Order retrieved successfully",
-                    Data = data
-                });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(
-                ex,
-                "Error retrieving Purchase Order with Id {Id}",
-                id);
+            return Ok(Done("Purchase Order retrieved successfully", data));
+        }, _logger, "Error retrieving Purchase Order");
 
-            return StatusCode(
-                500,
-                new ApiResponse<string>
-                {
-                    Success = false,
-                    Message =
-                        "Error retrieving Purchase Order",
-                    Error = new ApiError
-                    {
-                        Code = "500",
-                        Details = ex.Message
-                    }
-                });
-        }
-    }
-
-    // ============================================================
     // POST: api/v1/PurchaseOrder/Create
-    // ============================================================
     [HttpPost("Create")]
-    public async Task<IActionResult> Create(
-        [FromBody] PurchaseOrderDto dto)
-    {
-        try
+    public Task<IActionResult> Create([FromBody] PurchaseOrderDto dto) =>
+        RunAsync(async () =>
         {
-            var id =
-                await _service.AddAsync(dto);
+            dto.CreatedBy = CurrentUser;
 
-            return Ok(
-                new ApiResponse<int>
-                {
-                    Success = true,
-                    Message =
-                        "Purchase Order created successfully",
-                    Data = id
-                });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(
-                ex,
-                "Error creating Purchase Order");
+            var id = await _service.AddAsync(dto);
 
-            return StatusCode(
-                500,
-                new ApiResponse<string>
-                {
-                    Success = false,
-                    Message =
-                        "Error creating Purchase Order",
-                    Error = new ApiError
-                    {
-                        Code = "500",
-                        Details = ex.Message
-                    }
-                });
-        }
-    }
+            return Ok(Done("Purchase Order created successfully", id));
+        }, _logger, "Error creating Purchase Order");
 
-    // ============================================================
     // PUT: api/v1/PurchaseOrder/Update/1
-    // ============================================================
     [HttpPut("Update/{id:int}")]
-    public async Task<IActionResult> Update(
-        int id,
-        [FromBody] PurchaseOrderDto dto)
-    {
-        try
+    public Task<IActionResult> Update(int id, [FromBody] PurchaseOrderDto dto) =>
+        RunAsync(async () =>
         {
             dto.Id = id;
+            dto.UpdatedBy = CurrentUser;
 
-            var updated =
-                await _service.UpdateAsync(dto);
+            var updated = await _service.UpdateAsync(dto);
 
             if (!updated)
-            {
-                return NotFound(
-                    new ApiResponse<string>
-                    {
-                        Success = false,
-                        Message =
-                            "Purchase Order not found"
-                    });
-            }
+                return NotFound(Fail("Purchase Order not found", "404", "Purchase Order not found"));
 
-            return Ok(
-                new ApiResponse<string>
-                {
-                    Success = true,
-                    Message =
-                        "Purchase Order updated successfully"
-                });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(
-                ex,
-                "Error updating Purchase Order with Id {Id}",
-                id);
+            return Ok(Done("Purchase Order updated successfully"));
+        }, _logger, "Error updating Purchase Order");
 
-            return StatusCode(
-                500,
-                new ApiResponse<string>
-                {
-                    Success = false,
-                    Message =
-                        "Error updating Purchase Order",
-                    Error = new ApiError
-                    {
-                        Code = "500",
-                        Details = ex.Message
-                    }
-                });
-        }
-    }
-
-    // ============================================================
     // DELETE: api/v1/PurchaseOrder/Delete/1
-    // ============================================================
     [HttpDelete("Delete/{id:int}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        try
+    public Task<IActionResult> Delete(int id) =>
+        RunAsync(async () =>
         {
-            var deleted =
-                await _service.DeleteAsync(id);
+            var deleted = await _service.DeleteAsync(id);
 
             if (!deleted)
-            {
-                return NotFound(
-                    new ApiResponse<string>
-                    {
-                        Success = false,
-                        Message =
-                            "Purchase Order not found"
-                    });
-            }
+                return NotFound(Fail("Purchase Order not found", "404", "Purchase Order not found"));
 
-            return Ok(
-                new ApiResponse<string>
-                {
-                    Success = true,
-                    Message =
-                        "Purchase Order deleted successfully"
-                });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(
-                ex,
-                "Error deleting Purchase Order with Id {Id}",
-                id);
+            return Ok(Done("Purchase Order deleted successfully"));
+        }, _logger, "Error deleting Purchase Order");
 
-            return StatusCode(
-                500,
-                new ApiResponse<string>
-                {
-                    Success = false,
-                    Message =
-                        "Error deleting Purchase Order",
-                    Error = new ApiError
-                    {
-                        Code = "500",
-                        Details = ex.Message
-                    }
-                });
-        }
-    }
-
-    // ============================================================
     // GET: api/v1/PurchaseOrder/GetAllPaged
-    // ============================================================
     [HttpGet("GetAllPaged")]
-    public async Task<IActionResult> GetAllPaged(
+    public Task<IActionResult> GetAllPaged(
         string? PONumber,
         int? VendorId,
         string? Status,
         int pageNumber = 1,
-        int pageSize = 10)
-    {
-        try
+        int pageSize = 10) =>
+        RunAsync(async () =>
         {
-            var result =
-                await _service.GetAllPagedAsync(
-                    PONumber,
-                    VendorId,
-                    Status,
-                    pageNumber,
-                    pageSize);
+            var result = await _service.GetAllPagedAsync(
+                PONumber, VendorId, Status, pageNumber, pageSize);
 
-            return Ok(
-                new ApiResponse<PagedResultDto<PurchaseOrderDto>>
-                {
-                    Success = true,
-                    Message =
-                        "Purchase Orders retrieved successfully",
-                    Data = result
-                });
-        }
-        catch (Exception ex)
+            return Ok(Done("Purchase Orders retrieved successfully", result));
+        }, _logger, "Error retrieving paged Purchase Orders");
+
+    // POST: api/v1/PurchaseOrder/Approve/1   (Draft -> Approved)
+    [HttpPost("Approve/{id:int}")]
+    public Task<IActionResult> Approve(int id) =>
+        RunAsync(async () =>
         {
-            _logger.LogError(
-                ex,
-                "Error retrieving paged Purchase Orders");
+            await _service.ApproveAsync(id, CurrentUser);
+            return Ok(Done("Purchase Order approved successfully"));
+        }, _logger, "Error approving Purchase Order");
 
-            return StatusCode(
-                500,
-                new ApiResponse<string>
-                {
-                    Success = false,
-                    Message =
-                        "Error retrieving Purchase Orders",
-                    Error = new ApiError
-                    {
-                        Code = "500",
-                        Details = ex.Message
-                    }
-                });
-        }
-    }
+    // POST: api/v1/PurchaseOrder/Cancel/1
+    [HttpPost("Cancel/{id:int}")]
+    public Task<IActionResult> Cancel(int id) =>
+        RunAsync(async () =>
+        {
+            await _service.CancelAsync(id, CurrentUser);
+            return Ok(Done("Purchase Order cancelled successfully"));
+        }, _logger, "Error cancelling Purchase Order");
 }

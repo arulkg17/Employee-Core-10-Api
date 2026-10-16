@@ -4,7 +4,6 @@ using Invoice.Data.Entities;
 using Invoice.DTOs;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System.Data;
 
 namespace Invoice.DAL.Repositories;
 
@@ -20,38 +19,20 @@ public class PurchaseOrderRepositoryEFSp : IPurchaseOrderRepository
     // ============================================================
     // INSERT
     // ============================================================
-    public async Task<int> AddAsync(PurchaseOrderEntity purchaseOrder)
+    public Task<int> AddAsync(PurchaseOrderEntity purchaseOrder)
     {
-        var connection = _dbContext.Database.GetDbConnection();
-
-        await using var command = connection.CreateCommand();
-
-        command.CommandText = "sp_PurchaseOrder_Insert";
-        command.CommandType = CommandType.StoredProcedure;
-
-        command.Parameters.Add(new SqlParameter("@PONumber", purchaseOrder.PONumber));
-        command.Parameters.Add(new SqlParameter("@PODate", purchaseOrder.PODate));
-        command.Parameters.Add(new SqlParameter("@VendorId", purchaseOrder.VendorId));
-        command.Parameters.Add(new SqlParameter("@Status", purchaseOrder.Status));
-
-        command.Parameters.Add(new SqlParameter(
-            "@Notes",
-            (object?)purchaseOrder.Notes ?? DBNull.Value));
-
-        command.Parameters.Add(new SqlParameter("@SubTotal", purchaseOrder.SubTotal));
-        command.Parameters.Add(new SqlParameter("@TaxAmount", purchaseOrder.TaxAmount));
-        command.Parameters.Add(new SqlParameter("@TotalAmount", purchaseOrder.TotalAmount));
-
-        command.Parameters.Add(new SqlParameter(
-            "@CreatedBy",
-            (object?)purchaseOrder.CreatedBy ?? DBNull.Value));
-
-        if (connection.State != ConnectionState.Open)
-            await connection.OpenAsync();
-
-        var result = await command.ExecuteScalarAsync();
-
-        return Convert.ToInt32(result);
+        return SpExecutor.ScalarIntAsync(
+            _dbContext,
+            "dbo.sp_PurchaseOrder_Insert",
+            SpExecutor.P("@PONumber", purchaseOrder.PONumber),
+            SpExecutor.P("@PODate", purchaseOrder.PODate),
+            SpExecutor.P("@VendorId", purchaseOrder.VendorId),
+            SpExecutor.P("@Status", purchaseOrder.Status),
+            SpExecutor.P("@Notes", purchaseOrder.Notes),
+            SpExecutor.Dec("@SubTotal", purchaseOrder.SubTotal),
+            SpExecutor.Dec("@TaxAmount", purchaseOrder.TaxAmount),
+            SpExecutor.Dec("@TotalAmount", purchaseOrder.TotalAmount),
+            SpExecutor.P("@CreatedBy", purchaseOrder.CreatedBy));
     }
 
     // ============================================================
@@ -61,7 +42,7 @@ public class PurchaseOrderRepositoryEFSp : IPurchaseOrderRepository
     {
         var purchaseOrders = await _dbContext.PurchaseOrders
             .FromSqlRaw(
-                "EXEC sp_PurchaseOrder_GetById @Id",
+                "EXEC dbo.sp_PurchaseOrder_GetById @Id",
                 new SqlParameter("@Id", id))
             .AsNoTracking()
             .ToListAsync();
@@ -75,57 +56,42 @@ public class PurchaseOrderRepositoryEFSp : IPurchaseOrderRepository
     public async Task<IEnumerable<PurchaseOrderEntity>> GetAllAsync()
     {
         return await _dbContext.PurchaseOrders
-            .FromSqlRaw("EXEC sp_PurchaseOrder_GetAll")
+            .FromSqlRaw("EXEC dbo.sp_PurchaseOrder_GetAll")
             .AsNoTracking()
             .ToListAsync();
     }
 
     // ============================================================
-    // UPDATE
+    // UPDATE  (SP throws when the PO is not Draft)
     // ============================================================
-    public async Task<bool> UpdateAsync(
-        PurchaseOrderEntity purchaseOrder)
+    public async Task<bool> UpdateAsync(PurchaseOrderEntity purchaseOrder)
     {
-        var affectedRows = await _dbContext.Database.ExecuteSqlRawAsync(
-            @"EXEC sp_PurchaseOrder_Update
-                @Id,
-                @PONumber,
-                @PODate,
-                @VendorId,
-                @Status,
-                @Notes,
-                @SubTotal,
-                @TaxAmount,
-                @TotalAmount,
-                @UpdatedBy",
-
-            new SqlParameter("@Id", purchaseOrder.Id),
-            new SqlParameter("@PONumber", purchaseOrder.PONumber),
-            new SqlParameter("@PODate", purchaseOrder.PODate),
-            new SqlParameter("@VendorId", purchaseOrder.VendorId),
-            new SqlParameter("@Status", purchaseOrder.Status),
-            new SqlParameter(
-                "@Notes",
-                (object?)purchaseOrder.Notes ?? DBNull.Value),
-            new SqlParameter("@SubTotal", purchaseOrder.SubTotal),
-            new SqlParameter("@TaxAmount", purchaseOrder.TaxAmount),
-            new SqlParameter("@TotalAmount", purchaseOrder.TotalAmount),
-            new SqlParameter(
-                "@UpdatedBy",
-                (object?)purchaseOrder.UpdatedBy ?? DBNull.Value));
+        var affectedRows = await SpExecutor.NonQueryAsync(
+            _dbContext,
+            "dbo.sp_PurchaseOrder_Update",
+            SpExecutor.P("@Id", purchaseOrder.Id),
+            SpExecutor.P("@PONumber", purchaseOrder.PONumber),
+            SpExecutor.P("@PODate", purchaseOrder.PODate),
+            SpExecutor.P("@VendorId", purchaseOrder.VendorId),
+            SpExecutor.P("@Status", purchaseOrder.Status),
+            SpExecutor.P("@Notes", purchaseOrder.Notes),
+            SpExecutor.Dec("@SubTotal", purchaseOrder.SubTotal),
+            SpExecutor.Dec("@TaxAmount", purchaseOrder.TaxAmount),
+            SpExecutor.Dec("@TotalAmount", purchaseOrder.TotalAmount),
+            SpExecutor.P("@UpdatedBy", purchaseOrder.UpdatedBy));
 
         return affectedRows > 0;
     }
 
     // ============================================================
-    // DELETE
+    // DELETE  (soft delete; SP allows Draft / Cancelled only)
     // ============================================================
     public async Task<bool> DeleteAsync(int id)
     {
-        var affectedRows =
-            await _dbContext.Database.ExecuteSqlRawAsync(
-                "EXEC sp_PurchaseOrder_Delete @Id",
-                new SqlParameter("@Id", id));
+        var affectedRows = await SpExecutor.NonQueryAsync(
+            _dbContext,
+            "dbo.sp_PurchaseOrder_Delete",
+            SpExecutor.P("@Id", id));
 
         return affectedRows > 0;
     }
@@ -133,102 +99,64 @@ public class PurchaseOrderRepositoryEFSp : IPurchaseOrderRepository
     // ============================================================
     // PAGED
     // ============================================================
-    public async Task<PagedResultDto<PurchaseOrderEntity>>
-        GetAllPagedAsync(
-            string? PONumber,
-            int? VendorId,
-            string? Status,
-            int PageNumber,
-            int PageSize)
+    public async Task<PagedResultDto<PurchaseOrderEntity>> GetAllPagedAsync(
+        string? PONumber,
+        int? VendorId,
+        string? Status,
+        int pageNumber,
+        int pageSize)
     {
-        var connection = _dbContext.Database.GetDbConnection();
-
-        await connection.OpenAsync();
-
-        using var command = connection.CreateCommand();
-
-        command.CommandText = "sp_PurchaseOrder_GetPaged";
-        command.CommandType = CommandType.StoredProcedure;
-
-        command.Parameters.Add(
-            new SqlParameter(
-                "@PONumber",
-                (object?)PONumber ?? DBNull.Value));
-
-        command.Parameters.Add(
-            new SqlParameter(
-                "@VendorId",
-                (object?)VendorId ?? DBNull.Value));
-
-        command.Parameters.Add(
-            new SqlParameter(
-                "@Status",
-                (object?)Status ?? DBNull.Value));
-
-        command.Parameters.Add(
-            new SqlParameter("@PageNumber", PageNumber));
-
-        command.Parameters.Add(
-            new SqlParameter("@PageSize", PageSize));
-
-        using var reader =
-            await command.ExecuteReaderAsync();
-
-        var purchaseOrders =
-            new List<PurchaseOrderEntity>();
-
-        while (await reader.ReadAsync())
-        {
-            purchaseOrders.Add(
-                new PurchaseOrderEntity
-                {
-                    Id = reader.GetInt32(0),
-                    PONumber = reader.GetString(1),
-                    PODate = reader.GetDateTime(2),
-                    VendorId = reader.GetInt32(3),
-                    Status = reader.GetString(4),
-
-                    Notes = reader.IsDBNull(5)
-                        ? null
-                        : reader.GetString(5),
-
-                    SubTotal = reader.GetDecimal(6),
-                    TaxAmount = reader.GetDecimal(7),
-                    TotalAmount = reader.GetDecimal(8),
-
-                    IsDeleted = reader.GetBoolean(9),
-
-                    CreatedBy = reader.IsDBNull(10)
-                        ? null
-                        : reader.GetString(10),
-
-                    CreatedDate = reader.IsDBNull(11)
-                        ? null
-                        : reader.GetDateTime(11),
-
-                    UpdatedBy = reader.IsDBNull(12)
-                        ? null
-                        : reader.GetString(12),
-
-                    UpdatedDate = reader.IsDBNull(13)
-                        ? null
-                        : reader.GetDateTime(13)
-                });
-        }
-
-        await reader.NextResultAsync();
-
-        int totalRecords = 0;
-
-        if (await reader.ReadAsync())
-        {
-            totalRecords = reader.GetInt32(0);
-        }
+        var (rows, total) = await SpExecutor.PagedAsync(
+            _dbContext,
+            "dbo.sp_PurchaseOrder_GetPaged",
+            reader => new PurchaseOrderEntity
+            {
+                Id = reader.Int("Id"),
+                PONumber = reader.Text("PONumber"),
+                PODate = reader.Stamp("PODate"),
+                VendorId = reader.Int("VendorId"),
+                Status = reader.Text("Status"),
+                Notes = reader.TextOrNull("Notes"),
+                SubTotal = reader.Num("SubTotal"),
+                TaxAmount = reader.Num("TaxAmount"),
+                TotalAmount = reader.Num("TotalAmount"),
+                IsDeleted = reader.Flag("IsDeleted"),
+                CreatedBy = reader.TextOrNull("CreatedBy"),
+                CreatedDate = reader.StampOrNull("CreatedDate"),
+                UpdatedBy = reader.TextOrNull("UpdatedBy"),
+                UpdatedDate = reader.StampOrNull("UpdatedDate")
+            },
+            SpExecutor.P("@PONumber", PONumber),
+            SpExecutor.P("@VendorId", VendorId),
+            SpExecutor.P("@Status", Status),
+            SpExecutor.P("@PageNumber", pageNumber),
+            SpExecutor.P("@PageSize", pageSize));
 
         return new PagedResultDto<PurchaseOrderEntity>
         {
-            Data = purchaseOrders,
-            TotalRecords = totalRecords
+            Data = rows,
+            TotalRecords = total
         };
+    }
+
+    // ============================================================
+    // WORKFLOW
+    // ============================================================
+    public Task<bool> ApproveAsync(int id, string? updatedBy)
+    {
+        return SpExecutor.ScalarBoolAsync(
+            _dbContext,
+            "dbo.sp_PurchaseOrder_Approve",
+            SpExecutor.P("@Id", id),
+            SpExecutor.P("@UpdatedBy", updatedBy));
+    }
+
+    public Task<bool> CancelAsync(int id, string? updatedBy)
+    {
+        return SpExecutor.ScalarBoolAsync(
+            _dbContext,
+            "dbo.sp_PurchaseOrder_Cancel",
+            SpExecutor.P("@Id", id),
+            SpExecutor.P("@UpdatedBy", updatedBy));
     }
 }

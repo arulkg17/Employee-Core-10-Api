@@ -19,4 +19,7 @@ public class PurchaseOrderDetailDto
     public decimal TaxAmount { get; set; }
 
     public decimal LineTotal { get; set; }
+
+    // Output only: set by the server, ignored on create/update
+    public decimal ReceivedQuantity { get; set; }
 }
