@@ -1,0 +1,175 @@
+@api = http://localhost:5063
+@mcp = http://localhost:3001/mcp
+
+### 1. Login to the Invoice API (replace credentials)
+# @name login
+POST {{api}}/api/v1/Login
+Content-Type: application/json
+
+{
+  "userName": "your-user",
+  "password": "your-password"
+}
+
+###
+@token = replace-your-token
+
+### 2. Call the API directly (baseline - must work before testing MCP)
+GET {{api}}/api/v1/Category/GetAll
+Authorization: Bearer {{token}}
+
+### 3. API without token -> expect 401
+GET {{api}}/api/v1/Category/GetAll
+
+### 4. MCP: initialize (creates a session)
+# @name init
+POST {{mcp}}
+Content-Type: application/json
+Accept: application/json, text/event-stream
+
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "initialize",
+  "params": {
+    "protocolVersion": "2025-06-18",
+    "capabilities": {},
+    "clientInfo": { "name": "vs-http-file", "version": "1.0" }
+  }
+}
+
+###
+@sessionId = paste-later
+
+### 5. MCP: initialized notification
+POST {{mcp}}
+Content-Type: application/json
+Accept: application/json, text/event-stream
+Mcp-Session-Id: {{sessionId}}
+
+{ "jsonrpc": "2.0", "method": "notifications/initialized" }
+
+### 6. MCP: list tools (expect hello_ims, get_categories, get_category_by_id, get_categories_paged + customer/vendor/item/invoice/PO tools)
+POST {{mcp}}
+Content-Type: application/json
+Accept: application/json, text/event-stream
+Mcp-Session-Id: {{sessionId}}
+
+{ "jsonrpc": "2.0", "id": 2, "method": "tools/list" }
+
+### 7. MCP: call get_categories, token sent as header (recommended path)
+POST {{mcp}}
+Content-Type: application/json
+Accept: application/json, text/event-stream
+Mcp-Session-Id: {{sessionId}}
+Authorization: Bearer {{token}}
+
+{
+  "jsonrpc": "2.0",
+  "id": 3,
+  "method": "tools/call",
+  "params": { "name": "get_categories", "arguments": {} }
+}
+
+### 8. MCP: call get_categories, token passed as argument (quick manual test)
+POST {{mcp}}
+Content-Type: application/json
+Accept: application/json, text/event-stream
+Mcp-Session-Id: {{sessionId}}
+
+{
+  "jsonrpc": "2.0",
+  "id": 4,
+  "method": "tools/call",
+  "params": { "name": "get_categories", "arguments": { "accessToken": "{{token}}" } }
+}
+
+### 9. MCP: paged search
+POST {{mcp}}
+Content-Type: application/json
+Accept: application/json, text/event-stream
+Mcp-Session-Id: {{sessionId}}
+Authorization: Bearer {{token}}
+
+{
+  "jsonrpc": "2.0",
+  "id": 5,
+  "method": "tools/call",
+  "params": { "name": "get_categories_paged", "arguments": { "name": "a", "pageNumber": 1, "pageSize": 5 } }
+}
+
+### 10. MCP: error path - bad token, expect isError with the 401 message
+POST {{mcp}}
+Content-Type: application/json
+Accept: application/json, text/event-stream
+Mcp-Session-Id: {{sessionId}}
+
+{
+  "jsonrpc": "2.0",
+  "id": 6,
+  "method": "tools/call",
+  "params": { "name": "get_categories", "arguments": { "accessToken": "not-a-real-token" } }
+}
+
+### 11. MCP: customer counts (computed server-side, returns 3 numbers)
+POST {{mcp}}
+Content-Type: application/json
+Accept: application/json, text/event-stream
+Mcp-Session-Id: {{sessionId}}
+Authorization: Bearer {{token}}
+
+{ "jsonrpc": "2.0", "id": 11, "method": "tools/call",
+  "params": { "name": "get_customer_counts", "arguments": {} } }
+
+### 12. MCP: customers by city
+POST {{mcp}}
+Content-Type: application/json
+Accept: application/json, text/event-stream
+Mcp-Session-Id: {{sessionId}}
+Authorization: Bearer {{token}}
+
+{ "jsonrpc": "2.0", "id": 12, "method": "tools/call",
+  "params": { "name": "get_customers_paged", "arguments": { "city": "Chennai", "pageSize": 5 } } }
+
+### 13. MCP: sales invoices by status
+POST {{mcp}}
+Content-Type: application/json
+Accept: application/json, text/event-stream
+Mcp-Session-Id: {{sessionId}}
+Authorization: Bearer {{token}}
+
+{ "jsonrpc": "2.0", "id": 13, "method": "tools/call",
+  "params": { "name": "get_sales_invoices_paged", "arguments": { "status": "Posted", "pageSize": 5 } } }
+
+### 14. MCP: purchase orders for a vendor
+POST {{mcp}}
+Content-Type: application/json
+Accept: application/json, text/event-stream
+Mcp-Session-Id: {{sessionId}}
+Authorization: Bearer {{token}}
+
+{ "jsonrpc": "2.0", "id": 14, "method": "tools/call",
+  "params": { "name": "get_purchase_orders_paged", "arguments": { "vendorId": 1 } } }
+
+### 15. MCP: active items in a category
+POST {{mcp}}
+Content-Type: application/json
+Accept: application/json, text/event-stream
+Mcp-Session-Id: {{sessionId}}
+Authorization: Bearer {{token}}
+
+{ "jsonrpc": "2.0", "id": 15, "method": "tools/call",
+  "params": { "name": "get_active_item_count_by_category", "arguments": { "categoryId": 1 } } }
+
+### 16. MCP: items filtered (active items in category 1)
+POST {{mcp}}
+Content-Type: application/json
+Accept: application/json, text/event-stream
+Authorization: Bearer {{token}}
+
+{ "jsonrpc": "2.0", "id": 16, "method": "tools/call",
+  "params": { "name": "get_items_paged", "arguments": { "categoryId": 1, "isActive": true, "pageSize": 5 } } }
+
+### 17. API direct: same filter, to compare with request 16
+GET {{api}}/api/v1/Itemmaster/GetAllPaged?CategoryId=1&IsActive=true&PageNumber=1&PageSize=5
+Authorization: Bearer {{token}}
