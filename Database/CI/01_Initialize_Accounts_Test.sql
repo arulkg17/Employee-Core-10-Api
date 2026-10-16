@@ -648,6 +648,7 @@ BEGIN
         I.Minimumstock,
         I.Maximumstock,
         I.IsActive,
+	I.IsDeleted,
         I.Createdby,
         I.Createddate,
         I.Updatedby,
@@ -655,6 +656,7 @@ BEGIN
     FROM dbo.Itemmaster I
     INNER JOIN dbo.Category C
         ON I.CategoryId = C.Id
+    where ISNULL(IsDeleted, 0) = 0 
     ORDER BY I.Id ASC;
 END
 GO
@@ -680,6 +682,7 @@ BEGIN
         I.Minimumstock,
         I.Maximumstock,
         I.IsActive,
+	I.IsDeleted,
         I.Createdby,
         I.Createddate,
         I.Updatedby,
@@ -687,7 +690,7 @@ BEGIN
     FROM dbo.Itemmaster I
     INNER JOIN dbo.Category C
         ON I.CategoryId = C.Id
-    WHERE I.Id = @Id;
+    WHERE I.Id = @Id AND ISNULL(IsDeleted, 0) = 0; 
 END
 GO
 
@@ -728,6 +731,7 @@ BEGIN
         I.Minimumstock,
         I.Maximumstock,
         I.IsActive,
+	I.IsDeleted,
         I.Createdby,
         I.Createddate,
         I.Updatedby,

@@ -41,6 +41,7 @@ public class ItemmasterEntity
     public decimal? MaximumStock { get; set; }
 
     public bool? IsActive { get; set; }
+    public bool IsDeleted { get; set; } = false;
 
     [StringLength(100)]
     public string? CreatedBy { get; set; }

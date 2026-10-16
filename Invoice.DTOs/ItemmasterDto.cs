@@ -24,6 +24,7 @@ public class ItemmasterDto
     public decimal? MaximumStock { get; set; }
 
     public bool? IsActive { get; set; }
+    public bool IsDeleted { get; set; } = false;
 
     public string? CreatedBy { get; set; }
 
