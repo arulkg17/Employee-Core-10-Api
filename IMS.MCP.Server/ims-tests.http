@@ -7,13 +7,13 @@ POST {{api}}/api/v1/Login
 Content-Type: application/json
 
 {
-  "userName": "your-user",
-  "password": "your-password"
+  "userName": "admin1",
+  "password": "admin1@123"
 }
 
 ###
-@token = replace-your-token
-
+#@token = {{login.response.body.$.data.token}}
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyIiwidW5pcXVlX25hbWUiOiJhZG1pbjEiLCJlbWFpbCI6ImFydWxrZ0BnbWFpbC5jb20iLCJnaXZlbl9uYW1lIjoiQXJ1bCIsImZhbWlseV9uYW1lIjoiS2FsaXZhcmF0aGFuIiwiZGlzcGxheU5hbWUiOiJBcnVsIEthbGl2YXJhdGhhbiIsIm5iZiI6MTc5MjI1OTczOSwiZXhwIjoxNzkyMzMxNzM5LCJpYXQiOjE3OTIyNTk3MzksImlzcyI6Ikludm9pY2UuQXBpIiwiYXVkIjoiSW52b2ljZS5BcGkifQ.t0VjvmbN9tPdfJ3VUPMQuSf_fZ45vJ105UVRO8bIh2Q
 ### 2. Call the API directly (baseline - must work before testing MCP)
 GET {{api}}/api/v1/Category/GetAll
 Authorization: Bearer {{token}}
@@ -39,8 +39,8 @@ Accept: application/json, text/event-stream
 }
 
 ###
-@sessionId = paste-later
-
+#@sessionId = {{init.response.headers.Mcp-Session-Id}}
+@sessionId = 
 ### 5. MCP: initialized notification
 POST {{mcp}}
 Content-Type: application/json
@@ -61,7 +61,6 @@ Mcp-Session-Id: {{sessionId}}
 POST {{mcp}}
 Content-Type: application/json
 Accept: application/json, text/event-stream
-Mcp-Session-Id: {{sessionId}}
 Authorization: Bearer {{token}}
 
 {
@@ -75,7 +74,6 @@ Authorization: Bearer {{token}}
 POST {{mcp}}
 Content-Type: application/json
 Accept: application/json, text/event-stream
-Mcp-Session-Id: {{sessionId}}
 
 {
   "jsonrpc": "2.0",
@@ -88,7 +86,6 @@ Mcp-Session-Id: {{sessionId}}
 POST {{mcp}}
 Content-Type: application/json
 Accept: application/json, text/event-stream
-Mcp-Session-Id: {{sessionId}}
 Authorization: Bearer {{token}}
 
 {
@@ -115,7 +112,6 @@ Mcp-Session-Id: {{sessionId}}
 POST {{mcp}}
 Content-Type: application/json
 Accept: application/json, text/event-stream
-Mcp-Session-Id: {{sessionId}}
 Authorization: Bearer {{token}}
 
 { "jsonrpc": "2.0", "id": 11, "method": "tools/call",
@@ -125,7 +121,6 @@ Authorization: Bearer {{token}}
 POST {{mcp}}
 Content-Type: application/json
 Accept: application/json, text/event-stream
-Mcp-Session-Id: {{sessionId}}
 Authorization: Bearer {{token}}
 
 { "jsonrpc": "2.0", "id": 12, "method": "tools/call",
@@ -135,7 +130,6 @@ Authorization: Bearer {{token}}
 POST {{mcp}}
 Content-Type: application/json
 Accept: application/json, text/event-stream
-Mcp-Session-Id: {{sessionId}}
 Authorization: Bearer {{token}}
 
 { "jsonrpc": "2.0", "id": 13, "method": "tools/call",
@@ -145,7 +139,6 @@ Authorization: Bearer {{token}}
 POST {{mcp}}
 Content-Type: application/json
 Accept: application/json, text/event-stream
-Mcp-Session-Id: {{sessionId}}
 Authorization: Bearer {{token}}
 
 { "jsonrpc": "2.0", "id": 14, "method": "tools/call",
@@ -165,6 +158,7 @@ Authorization: Bearer {{token}}
 POST {{mcp}}
 Content-Type: application/json
 Accept: application/json, text/event-stream
+Mcp-Session-Id: {{sessionId}}
 Authorization: Bearer {{token}}
 
 { "jsonrpc": "2.0", "id": 16, "method": "tools/call",
@@ -173,3 +167,16 @@ Authorization: Bearer {{token}}
 ### 17. API direct: same filter, to compare with request 16
 GET {{api}}/api/v1/Itemmaster/GetAllPaged?CategoryId=1&IsActive=true&PageNumber=1&PageSize=5
 Authorization: Bearer {{token}}
+
+### 18. API direct: new count endpoint (compare with Swagger)
+GET {{api}}/api/v1/MasterCount/Customers?isActive=true
+Authorization: Bearer {{token}}
+
+### 19. MCP: customer counts now come from the BAL (expect { active, inactive, total })
+POST {{mcp}}
+Content-Type: application/json
+Accept: application/json, text/event-stream
+Authorization: Bearer {{token}}
+
+{ "jsonrpc": "2.0", "id": 19, "method": "tools/call",
+  "params": { "name": "get_customer_counts", "arguments": {} } }

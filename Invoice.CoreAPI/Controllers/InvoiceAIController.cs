@@ -3,7 +3,7 @@ using Invoice.AI.Abstractions;
 using Invoice.AI.Intents;
 using Invoice.AI.Models;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.Authorization;
 namespace Invoice.Coreapi.Controllers;
 
 // NOTE: route is "api/invoice-ai" so it does NOT clash with your old api/ai/ask and api/ai/ask-multi.
@@ -11,7 +11,7 @@ namespace Invoice.Coreapi.Controllers;
 [ApiController]
 [Route("api/invoice-ai")]
 [ApiVersion("1.0")]
-//[Authorize]
+[Authorize]
 public class InvoiceAIController : ControllerBase
 {
     private readonly IAIOrchestrator _orchestrator;

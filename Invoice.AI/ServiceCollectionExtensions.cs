@@ -29,12 +29,13 @@ public static class ServiceCollectionExtensions
             client.Timeout = TimeSpan.FromSeconds(o.TimeoutSeconds);
         });
 
-        // Data source: fake in-memory data (demo/tests) or real SQL Server
+        // Data source: fake in-memory data (demo/tests) or the BAL.
+        // The API project must register IMasterCountService (services.AddScoped<IMasterCountService, MasterCountService>()).
         var useInMemory = configuration.GetValue<bool>($"{InvoiceAIOptions.SectionName}:{nameof(InvoiceAIOptions.UseInMemoryData)}");
         if (useInMemory)
             services.AddSingleton<IMasterDataQueryService, InMemoryMasterDataQueryService>();
         else
-            services.AddScoped<IMasterDataQueryService, SqlMasterDataQueryService>();
+            services.AddScoped<IMasterDataQueryService, BalMasterDataQueryService>();
 
         // One handler per business question type. Add a new line here to teach the AI something new.
         services.AddScoped<IIntentHandler, CategoryItemCountHandler>();

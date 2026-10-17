@@ -1,11 +1,10 @@
 ﻿using IMS.MCP.Server.Services;
-using ModelContextProtocol;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
-using System.Text.Json;
 
 namespace IMS.MCP.Server.Tools;
 
+// Customer counts live in CountTools (get_customer_counts, get_customer_counts_by_city).
 [McpServerToolType]
 public sealed class CustomerTools(InvoiceApiClient api)
 {
@@ -38,54 +37,4 @@ public sealed class CustomerTools(InvoiceApiClient api)
         [Description(InvoiceApiClient.TokenHelp)] string? accessToken = null,
         CancellationToken cancellationToken = default)
         => api.GetAsync($"api/v1/Customer/GetById/{id}", accessToken, cancellationToken);
-
-    [McpServerTool(Name = "get_customer_counts", ReadOnly = true)]
-    [Description("Returns how many customers are active (and not deleted) versus inactive or deleted. " +
-                 "Use this for 'how many customers' questions instead of listing customers.")]
-    public async Task<string> GetCustomerCounts(
-        [Description(InvoiceApiClient.TokenHelp)] string? accessToken = null,
-        CancellationToken cancellationToken = default)
-    {
-        // Counting happens here so the AI gets 3 numbers, not the whole customer table.
-        var json = await api.GetAsync("api/v1/Customer/GetAll", accessToken, cancellationToken);
-
-        using var doc = JsonDocument.Parse(json);
-
-        if (!TryGet(doc.RootElement, "data", out var data) || data.ValueKind != JsonValueKind.Array)
-            throw new McpException("Unexpected response shape from the Customer API.");
-
-        int active = 0, inactive = 0;
-        foreach (var customer in data.EnumerateArray())
-        {
-            var isActive = TryGet(customer, "isActive", out var a) && a.ValueKind == JsonValueKind.True;
-            var isDeleted = TryGet(customer, "isDeleted", out var d) && d.ValueKind == JsonValueKind.True;
-
-            if (isActive && !isDeleted) active++; else inactive++;
-        }
-
-        return JsonSerializer.Serialize(new
-        {
-            activeNonDeleted = active,
-            inactiveOrDeleted = inactive,
-            total = active + inactive
-        });
-    }
-
-    private static bool TryGet(JsonElement element, string name, out JsonElement value)
-    {
-        if (element.ValueKind == JsonValueKind.Object)
-        {
-            foreach (var p in element.EnumerateObject())
-            {
-                if (p.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
-                {
-                    value = p.Value;
-                    return true;
-                }
-            }
-        }
-
-        value = default;
-        return false;
-    }
 }
