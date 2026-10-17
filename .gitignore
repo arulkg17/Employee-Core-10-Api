@@ -12,3 +12,7 @@ obj/
 TestResults/
 coveragereport/
 CoverageReport/
+
+# Application log files
+**/logs/*.txt
+
