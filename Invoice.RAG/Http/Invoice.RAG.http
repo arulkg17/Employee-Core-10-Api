@@ -1,0 +1,63 @@
+@rag = http://localhost:5070
+# Paste a fresh token from the CoreAPI login: raw value only, no quotes, no "Bearer".
+@token = PASTE_TOKEN_HERE
+
+### 0. Health (no token needed)
+GET {{rag}}/health
+
+### 1. Upload a vendor agreement PDF (change vendorId and the file path)
+POST {{rag}}/api/v1/vendor-agreements
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=----RagBoundary
+
+------RagBoundary
+Content-Disposition: form-data; name="vendorId"
+
+1
+------RagBoundary
+Content-Disposition: form-data; name="title"
+
+Supply agreement 2026
+------RagBoundary
+Content-Disposition: form-data; name="file"; filename="agreement.pdf"
+Content-Type: application/pdf
+
+< C:\path\to\agreement.pdf
+------RagBoundary--
+
+### 2. List agreements of the vendor
+GET {{rag}}/api/v1/vendor-agreements?vendorId=1
+Authorization: Bearer {{token}}
+
+### 3. Extract the payment terms (uses the chat model - the slow step). Use the agreement id from step 1.
+POST {{rag}}/api/v1/vendor-agreements/1/extract-terms
+Authorization: Bearer {{token}}
+
+### 4. Read the terms back
+GET {{rag}}/api/v1/vendor-agreements/1/terms
+Authorization: Bearer {{token}}
+
+### 4b. Retrieval only: which clauses/pages does the search find? (fast, no chat model)
+POST {{rag}}/api/v1/rag/search
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "query": "late payment penalty interest", "vendorId": 1, "topK": 5 }
+
+### 5. Ask about a vendor (no PO)
+POST {{rag}}/api/v1/rag/ask
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "question": "What are the payment terms and the penalty for late payment?", "vendorId": 1 }
+
+### 6. Ask about a purchase order (PO facts + agreement + computed due date/penalty)
+POST {{rag}}/api/v1/rag/ask
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "question": "When is payment due for this PO and what penalty applies if we pay late?", "poNumber": "PO-0001" }
+
+### 7. Payment summary for a PO (no language model, pure calculation)
+GET {{rag}}/api/v1/rag/po/PO-0001/payment-summary
+Authorization: Bearer {{token}}
