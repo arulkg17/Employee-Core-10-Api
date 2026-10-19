@@ -1,0 +1,108 @@
+{
+  "note": "Expected answers come from the five sample agreements (VEND001, 003, 004, 005, 006; VEND002 was not provided). Structured questions list the tools that should be called, because the numbers live in your database. Run each through POST /api/v1/agent/ask and check answer + toolCalls.",
+  "questions": [
+    {
+      "id": "u1",
+      "type": "unstructured",
+      "question": "What are the payment terms for VEND004?",
+      "expect": [ "Net 30", "after invoice approval" ],
+      "tools": [ "find_vendor", "search_vendor_agreements" ]
+    },
+    {
+      "id": "u2",
+      "type": "unstructured",
+      "question": "Which vendors have Net 45 payment terms?",
+      "expect": [ "VEND003", "VEND005" ],
+      "notExpect": [ "VEND001", "VEND004", "VEND006" ],
+      "tools": [ "search_vendor_agreements" ]
+    },
+    {
+      "id": "u3",
+      "type": "unstructured",
+      "question": "What is the warranty period in the VEND005 agreement?",
+      "expect": [ "24-month" ],
+      "tools": [ "find_vendor", "search_vendor_agreements" ]
+    },
+    {
+      "id": "u4",
+      "type": "unstructured",
+      "question": "What late payment interest does VEND006 charge?",
+      "expect": [ "0.8%" ],
+      "tools": [ "find_vendor", "search_vendor_agreements" ]
+    },
+    {
+      "id": "u5",
+      "type": "unstructured",
+      "question": "Within how many days must GreenField acknowledge an emergency request?",
+      "expect": [ "2 hours", "8 hours" ],
+      "tools": [ "search_vendor_agreements" ]
+    },
+    {
+      "id": "u6",
+      "type": "unstructured",
+      "question": "When can the buyer terminate BluePeak for repeated late delivery?",
+      "expect": [ "3 or more orders", "90-day" ],
+      "tools": [ "search_vendor_agreements" ]
+    },
+    {
+      "id": "u7",
+      "type": "unstructured",
+      "question": "Is a late fee charged on disputed invoices for VEND004?",
+      "expect": [ "No late fee", "disputed" ],
+      "tools": [ "search_vendor_agreements" ]
+    },
+    {
+      "id": "u8",
+      "type": "unstructured",
+      "question": "What is the maximum annual increase for Summit support renewal pricing?",
+      "expect": [ "4%", "60 days" ],
+      "tools": [ "search_vendor_agreements" ]
+    },
+    {
+      "id": "u9",
+      "type": "unstructured",
+      "question": "When does the Northstar agreement end?",
+      "expect": [ "2026-12-31" ],
+      "tools": [ "search_vendor_agreements" ]
+    },
+    {
+      "id": "s1",
+      "type": "structured",
+      "question": "How many purchase orders does VEND001 have and what is their total value?",
+      "tools": [ "find_vendor", "list_vendor_purchase_orders" ]
+    },
+    {
+      "id": "s2",
+      "type": "structured",
+      "question": "What is the status and amount of PO-0001?",
+      "tools": [ "get_purchase_order" ]
+    },
+    {
+      "id": "h1",
+      "type": "hybrid",
+      "question": "What are the late payment terms of VEND003, and how many purchase orders does it have?",
+      "expect": [ "0.75%" ],
+      "tools": [ "find_vendor", "search_vendor_agreements", "list_vendor_purchase_orders" ]
+    },
+    {
+      "id": "h2",
+      "type": "hybrid",
+      "question": "When is payment due for PO-0001 and what penalty applies if we pay late?",
+      "tools": [ "get_payment_summary" ]
+    },
+    {
+      "id": "m1",
+      "type": "multi",
+      "questions": [ "What are the payment terms of VEND001?", "What is the warranty of VEND003?", "How many purchase orders does VEND005 have?", "Which vendors charge 1.0% monthly late interest?" ],
+      "expect": [ "Net 30", "18 months", "VEND001", "VEND004", "VEND005" ],
+      "tools": [ "find_vendor", "search_vendor_agreements", "list_vendor_purchase_orders" ]
+    },
+    {
+      "id": "n1",
+      "type": "negative",
+      "question": "What is the penalty for data breach in the VEND001 agreement?",
+      "expect": [ "could not find" ],
+      "note": "VEND001 has no data-breach clause: the answer must say it was not found."
+    }
+  ]
+}

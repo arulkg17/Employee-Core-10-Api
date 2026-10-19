@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Text.Json;
 using Invoice.RAG.Configuration;
@@ -58,6 +59,67 @@ public sealed class CoreApiClient(HttpClient http, IOptions<RagOptions> options,
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Vendors whose code or name contains the text (case-insensitive). The list is read from CoreAPI and filtered here,
+    /// so it works whatever filter parameters the vendor endpoint has.
+    /// </summary>
+    public async Task<IReadOnlyList<VendorFacts>> FindVendorsAsync(string text, CancellationToken ct)
+    {
+        var data = await GetDataAsync(options.Value.CoreApiEndpoints.VendorList, allowNotFound: true, ct);
+        if (data is null) return [];
+
+        var needle = text.Trim();
+        var found = new List<VendorFacts>();
+
+        foreach (var row in JsonPick.Rows(data.Value))
+        {
+            var id = JsonPick.Int(row, "id", "vendorId");
+            if (id is null) continue;
+
+            var code = JsonPick.Str(row, "vendorCode", "code");
+            var name = JsonPick.Str(row, "vendorName", "name");
+
+            if (needle.Length == 0 || Has(code, needle) || Has(name, needle) || Has(needle, name))
+                found.Add(new VendorFacts(id.Value, code, name));
+        }
+
+        return found.Take(10).ToList();
+
+        static bool Has(string? haystack, string? needle) =>
+            !string.IsNullOrWhiteSpace(haystack) && !string.IsNullOrWhiteSpace(needle) &&
+            haystack.Contains(needle.Trim(), StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>Purchase orders of one vendor (first page of up to 200). Rows of other vendors are dropped in case the filter is ignored.</summary>
+    public async Task<IReadOnlyList<PoFacts>> GetPurchaseOrdersByVendorAsync(int vendorId, CancellationToken ct)
+    {
+        var map = options.Value.PoFields;
+        var url = options.Value.CoreApiEndpoints.PurchaseOrdersByVendor
+            .Replace("{vendorId}", vendorId.ToString(CultureInfo.InvariantCulture));
+
+        var data = await GetDataAsync(url, allowNotFound: true, ct);
+        if (data is null) return [];
+
+        var list = new List<PoFacts>();
+        foreach (var row in JsonPick.Rows(data.Value))
+        {
+            var rowVendor = JsonPick.Int(row, map.VendorId);
+            if (rowVendor is not null && rowVendor != vendorId) continue;
+
+            list.Add(new PoFacts
+            {
+                PoNumber = JsonPick.Str(row, map.PoNumber)?.Trim() ?? "",
+                Id = JsonPick.Int(row, map.Id),
+                VendorId = rowVendor ?? vendorId,
+                Status = JsonPick.Str(row, map.Status),
+                PoDate = JsonPick.Date(row, map.PoDate),
+                Amount = JsonPick.Dec(row, map.Amount),
+                Currency = JsonPick.Str(row, map.Currency)
+            });
+        }
+        return list;
     }
 
     private async Task<JsonElement?> GetDataAsync(string url, bool allowNotFound, CancellationToken ct)
