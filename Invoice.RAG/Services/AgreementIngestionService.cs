@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using Invoice.RAG.Configuration;
+using Invoice.RAG.Documents;
 using Invoice.RAG.Models;
 using Invoice.RAG.Ollama;
 using Invoice.RAG.Pdf;
@@ -27,16 +28,17 @@ public sealed class AgreementIngestionService(
         if (file.Length > o.MaxUploadBytes) throw new RagException(413, $"The file is larger than {o.MaxUploadBytes / (1024 * 1024)} MB.");
 
         var fileName = Path.GetFileName(file.FileName);
-        if (!Path.GetExtension(fileName).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
-            throw new RagException(400, "Only PDF files are accepted.");
+        var extension = Path.GetExtension(fileName).ToLowerInvariant();
+        if (!DocumentTextExtractor.IsSupported(extension))
+            throw new RagException(400, "Only PDF (.pdf) and Word (.docx) files are accepted.");
 
         await using var buffer = new MemoryStream();
         await file.CopyToAsync(buffer, ct);
         var bytes = buffer.ToArray();
 
-        // Do not trust the extension: a real PDF starts with "%PDF-".
-        if (bytes.Length < 5 || bytes[0] != '%' || bytes[1] != 'P' || bytes[2] != 'D' || bytes[3] != 'F' || bytes[4] != '-')
-            throw new RagException(400, "The file is not a valid PDF.");
+        // Do not trust the extension: check the file signature too.
+        if (!DocumentTextExtractor.HasValidSignature(bytes, extension))
+            throw new RagException(400, $"The file is not a valid {(extension == ".pdf" ? "PDF" : "Word (.docx)")} document.");
 
         // The vendor must exist in the business system (and the caller must be allowed to read it).
         var vendor = await coreApi.GetVendorAsync(vendorId, ct)
@@ -45,21 +47,24 @@ public sealed class AgreementIngestionService(
         var sha = Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant();
         var existing = await store.FindByHashAsync(vendorId, sha, ct);
         if (existing is not null)
-            throw new RagException(409, $"This PDF is already uploaded for this vendor (agreement {existing.Id}).");
+            throw new RagException(409, $"This document is already uploaded for this vendor (agreement {existing.Id}).");
 
         IReadOnlyList<PageText> pages;
         try
         {
-            pages = PdfTextExtractor.Extract(new MemoryStream(bytes));
+            pages = DocumentTextExtractor.Extract(new MemoryStream(bytes), extension);
         }
         catch (Exception ex)
         {
-            logger.LogWarning(ex, "PDF could not be read");
-            throw new RagException(422, "The PDF could not be read (it may be corrupt or password-protected).");
+            logger.LogWarning(ex, "Document could not be read");
+            throw new RagException(422, "The document could not be read (it may be corrupt or password-protected).");
         }
 
-        if (pages.Sum(p => p.Text.Length) < 200)
+        var totalChars = pages.Sum(p => p.Text.Length);
+        if (totalChars < 200)
             throw new RagException(422, "No extractable text was found. Scanned PDFs need OCR before upload.");
+        if (totalChars > 2_000_000)
+            throw new RagException(422, "The document is too large to index (more than about 2 million characters).");
 
         var chunks = new TextChunker(o.ChunkSize, o.ChunkOverlap).Chunk(pages);
         if (chunks.Count == 0)
@@ -83,10 +88,10 @@ public sealed class AgreementIngestionService(
             Embedding = VectorMath.Normalize(vectors[i])
         }).ToList();
 
-        // Keep the original PDF (named by a random id, never by the uploaded name).
+        // Keep the original file (named by a random id, never by the uploaded name).
         var folder = Path.GetFullPath(o.StoragePath);
         Directory.CreateDirectory(folder);
-        var storedPath = Path.Combine(folder, $"{Guid.NewGuid():N}.pdf");
+        var storedPath = Path.Combine(folder, $"{Guid.NewGuid():N}{extension}");
         await File.WriteAllBytesAsync(storedPath, bytes, ct);
 
         var doc = new AgreementDocument

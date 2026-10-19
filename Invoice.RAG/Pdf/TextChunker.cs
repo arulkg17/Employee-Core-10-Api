@@ -1,6 +1,7 @@
 
 using System.Text;
 using System.Text.RegularExpressions;
+using Invoice.RAG.Documents;
 
 namespace Invoice.RAG.Pdf;
 
@@ -39,13 +40,19 @@ public sealed class TextChunker(int chunkSize, int overlap)
             {
                 var line = raw.Trim();
 
+                // Word headings arrive pre-marked by DocxTextExtractor.
+                var marked = line.StartsWith(DocxTextExtractor.HeadingMarker, StringComparison.Ordinal);
+                if (marked)
+                    line = line[DocxTextExtractor.HeadingMarker.Length..].Trim();
+
                 if (line.Length == 0)
                     continue;
 
                 var isHeading =
-                    line.Length <= 100 &&
-                    !line.EndsWith('.') &&
-                    HeadingRegex.IsMatch(line);
+                    marked ||
+                    (line.Length <= 100 &&
+                     !line.EndsWith('.') &&
+                     HeadingRegex.IsMatch(line));
 
                 if (isHeading)
                 {
@@ -58,7 +65,7 @@ public sealed class TextChunker(int chunkSize, int overlap)
                     // Do not carry overlap from one section into another.
                     buffer.Clear();
 
-                    section = line;
+                    section = line.Length > 200 ? line[..200] : line;   // Section column is NVARCHAR(200)
                     buffer.Append(line).Append('\n');
                     hasFreshText = true;
                     continue;

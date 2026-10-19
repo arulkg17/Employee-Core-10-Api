@@ -21,6 +21,31 @@ public sealed class RagOptions
 
     public OllamaOptions Ollama { get; set; } = new();
     public PoFieldMap PoFields { get; set; } = new();
+    public CoreApiEndpoints CoreApiEndpoints { get; set; } = new();
+    public AgentOptions Agent { get; set; } = new();
+}
+
+/// <summary>Limits for the tool-calling agent (POST api/v1/agent/ask).</summary>
+public sealed class AgentOptions
+{
+    /// <summary>Model round trips per request (each one may call several tools).</summary>
+    public int MaxSteps { get; set; } = 6;
+    public int MaxToolCallsPerStep { get; set; } = 6;
+    public int MaxQuestions { get; set; } = 8;
+    /// <summary>One tool result is cut at this size.</summary>
+    public int MaxToolResultChars { get; set; } = 6000;
+    /// <summary>All tool results of one request together. Keep it well below NumCtx (about 4 chars per token).</summary>
+    public int MaxTotalToolChars { get; set; } = 14000;
+}
+
+/// <summary>
+/// CoreAPI routes used by the agent tools. Check them against your Swagger and adjust in appsettings
+/// (Rag:CoreApiEndpoints). {vendorId} is replaced by the vendor id.
+/// </summary>
+public sealed class CoreApiEndpoints
+{
+    public string VendorList { get; set; } = "api/v1/Vendor/GetAllPaged?pageNumber=1&pageSize=200";
+    public string PurchaseOrdersByVendor { get; set; } = "api/v1/PurchaseOrder/GetAllPaged?VendorId={vendorId}&pageNumber=1&pageSize=200";
 }
 
 public sealed class OllamaOptions

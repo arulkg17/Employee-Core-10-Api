@@ -1,0 +1,44 @@
+@rag = http://localhost:5070
+# Paste a fresh token from the CoreAPI login: raw value only, no quotes, no "Bearer".
+@token = PASTE_TOKEN_HERE
+
+### A. Upload a Word agreement (same endpoint as PDF; .docx is accepted now)
+POST {{rag}}/api/v1/vendor-agreements
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=----RagBoundary
+
+------RagBoundary
+Content-Disposition: form-data; name="vendorId"
+
+1
+------RagBoundary
+Content-Disposition: form-data; name="title"
+
+Supply agreement 2026 (Word)
+------RagBoundary
+Content-Disposition: form-data; name="file"; filename="agreement.docx"
+Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+
+< C:\path\to\agreement.docx
+------RagBoundary--
+
+### B. Several questions as a list (structured + unstructured mixed)
+POST {{rag}}/api/v1/agent/ask
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "questions": [
+    "What are the payment terms of VEND004?",
+    "How many purchase orders does VEND004 have and what is their total value?",
+    "Which vendors have Net 45 payment terms?"
+  ]
+}
+
+### C. One message containing two questions
+POST {{rag}}/api/v1/agent/ask
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "question": "What is the warranty period for Summit Technology Services and when does its agreement end?" }
+# For more info on HTTP files go to https://aka.ms/vs/httpfile

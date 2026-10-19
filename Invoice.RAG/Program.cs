@@ -1,4 +1,5 @@
 using System.Text;
+using Invoice.RAG.Agent;
 using Invoice.RAG.Configuration;
 using Invoice.RAG.Models;
 using Invoice.RAG.Ollama;
@@ -110,6 +111,8 @@ builder.Services.AddScoped<Retriever>();
 builder.Services.AddScoped<AgreementIngestionService>();
 builder.Services.AddScoped<AgreementTermsService>();
 builder.Services.AddScoped<RagAnswerService>();
+builder.Services.AddScoped<AgentToolbox>();   // per request: keeps the numbered citations of one question
+builder.Services.AddScoped<AgentService>();
 
 //==================================
 //  Swagger Configuration

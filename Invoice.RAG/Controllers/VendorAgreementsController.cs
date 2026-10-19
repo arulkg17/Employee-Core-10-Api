@@ -1,3 +1,4 @@
+using Invoice.RAG.Documents;
 using Invoice.RAG.Models;
 using Invoice.RAG.Retrieval;
 using Invoice.RAG.Services;
@@ -42,7 +43,7 @@ public class VendorAgreementsController(
             : Ok(new ApiResult<AgreementInfo>(true, "Agreement retrieved.", AgreementInfo.From(doc)));
     }
 
-    // GET api/v1/vendor-agreements/3/file   (original PDF, for "open the source" links in the UI)
+    // GET api/v1/vendor-agreements/3/file   (original PDF or Word file, for "open the source" links in the UI)
     [HttpGet("{id:int}/file")]
     public async Task<IActionResult> Download(int id, CancellationToken ct)
     {
@@ -50,7 +51,7 @@ public class VendorAgreementsController(
         if (doc is null || !System.IO.File.Exists(doc.StoredPath))
             return NotFound(new ApiResult<object>(false, "Agreement file not found."));
 
-        return PhysicalFile(doc.StoredPath, "application/pdf", doc.FileName);
+        return PhysicalFile(doc.StoredPath, DocumentTextExtractor.ContentTypeFor(doc.StoredPath), doc.FileName);
     }
 
     // DELETE api/v1/vendor-agreements/3
@@ -64,7 +65,14 @@ public class VendorAgreementsController(
     // POST api/v1/vendor-agreements/3/extract-terms
     [HttpPost("{id:int}/extract-terms")]
     public async Task<IActionResult> ExtractTerms(int id, CancellationToken ct)
-        => Ok(new ApiResult<StoredTermsDto>(true, "Terms extracted. Please review them.", await terms.ExtractAsync(id, ct)));
+    {
+        var doc = await store.GetAsync(id, ct);
+        if (doc is null)
+            return NotFound(new ApiResult<object>(false, "Agreement not found."));
+
+        var extracted = await terms.ExtractAsync(id, ct);
+        return Ok(new ApiResult<StoredTermsDto>(true, "Terms extracted. Please review them.", extracted));
+    }
 
     // GET api/v1/vendor-agreements/3/terms
     [HttpGet("{id:int}/terms")]
