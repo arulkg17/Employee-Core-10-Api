@@ -22,7 +22,7 @@ public sealed class SearchRequest
 }
 
 public sealed record SearchHit(
-    int AgreementId, string AgreementTitle, int Page, string? Section, double Score, string Text);
+    int AgreementId, int VendorId, string AgreementTitle, int Page, string? Section, double Score, string Text);
 
 public sealed class AskResponse
 {

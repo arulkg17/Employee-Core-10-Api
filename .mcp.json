@@ -12,7 +12,7 @@
       "type": "http",
       "url": "http://localhost:3001/mcp",
       "headers": {
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyIiwidW5pcXVlX25hbWUiOiJhZG1pbjEiLCJlbWFpbCI6ImFydWxrZ0BnbWFpbC5jb20iLCJnaXZlbl9uYW1lIjoiQXJ1bCIsImZhbWlseV9uYW1lIjoiS2FsaXZhcmF0aGFuIiwiZGlzcGxheU5hbWUiOiJBcnVsIEthbGl2YXJhdGhhbiIsIm5iZiI6MTc5MjMwOTk3NiwiZXhwIjoxNzkyNDE3OTc2LCJpYXQiOjE3OTIzMDk5NzYsImlzcyI6Ikludm9pY2UuQXBpIiwiYXVkIjoiSW52b2ljZS5BcGkifQ.rw1W6f1KWhWAifxJCJZaXtxfTTkVw-xUsLz9Aw9mek0"
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyIiwidW5pcXVlX25hbWUiOiJhZG1pbjEiLCJlbWFpbCI6ImFydWxrZ0BnbWFpbC5jb20iLCJnaXZlbl9uYW1lIjoiQXJ1bCIsImZhbWlseV9uYW1lIjoiS2FsaXZhcmF0aGFuIiwiZGlzcGxheU5hbWUiOiJBcnVsIEthbGl2YXJhdGhhbiIsIm5iZiI6MTc5MjQwMjQ4NiwiZXhwIjoxNzkyNTEwNDg2LCJpYXQiOjE3OTI0MDI0ODYsImlzcyI6Ikludm9pY2UuQXBpIiwiYXVkIjoiSW52b2ljZS5BcGkifQ.Gx8TdCYZtxDtvEzczwvTBzYga1sAV8O_6lqBoR9hCvQ"
       }
     }
   }

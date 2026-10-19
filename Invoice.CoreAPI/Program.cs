@@ -291,6 +291,15 @@ builder.Services.AddHttpClient("InvoiceApi", client =>
 });
 
 // ============================================================
+//  Vendor AI Service
+// ============================================================
+builder.Services.AddVendorAi(o =>
+    o.McpEndpoint = builder.Configuration["Ims:McpEndpoint"] ?? "http://localhost:3001/");
+// Semantic Kernel + local Ollama chat model registration removed: the project
+// does not include the Semantic Kernel extension methods by default. If you
+// want to enable the kernel and Ollama chat completion, add the appropriate
+// Semantic Kernel NuGet packages and reintroduce the calls here.
+// ============================================================
 // Build Application
 // ============================================================
 
