@@ -17,6 +17,7 @@
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="10.2.3" />
+    <!-- No Semantic Kernel packages here: AI features are optional and disabled by default. -->
   </ItemGroup>
 
   <ItemGroup>

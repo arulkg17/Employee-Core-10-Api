@@ -29,21 +29,20 @@ public sealed class RagAnswerService(
         Keep the answer short and plain. This is information, not legal advice.
         """;
 
-    /// <summary>Retrieval only. No minimum score, so you can see how scores behave while tuning.</summary>
+    /// <summary>Retrieval only. No minimum score, so you can see how scores behave while tuning. vendorId and agreementId are optional.</summary>
     public async Task<IReadOnlyList<SearchHit>> SearchAsync(SearchRequest request, CancellationToken ct)
     {
         var query = request.Query.Trim();
         if (query.Length == 0) throw new RagException(400, "Query is required.");
         if (query.Length > 1000) throw new RagException(400, "Query is too long (max 1000 characters).");
-        if (request.VendorId is null && request.AgreementId is null)
-            throw new RagException(400, "Provide vendorId or agreementId so the right agreements are searched.");
-
+        // vendorId / agreementId are optional: without them every vendor's agreements are searched
+        // (for questions such as "which vendors have net 45 payment terms").
         var topK = Math.Clamp(request.TopK ?? options.Value.TopK, 1, 20);
         var hits = await retriever.SearchAsync([query], request.VendorId, request.AgreementId, topK, 0, ct);
 
         return hits
             .Take(topK)
-            .Select(h => new SearchHit(h.Chunk.AgreementId, h.AgreementTitle, h.Chunk.Page, h.Chunk.Section,
+            .Select(h => new SearchHit(h.Chunk.AgreementId, h.VendorId, h.AgreementTitle, h.Chunk.Page, h.Chunk.Section,
                 Math.Round(h.Score, 3), h.Chunk.Content))
             .ToList();
     }

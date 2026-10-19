@@ -1,0 +1,17 @@
+{
+  "_note": "DEFAULTS for the sample company. Finance must replace these with the real policy values before production. Amounts are in the company base currency.",
+  "approvalLimits": [
+    { "upTo": 5000, "approver": "Department manager" },
+    { "upTo": 25000, "approver": "Finance manager" },
+    { "upTo": null, "approver": "CFO" }
+  ],
+  "match": {
+    "quantityTolerancePercent": 5.0,
+    "priceTolerancePercent": 2.0,
+    "amountToleranceAbsolute": 50.0
+  },
+  "overReceiptTolerancePercent": 5.0,
+  "defaultPaymentTermsDays": 30,
+  "paymentRunDay": "Friday",
+  "secondApprovalAbove": 25000
+}

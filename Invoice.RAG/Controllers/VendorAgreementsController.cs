@@ -65,14 +65,7 @@ public class VendorAgreementsController(
     // POST api/v1/vendor-agreements/3/extract-terms
     [HttpPost("{id:int}/extract-terms")]
     public async Task<IActionResult> ExtractTerms(int id, CancellationToken ct)
-    {
-        var doc = await store.GetAsync(id, ct);
-        if (doc is null)
-            return NotFound(new ApiResult<object>(false, "Agreement not found."));
-
-        var extracted = await terms.ExtractAsync(id, ct);
-        return Ok(new ApiResult<StoredTermsDto>(true, "Terms extracted. Please review them.", extracted));
-    }
+        => Ok(new ApiResult<StoredTermsDto>(true, "Terms extracted. Please review them.", await terms.ExtractAsync(id, ct)));
 
     // GET api/v1/vendor-agreements/3/terms
     [HttpGet("{id:int}/terms")]

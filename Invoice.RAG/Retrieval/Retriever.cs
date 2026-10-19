@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace Invoice.RAG.Retrieval;
 
-public sealed record RetrievedChunk(AgreementChunk Chunk, string AgreementTitle, double Score);
+public sealed record RetrievedChunk(AgreementChunk Chunk, string AgreementTitle, double Score, int VendorId = 0);
 
 public sealed class Retriever(IAgreementStore store, OllamaClient ollama, IOptions<RagOptions> options, ILogger<Retriever> logger)
 {
@@ -45,12 +45,17 @@ public sealed class Retriever(IAgreementStore store, OllamaClient ollama, IOptio
         }
 
         var byId = usable.ToDictionary(c => c.Id);
-        var titles = new Dictionary<int, string>();
+        var docs = new Dictionary<int, AgreementDocument?>();
         foreach (var agId in best.Keys.Select(k => byId[k].AgreementId).Distinct())
-            titles[agId] = (await store.GetAsync(agId, ct))?.Title ?? $"Agreement {agId}";
+            docs[agId] = await store.GetAsync(agId, ct);
 
         return best
-            .Select(kv => new RetrievedChunk(byId[kv.Key], titles[byId[kv.Key].AgreementId], kv.Value))
+            .Select(kv =>
+            {
+                var chunk = byId[kv.Key];
+                var doc = docs[chunk.AgreementId];
+                return new RetrievedChunk(chunk, doc?.Title ?? $"Agreement {chunk.AgreementId}", kv.Value, doc?.VendorId ?? 0);
+            })
             .OrderByDescending(r => r.Score)
             .ToList();
     }

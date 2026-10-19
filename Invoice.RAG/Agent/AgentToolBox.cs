@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 using Invoice.RAG.Configuration;
 using Invoice.RAG.Models;
+using Invoice.RAG.Policies;
 using Invoice.RAG.Retrieval;
 using Invoice.RAG.Services;
 using Microsoft.Extensions.Options;
@@ -19,6 +20,7 @@ public sealed class AgentToolbox(
     Retriever retriever,
     IAgreementStore store,
     AgreementTermsService termsService,
+    PolicyIndex policies,
     IOptions<RagOptions> options)
 {
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web)
@@ -67,6 +69,13 @@ public sealed class AgentToolbox(
                 poNumber = Str("The purchase order number."),
                 asOf = Str("Optional date YYYY-MM-DD to calculate for. Default: today.")
             }, ["poNumber"]),
+
+        // ---- company rules (purchase-to-pay skill) ----
+        Tool("search_policies",
+            "Search the company purchase-to-pay rules (purchase order approval, goods receipt, three-way match tolerance, " +
+            "vendor payment terms, discounts, late interest, holds, payment run). Use it for 'what is our rule/policy for...' " +
+            "and to decide if an invoice can be paid. A vendor agreement overrides these rules where it states something different.",
+            new { query = Str("The rule to look for, in plain words."), topK = Int("Optional. Passages, 1 to 8. Default 4.") }, ["query"]),
 
         // ---- unstructured (agreement documents) ----
         Tool("list_vendor_agreements",
@@ -124,6 +133,7 @@ public sealed class AgentToolbox(
                 "list_vendor_agreements" => await ListAgreementsAsync(args, ct),
                 "get_agreement_terms" => await GetTermsAsync(args, ct),
                 "search_vendor_agreements" => await SearchAgreementsAsync(args, ct),
+                "search_policies" => await SearchPoliciesAsync(args, ct),
                 _ => new { error = $"Unknown tool '{name}'. Use one of the listed tools." }
             };
         }
@@ -298,6 +308,17 @@ public sealed class AgentToolbox(
         }
 
         return new { excerpts };
+    }
+
+    private async Task<object> SearchPoliciesAsync(JsonElement args, CancellationToken ct)
+    {
+        var query = RequiredText(args, "query", "query");
+        var topK = Math.Clamp(JsonPick.Int(args, "topK") ?? 4, 1, 8);
+        var hits = await policies.SearchAsync(query, topK, ct);
+
+        return hits.Count == 0
+            ? (object)new { passages = Array.Empty<object>(), note = "No matching company rule was found." }
+            : new { passages = hits.Select(h => new { rule = h.Skill + "/" + h.File, section = h.Section, score = h.Score, text = h.Text }) };
     }
 
     // ------------------------------------------------------------------ helpers

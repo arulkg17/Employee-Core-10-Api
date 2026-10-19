@@ -113,7 +113,8 @@ builder.Services.AddScoped<AgreementTermsService>();
 builder.Services.AddScoped<RagAnswerService>();
 builder.Services.AddScoped<AgentToolbox>();   // per request: keeps the numbered citations of one question
 builder.Services.AddScoped<AgentService>();
-
+// ===== Invoice.RAG / Program.cs : add next to the other AddScoped lines =====
+builder.Services.AddScoped<Invoice.RAG.Policies.PolicyIndex>();
 //==================================
 //  Swagger Configuration
 //===============================================
