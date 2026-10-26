@@ -1,0 +1,135 @@
+# IMS vendor + purchase-to-pay: Visual Studio variant with literal URLs and token
+# Use this file in Visual Studio's HTTP runner (variables expanded inline)
+
+# Core and RAG URLs (literal)
+# core = http://localhost:5063
+# rag  = http://localhost:5070
+# ai   = http://localhost:5063
+
+# Raw JWT inserted below. Replace with a fresh token after login when it expires.
+# token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyIiwidW5pcXVlX25hbWUiOiJhZG1pbjEiLCJlbWFpbCI6ImFydWxrZ0BnbWFpbC5jb20iLCJnaXZlbl9uYW1lIjoiQXJ1bCIsImZhbWlseV9uYW1lIjoiS2FsaXZhcmF0aGFuIiwiZGlzcGxheU5hbWUiOiJBcnVsIEthbGl2YXJhdGhhbiIsIm5iZiI6MTc5MjQzMjkxNywiZXhwIjoxNzkyNjQ4OTE3LCJpYXQiOjE3OTI0MzI5MTcsImlzcyI6Ikludm9pY2UuQXBpIiwiYXVkIjoiSW52b2ljZS5BcGkifQ.iKM0q6JxkZB_XEYzcUFOobnm80z0aoO0z1gGgJ7ilPQ
+
+# Numeric vendor Ids (literal)
+# v001 = 1
+# v002 = 2
+# v004 = 4
+# v008 = 8
+# agr004 = 1
+
+# =====================================================================================================
+#  0. SETUP
+# =====================================================================================================
+
+### 0.1 Login: copy the token from the response into this file (replace the token above)
+# Match the body to your LoginRequest DTO (see Swagger).
+POST http://localhost:5063/api/v1/Login
+Content-Type: application/json
+
+{ "userName": "admin1", "password": "admin1@123" }
+
+### 0.2 Health: RAG API can reach Ollama and CoreAPI (if you have a health endpoint; otherwise skip)
+GET http://localhost:5070/health
+
+### 0.3 Extract payment terms for an agreement (needed once per agreement for get_agreement_terms and the PO payment summary)
+# Check the route in Swagger if you get 404.
+POST http://localhost:5070/api/v1/vendor-agreements/1/extract-terms
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyIiwidW5pcXVlX25hbWUiOiJhZG1pbjEiLCJlbWFpbCI6ImFydWxrZ0BnbWFpbC5jb20iLCJnaXZlbl9uYW1lIjoiQXJ1bCIsImZhbWlseV9uYW1lIjoiS2FsaXZhcmF0aGFuIiwiZGlzcGxheU5hbWUiOiJBcnVsIEthbGl2YXJhdGhhbiIsIm5iZiI6MTc5MjQzNjA2NCwiZXhwIjoxNzkyNjUyMDY0LCJpYXQiOjE3OTI0MzYwNjQsImlzcyI6Ikludm9pY2UuQXBpIiwiYXVkIjoiSW52b2ljZS5BcGkifQ.87faS8-pcuUqFRWpMrTdUah6WcNmInbpJR6Ppz2ZNt4
+
+
+# =====================================================================================================
+#  1. STRUCTURED  (Accounts database through CoreAPI; tools: find_vendor, get_vendor,
+#                  get_vendor_purchase_orders, get_purchase_order)
+# =====================================================================================================
+
+### 1.1 GROUND TRUTH: vendor list (note each vendor's numeric id and code)
+GET http://localhost:5063/api/v1/Vendor/GetAllPaged?pageNumber=1&pageSize=200
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyIiwidW5pcXVlX25hbWUiOiJhZG1pbjEiLCJlbWFpbCI6ImFydWxrZ0BnbWFpbC5jb20iLCJnaXZlbl9uYW1lIjoiQXJ1bCIsImZhbWlseV9uYW1lIjoiS2FsaXZhcmF0aGFuIiwiZGlzcGxheU5hbWUiOiJBcnVsIEthbGl2YXJhdGhhbiIsIm5iZiI6MTc5MjQzNjA2NCwiZXhwIjoxNzkyNjUyMDY0LCJpYXQiOjE3OTI0MzYwNjQsImlzcyI6Ikludm9pY2UuQXBpIiwiYXVkIjoiSW52b2ljZS5BcGkifQ.87faS8-pcuUqFRWpMrTdUah6WcNmInbpJR6Ppz2ZNt4
+
+### 1.2 GROUND TRUTH: purchase orders of one vendor (count them and add the amounts yourself)
+GET http://localhost:5063/api/v1/PurchaseOrder/GetAllPaged?VendorId=4&pageNumber=1&pageSize=200
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyIiwidW5pcXVlX25hbWUiOiJhZG1pbjEiLCJlbWFpbCI6ImFydWxrZ0BnbWFpbC5jb20iLCJnaXZlbl9uYW1lIjoiQXJ1bCIsImZhbWlseV9uYW1lIjoiS2FsaXZhcmF0aGFuIiwiZGlzcGxheU5hbWUiOiJBcnVsIEthbGl2YXJhdGhhbiIsIm5iZiI6MTc5MjQzNjA2NCwiZXhwIjoxNzkyNjUyMDY0LCJpYXQiOjE3OTI0MzYwNjQsImlzcyI6Ikludm9pY2UuQXBpIiwiYXVkIjoiSW52b2ljZS5BcGkifQ.87faS8-pcuUqFRWpMrTdUah6WcNmInbpJR6Ppz2ZNt4
+
+### 1.3 GROUND TRUTH: one purchase order by number
+GET http://localhost:5063/api/v1/PurchaseOrder/GetAllPaged?PONumber=PO-0001&pageNumber=1&pageSize=20
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyIiwidW5pcXVlX25hbWUiOiJhZG1pbjEiLCJlbWFpbCI6ImFydWxrZ0BnbWFpbC5jb20iLCJnaXZlbl9uYW1lIjoiQXJ1bCIsImZhbWlseV9uYW1lIjoiS2FsaXZhcmF0aGFuIiwiZGlzcGxheU5hbWUiOiJBcnVsIEthbGl2YXJhdGhhbiIsIm5iZiI6MTc5MjQzNjA2NCwiZXhwIjoxNzkyNjUyMDY0LCJpYXQiOjE3OTI0MzYwNjQsImlzcyI6Ikludm9pY2UuQXBpIiwiYXVkIjoiSW52b2ljZS5BcGkifQ.87faS8-pcuUqFRWpMrTdUah6WcNmInbpJR6Ppz2ZNt4
+
+### 1.4 AI: how many purchase orders and what total value
+# Expect: toolCalls = find_vendor, get_vendor_purchase_orders. Count and total EQUAL 1.2 (the model must not do the maths).
+POST http://localhost:5063/api/v1/ai/vendor/ask
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyIiwidW5pcXVlX25hbWUiOiJhZG1pbjEiLCJlbWFpbCI6ImFydWxrZ0BnbWFpbC5jb20iLCJnaXZlbl9uYW1lIjoiQXJ1bCIsImZhbWlseV9uYW1lIjoiS2FsaXZhcmF0aGFuIiwiZGlzcGxheU5hbWUiOiJBcnVsIEthbGl2YXJhdGhhbiIsIm5iZiI6MTc5MjQzNjA2NCwiZXhwIjoxNzkyNjUyMDY0LCJpYXQiOjE3OTI0MzYwNjQsImlzcyI6Ikludm9pY2UuQXBpIiwiYXVkIjoiSW52b2ljZS5BcGkifQ.87faS8-pcuUqFRWpMrTdUah6WcNmInbpJR6Ppz2ZNt4
+Content-Type: application/json
+
+{ "question": "How many purchase orders does VEND004 have and what is their total value?" }
+
+### 1.5 AI: find a vendor by part of its name
+POST http://localhost:5063/api/v1/ai/vendor/ask
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyIiwidW5pcXVlX25hbWUiOiJhZG1pbjEiLCJlbWFpbCI6ImFydWxrZ0BnbWFpbC5jb20iLCJnaXZlbl9uYW1lIjoiQXJ1bCIsImZhbWlseV9uYW1lIjoiS2FsaXZhcmF0aGFuIiwiZGlzcGxheU5hbWUiOiJBcnVsIEthbGl2YXJhdGhhbiIsIm5iZiI6MTc5MjQzNjA2NCwiZXhwIjoxNzkyNjUyMDY0LCJpYXQiOjE3OTI0MzYwNjQsImlzcyI6Ikludm9pY2UuQXBpIiwiYXVkIjoiSW52b2ljZS5BcGkifQ.87faS8-pcuUqFRWpMrTdUah6WcNmInbpJR6Ppz2ZNt4
+Content-Type: application/json
+
+{ "question": "Which vendor is called Northstar and what is its vendor code?" }
+
+### 1.6 AI: one purchase order
+POST http://localhost:5063/api/v1/ai/vendor/ask
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyIiwidW5pcXVlX25hbWUiOiJhZG1pbjEiLCJlbWFpbCI6ImFydWxrZ0BnbWFpbC5jb20iLCJnaXZlbl9uYW1lIjoiQXJ1bCIsImZhbWlseV9uYW1lIjoiS2FsaXZhcmF0aGFuIiwiZGlzcGxheU5hbWUiOiJBcnVsIEthbGl2YXJhdGhhbiIsIm5iZiI6MTc5MjQzMjkxNywiZXhwIjoxNzkyNjQ4OTE3LCJpYXQiOjE3OTI0MzI5MTcsImlzcyI6Ikludm9pY2UuQXBpIiwiYXVkIjoiSW52b2ljZS5BcGkifQ.iKM0q6JxkZB_XEYzcUFOobnm80z0aoO0z1gGgJ7ilPQ
+Content-Type: application/json
+
+{ "question": "What is the status and amount of PO-0001?" }
+
+### 1.7 AI: several structured questions in one request
+POST http://localhost:5063/api/v1/ai/vendor/ask
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyIiwidW5pcXVlX25hbWUiOiJhZG1pbjEiLCJlbWFpbCI6ImFydWxrZ0BnbWFpbC5jb20iLCJnaXZlbl9uYW1lIjoiQXJ1bCIsImZhbWlseV9uYW1lIjoiS2FsaXZhcmF0aGFuIiwiZGlzcGxheU5hbWUiOiJBcnVsIEthbGl2YXJhdGhhbiIsIm5iZiI6MTc5MjQzMjkxNywiZXhwIjoxNzkyNjQ4OTE3LCJpYXQiOjE3OTI0MzI5MTcsImlzcyI6Ikludm9pY2UuQXBpIiwiYXVkIjoiSW52b2ljZS5BcGkifQ.iKM0q6JxkZB_XEYzcUFOobnm80z0aoO0z1gGgJ7ilPQ
+Content-Type: application/json
+
+{
+  "questions": [
+    "How many purchase orders does VEND001 have?",
+    "How many purchase orders does VEND004 have?",
+    "What is the status of PO-0001?"
+  ]
+}
+
+### 1.8 AI negative: vendor that does not exist
+POST http://localhost:5063/api/v1/ai/vendor/ask
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyIiwidW5pcXVlX25hbWUiOiJhZG1pbjEiLCJlbWFpbCI6ImFydWxrZ0BnbWFpbC5jb20iLCJnaXZlbl9uYW1lIjoiQXJ1bCIsImZhbWlseV9uYW1lIjoiS2FsaXZhcmF0aGFuIiwiZGlzcGxheU5hbWUiOiJBcnVsIEthbGl2YXJhdGhhbiIsIm5iZiI6MTc5MjQzNjA2NCwiZXhwIjoxNzkyNjUyMDY0LCJpYXQiOjE3OTI0MzYwNjQsImlzcyI6Ikludm9pY2UuQXBpIiwiYXVkIjoiSW52b2ljZS5BcGkifQ.87faS8-pcuUqFRWpMrTdUah6WcNmInbpJR6Ppz2ZNt4
+Content-Type: application/json
+
+{ "question": "How many purchase orders does VEND999 have?" }
+
+
+# =====================================================================================================
+#  2. UNSTRUCTURED  (agreement text in the InvoiceRag database through Invoice.RAG;
+#                    tools: search_vendor_agreements, list_vendor_agreements, get_agreement_terms)
+#  Sample data: PDF VEND001, 003, 004, 005, 006 and Word VEND002, 007, 008, 009, 010 uploaded to their vendors.
+# =====================================================================================================
+
+### 2.1 GROUND TRUTH: agreements uploaded for a vendor (note the agreementId)
+GET http://localhost:5070/api/v1/vendor-agreements?vendorId=4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyIiwidW5pcXVlX25hbWUiOiJhZG1pbjEiLCJlbWFpbCI6ImFydWxrZ0BnbWFpbC5jb20iLCJnaXZlbl9uYW1lIjoiQXJ1bCIsImZhbWlseV9uYW1lIjoiS2FsaXZhcmF0aGFuIiwiZGlzcGxheU5hbWUiOiJBcnVsIEthbGl2YXJhdGhhbiIsIm5iZiI6MTc5MjQzMjkxNywiZXhwIjoxNzkyNjQ4OTE3LCJpYXQiOjE3OTI0MzI5MTcsImlzcyI6Ikludm9pY2UuQXBpIiwiYXVkIjoiSW52b2ljZS5BcGkifQ.iKM0q6JxkZB_XEYzcUFOobnm80z0aoO0z1gGgJ7ilPQ
+
+### 2.2 GROUND TRUTH: search across ALL vendors (no vendorId)
+# Expect: the top hits come from VEND003 and VEND005 (Net 45).
+POST http://localhost:5070/api/v1/rag/search
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyIiwidW5pcXVlX25hbWUiOiJhZG1pbjEiLCJlbWFpbCI6ImFydWxrZ0BnbWFpbC5jb20iLCJnaXZlbl9uYW1lIjoiQXJ1bCIsImZhbWlseV9uYW1lIjoiS2FsaXZhcmF0aGFuIiwiZGlzcGxheU5hbWUiOiJBcnVsIEthbGl2YXJhdGhhbiIsIm5iZiI6MTc5MjQzMjkxNywiZXhwIjoxNzkyNjQ4OTE3LCJpYXQiOjE3OTI0MzI5MTcsImlzcyI6Ikludm9pY2UuQXBpIiwiYXVkIjoiSW52b2ljZS5BcGkifQ.iKM0q6JxkZB_XEYzcUFOobnm80z0aoO0z1gGgJ7ilPQ
+Content-Type: application/json
+
+{ "query": "net 45 payment terms", "topK": 8 }
+
+### 2.3 GROUND TRUTH: stored terms of one agreement
+GET http://localhost:5070/api/v1/vendor-agreements/1/terms
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyIiwidW5pcXVlX25hbWUiOiJhZG1pbjEiLCJlbWFpbCI6ImFydWxrZ0BnbWFpbC5jb20iLCJnaXZlbl9uYW1lIjoiQXJ1bCIsImZhbWlseV9uYW1lIjoiS2FsaXZhcmF0aGFuIiwiZGlzcGxheU5hbWUiOiJBcnVsIEthbGl2YXJhdGhhbiIsIm5iZiI6MTc5MjQzMjkxNywiZXhwIjoxNzkyNjQ4OTE3LCJpYXQiOjE3OTI0MzI5MTcsImlzcyI6Ikludm9pY2UuQXBpIiwiYXVkIjoiSW52b2ljZS5BcGkifQ.iKM0q6JxkZB_XEYzcUFOobnm80z0aoO0z1gGgJ7ilPQ
+
+### 2.4 AI: payment terms of a PDF vendor
+# Expect: Net 30 days after invoice approval (VEND004). toolCalls = find_vendor, search_vendor_agreements. A page number is cited.
+POST http://localhost:5063/api/v1/ai/vendor/ask
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyIiwidW5pcXVlX25hbWUiOiJhZG1pbjEiLCJlbWFpbCI6ImFydWxrZ0BnbWFpbC5jb20iLCJnaXZlbl9uYW1lIjoiQXJ1bCIsImZhbWlseV9uYW1lIjoiS2FsaXZhcmF0aGFuIiwiZGlzcGxheU5hbWUiOiJBcnVsIEthbGl2YXJhdGhhbiIsIm5iZiI6MTc5MjQzMjkxNywiZXhwIjoxNzkyNjQ4OTE3LCJpYXQiOjE3OTI0MzI5MTcsImlzcyI6Ikludm9pY2UuQXBpIiwiYXVkIjoiSW52b2ljZS5BcGkifQ.iKM0q6JxkZB_XEYzcUFOobnm80z0aoO0z1gGgJ7ilPQ
+Content-Type: application/json
+
+{ "question": "What are the payment terms for VEND004?" }
+
+### 2.5 AI: which vendors (search without a vendor)
+# Expect: VEND003 and VEND005. NOT VEND001, 004, 006.
+POST http://localhost:5063/api/v1/ai/vendor/ask
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyIiwidW5pcXVlX25hbWUiOiJhZG1pbjEiLCJlbWFpbCI6ImFydWxrZ0BnbWFpbC5jb20iLCJnaXZlbl9uYW1lIjoiQXJ1bCIsImZhbWlseV9uYW1lIjoiS2FsaXZhcmF0aGFuIiwiZGlzcGxheU5hbWUiOiJBcnVsIEthbGl2YXJhdGhhbiIsIm5iZiI6MTc5MjQzMjkxNywiZXhwIjoxNzkyNjQ4OTE3LCJpYXQiOjE3OTI0MzI5MTcsImlzcyI6Ikludm9pY2UuQXBpIiwiYXVkIjoiSW52b2ljZS5BcGkifQ.iKM0q6JxkZB_XEYzcUFOobnm80z0aoO0z1gGgJ7ilPQ
+Content-Type: application/json
+
+{ "question": "Which vendors have Net 45 payment terms?" }
