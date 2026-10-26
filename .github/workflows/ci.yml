@@ -19,6 +19,7 @@ jobs:
     env:
       SA_PASSWORD: 'Your_Strong!Passw0rd'
       TEST_DB_CONNECTION: 'Server=localhost,1433;Database=Accounts_Test;User Id=sa;Password=Your_Strong!Passw0rd;Encrypt=False;TrustServerCertificate=True'
+      INVOICE_RAG_TEST_DB_CONNECTION: 'Server=localhost,1433;Database=InvoiceRag;User Id=sa;Password=Your_Strong!Passw0rd;Encrypt=False;TrustServerCertificate=True'      
 
     services:
       sqlserver:
@@ -115,12 +116,12 @@ jobs:
             -d Accounts_Test \
             -i "Database/CI/01_Initialize_Accounts_Test.sql"
 
-      - name: Verify database initialization
+      - name: Verify Accounts_Test database initialization
         shell: bash
         run: |
           set -euo pipefail
 
-          echo "Checking tables..."
+          echo "Checking Accounts_Test tables..."
 
           sqlcmd -S localhost,1433 \
             -U sa \
@@ -181,6 +182,13 @@ jobs:
             --collect:"XPlat Code Coverage" \
             --logger "trx;LogFileName=Invoice.DAL.Test.trx" \
             --results-directory ./TestResults/DAL
+     
+          dotnet test Invoice.RAG.Test/Invoice.RAG.Test.csproj \
+            --no-build \
+            --configuration Release \
+            --collect:"XPlat Code Coverage" \
+            --logger "trx;LogFileName=Invoice.RAG.Test.trx" \
+            --results-directory ./TestResults/RAG
 
       - name: Generate coverage report
         run: >-
