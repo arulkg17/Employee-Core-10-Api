@@ -11,12 +11,13 @@ namespace Invoice.CoreAPI.Test.Controllers;
 public class ReceiptControllerTests
 {
     private readonly Mock<IReceiptService> _serviceMock = new();
+    private readonly Mock<IDocumentPrintService> _printMock = new();    
     private readonly Mock<ILogger<ReceiptController>> _loggerMock = new();
     private readonly ReceiptController _controller;
 
     public ReceiptControllerTests()
     {
-        _controller = new ReceiptController(_serviceMock.Object, _loggerMock.Object);
+        _controller = new ReceiptController(_serviceMock.Object, _loggerMock.Object, _printMock.Object);
 
         ControllerTestHelpers.SetUser(_controller, "alice");
     }
@@ -118,7 +119,7 @@ public class ReceiptControllerTests
     [Fact]
     public async Task Create_UsesSystemUser_WhenNobodyIsLoggedIn()
     {
-        var anonymous = new ReceiptController(_serviceMock.Object, _loggerMock.Object);
+        var anonymous = new ReceiptController(_serviceMock.Object, _loggerMock.Object, _printMock.Object);
 
         ReceiptDto? sent = null;
         _serviceMock

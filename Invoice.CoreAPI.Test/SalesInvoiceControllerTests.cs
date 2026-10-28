@@ -11,12 +11,13 @@ namespace Invoice.CoreAPI.Test.Controllers;
 public class SalesInvoiceControllerTests
 {
     private readonly Mock<ISalesInvoiceService> _serviceMock = new();
+    private readonly Mock<IDocumentPrintService> _printMock = new();    
     private readonly Mock<ILogger<SalesInvoiceController>> _loggerMock = new();
     private readonly SalesInvoiceController _controller;
 
     public SalesInvoiceControllerTests()
     {
-        _controller = new SalesInvoiceController(_serviceMock.Object, _loggerMock.Object);
+        _controller = new SalesInvoiceController(_serviceMock.Object, _printMock.Object, _loggerMock.Object );
 
         ControllerTestHelpers.SetUser(_controller, "alice");
     }
