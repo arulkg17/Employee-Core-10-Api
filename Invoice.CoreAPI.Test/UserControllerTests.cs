@@ -634,7 +634,7 @@ public class UserControllerTests
     // ============================================================
 
     [Fact]
-    public async Task GetPaged_ReturnsOk_WhenServiceSucceeds()
+    public async Task GetAllPaged_ReturnsOk_WhenServiceSucceeds()
     {
         // Arrange
         var filter = new UserFilterDto();
@@ -672,11 +672,11 @@ public class UserControllerTests
             };
 
         _serviceMock
-            .Setup(x => x.GetPagedAsync(filter))
+            .Setup(x => x.GetAllPagedAsync(filter))
             .ReturnsAsync(response);
 
         // Act
-        var result = await _controller.GetPaged(filter);
+        var result = await _controller.GetAllPaged(filter);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
@@ -684,22 +684,22 @@ public class UserControllerTests
         Assert.Same(response, okResult.Value);
 
         _serviceMock.Verify(
-            x => x.GetPagedAsync(filter),
+            x => x.GetAllPagedAsync(filter),
             Times.Once);
     }
 
     [Fact]
-    public async Task GetPaged_Returns500_WhenServiceThrowsException()
+    public async Task GetAllPaged_Returns500_WhenServiceThrowsException()
     {
         // Arrange
         var filter = new UserFilterDto();
 
         _serviceMock
-            .Setup(x => x.GetPagedAsync(filter))
+            .Setup(x => x.GetAllPagedAsync(filter))
             .ThrowsAsync(new Exception("Database error"));
 
         // Act
-        var result = await _controller.GetPaged(filter);
+        var result = await _controller.GetAllPaged(filter);
 
         // Assert
         var statusResult = Assert.IsType<ObjectResult>(result);
@@ -707,7 +707,7 @@ public class UserControllerTests
         Assert.Equal(500, statusResult.StatusCode);
 
         _serviceMock.Verify(
-            x => x.GetPagedAsync(filter),
+            x => x.GetAllPagedAsync(filter),
             Times.Once);
     }
 

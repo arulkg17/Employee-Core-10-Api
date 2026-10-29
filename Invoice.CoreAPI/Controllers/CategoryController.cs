@@ -324,11 +324,11 @@ public class CategoryController : ControllerBase
                     pageSize);
 
             return Ok(
-                new ApiResponse<IEnumerable<CategoryDto>>
+                new ApiResponse<PagedResultDto<CategoryDto>>
                 {
                     Success = true,
                     Message = "Categories retrieved successfully.",
-                    Data = result.Data,
+                    Data = result,
                     TotalRecords = result.TotalRecords
                 });
         }

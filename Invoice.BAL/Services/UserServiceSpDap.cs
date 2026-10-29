@@ -220,10 +220,10 @@ public class UserServiceSpDap : IUserService
     }
 
     public async Task<ApiResponse<PagedResultDto<UserDto>>>
-     GetPagedAsync(UserFilterDto filter)
+     GetAllPagedAsync(UserFilterDto filter)
     {
         var result =
-            await _repository.GetPagedAsync(filter);
+            await _repository.GetAllPagedAsync(filter);
 
         return new ApiResponse<PagedResultDto<UserDto>>
         {

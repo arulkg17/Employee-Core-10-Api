@@ -198,13 +198,13 @@ public class UserController : ControllerBase
     // ============================================================
     // GET: api/v1/User/GetPaged
     // ============================================================
-    [HttpGet("GetPaged")]
-    public async Task<IActionResult> GetPaged(
+    [HttpGet("GetAllPaged")]
+    public async Task<IActionResult> GetAllPaged(
         [FromQuery] UserFilterDto filter)
     {
         try
         {
-            var response = await _service.GetPagedAsync(filter);
+            var response = await _service.GetAllPagedAsync(filter);
 
             return Ok(response);
         }

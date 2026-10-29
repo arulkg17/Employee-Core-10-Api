@@ -384,7 +384,7 @@ public class UserServiceSpDapTests
     }
 
     [Fact]
-    public async Task GetPagedAsync_ShouldReturnPagedUsers()
+    public async Task GetAllPagedAsync_ShouldReturnPagedUsers()
     {
         var filter = new UserFilterDto
         {
@@ -394,7 +394,7 @@ public class UserServiceSpDapTests
         };
 
         _repositoryMock
-            .Setup(x => x.GetPagedAsync(filter))
+            .Setup(x => x.GetAllPagedAsync(filter))
             .ReturnsAsync(
                 new PagedResultDto<UserEntity>
                 {
@@ -406,7 +406,7 @@ public class UserServiceSpDapTests
                     TotalRecords = 25
                 });
 
-        var result = await _service.GetPagedAsync(filter);
+        var result = await _service.GetAllPagedAsync(filter);
 
         Assert.True(result.Success);
         Assert.NotNull(result.Data);
@@ -420,7 +420,7 @@ public class UserServiceSpDapTests
             result.Data.Data.Count());
 
         _repositoryMock.Verify(
-            x => x.GetPagedAsync(filter),
+            x => x.GetAllPagedAsync(filter),
             Times.Once);
     }
 

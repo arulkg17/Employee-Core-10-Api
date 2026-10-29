@@ -11,7 +11,7 @@ public interface IUserService
         int id,
         UserUpdateDto dto);
     Task<ApiResponse<bool>> DeleteAsync(int id);
-    Task<ApiResponse<PagedResultDto<UserDto>>> GetPagedAsync(
+    Task<ApiResponse<PagedResultDto<UserDto>>> GetAllPagedAsync(
         UserFilterDto filter);
     Task<UserDto?> ValidateUserAsync(
         string userName,

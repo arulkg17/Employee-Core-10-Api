@@ -677,7 +677,7 @@ public class UserRepositorySpDapTests
     // ============================================================
 
     [Fact]
-    public async Task GetPagedAsync_ShouldReturnPagedUsers()
+    public async Task GetAllPagedAsync_ShouldReturnPagedUsers()
     {
         await using var connection = CreateConnection();
         await connection.OpenAsync();
@@ -693,7 +693,7 @@ public class UserRepositorySpDapTests
             PageSize = 2
         };
 
-        var result = await repository.GetPagedAsync(filter);
+        var result = await repository.GetAllPagedAsync(filter);
 
         Assert.NotNull(result);
         Assert.Equal(3, result.TotalRecords);
@@ -713,7 +713,7 @@ public class UserRepositorySpDapTests
     // ============================================================
 
     [Fact]
-    public async Task GetPagedAsync_ShouldReturnSecondPage()
+    public async Task GetAllPagedAsync_ShouldReturnSecondPage()
     {
         await using var connection = CreateConnection();
         await connection.OpenAsync();
@@ -729,7 +729,7 @@ public class UserRepositorySpDapTests
             PageSize = 2
         };
 
-        var result = await repository.GetPagedAsync(filter);
+        var result = await repository.GetAllPagedAsync(filter);
 
         Assert.NotNull(result);
         Assert.Equal(3, result.TotalRecords);
@@ -745,7 +745,7 @@ public class UserRepositorySpDapTests
     // ============================================================
 
     [Fact]
-    public async Task GetPagedAsync_ShouldFilterByUserName()
+    public async Task GetAllPagedAsync_ShouldFilterByUserName()
     {
         await using var connection = CreateConnection();
         await connection.OpenAsync();
@@ -761,7 +761,7 @@ public class UserRepositorySpDapTests
             PageSize = 10
         };
 
-        var result = await repository.GetPagedAsync(filter);
+        var result = await repository.GetAllPagedAsync(filter);
 
         Assert.Equal(1, result.TotalRecords);
         Assert.Single(result.Data);
@@ -776,7 +776,7 @@ public class UserRepositorySpDapTests
     // ============================================================
 
     [Fact]
-    public async Task GetPagedAsync_ShouldFilterByEmail()
+    public async Task GetAllPagedAsync_ShouldFilterByEmail()
     {
         await using var connection = CreateConnection();
         await connection.OpenAsync();
@@ -792,7 +792,7 @@ public class UserRepositorySpDapTests
             PageSize = 10
         };
 
-        var result = await repository.GetPagedAsync(filter);
+        var result = await repository.GetAllPagedAsync(filter);
 
         Assert.Equal(1, result.TotalRecords);
         Assert.Single(result.Data);
@@ -807,7 +807,7 @@ public class UserRepositorySpDapTests
     // ============================================================
 
     [Fact]
-    public async Task GetPagedAsync_ShouldFilterByActiveStatus()
+    public async Task GetAllPagedAsync_ShouldFilterByActiveStatus()
     {
         await using var connection = CreateConnection();
         await connection.OpenAsync();
@@ -823,7 +823,7 @@ public class UserRepositorySpDapTests
             PageSize = 10
         };
 
-        var result = await repository.GetPagedAsync(filter);
+        var result = await repository.GetAllPagedAsync(filter);
 
         Assert.Equal(2, result.TotalRecords);
         Assert.Equal(2, result.Data.Count());

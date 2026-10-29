@@ -649,7 +649,7 @@ public class CategoryControllerTests
         var okResult = Assert.IsType<OkObjectResult>(result);
 
         var response =
-            Assert.IsType<ApiResponse<IEnumerable<CategoryDto>>>(
+            Assert.IsType<ApiResponse<PagedResultDto<CategoryDto>>>(
                 okResult.Value);
 
         Assert.True(response.Success);
@@ -658,9 +658,9 @@ public class CategoryControllerTests
             response.Message);
 
         Assert.NotNull(response.Data);
-        Assert.Equal(2, response.Data.Count());
+        Assert.Equal(2, response.Data.Data.Count());
 
-        Assert.Equal(9, response.TotalRecords);
+        Assert.Equal(9, response.Data.TotalRecords);
 
         _serviceMock.Verify(
             x => x.GetAllPagedAsync(

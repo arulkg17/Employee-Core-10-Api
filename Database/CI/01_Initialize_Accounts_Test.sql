@@ -233,7 +233,7 @@ CREATE OR ALTER PROCEDURE dbo.sp_Category_Delete
     @Id INT
 AS
 BEGIN
-    SET NOCOUNT ON;
+    SET NOCOUNT OFF;
 
     DELETE FROM dbo.Category
     WHERE Id = @Id;
@@ -324,7 +324,7 @@ CREATE OR ALTER PROCEDURE dbo.sp_Category_Update
     @IsActive BIT
 AS
 BEGIN
-    SET NOCOUNT ON;
+    SET NOCOUNT OFF;
 
     UPDATE dbo.Category
     SET
@@ -347,7 +347,7 @@ CREATE OR ALTER PROCEDURE dbo.sp_Customer_Delete
     @Id INT
 AS
 BEGIN
-    SET NOCOUNT ON;
+    SET NOCOUNT OFF;
 
     DELETE FROM dbo.Customer
     WHERE Id = @Id;

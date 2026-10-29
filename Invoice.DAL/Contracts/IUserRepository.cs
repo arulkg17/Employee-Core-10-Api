@@ -15,6 +15,6 @@ public interface IUserRepository
     Task<int> InsertAsync(UserEntity user);
     Task<bool> UpdateAsync(int id, UserEntity user);
     Task<bool> DeleteAsync(int id);
-    Task<PagedResultDto<UserEntity>> GetPagedAsync(UserFilterDto filter);
+    Task<PagedResultDto<UserEntity>> GetAllPagedAsync(UserFilterDto filter);
     Task<bool> UpdateLastLoginAsync(int id);
 }

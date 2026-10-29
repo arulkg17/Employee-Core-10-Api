@@ -134,7 +134,7 @@ public class UserRepositorySpDap : IUserRepository
         return result > 0;
     }
 
-    public async Task<PagedResultDto<UserEntity>> GetPagedAsync(
+    public async Task<PagedResultDto<UserEntity>> GetAllPagedAsync(
         UserFilterDto filter)
     {
         using var multi = await _connection.QueryMultipleAsync(
