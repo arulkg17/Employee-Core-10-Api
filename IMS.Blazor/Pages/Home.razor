@@ -1,0 +1,38 @@
+@page "/"
+
+<PageTitle>IMS</PageTitle>
+
+<h3 class="text-primary fw-bold mb-3">Invoice Management System</h3>
+<p class="text-muted">Blazor WebAssembly client of the IMS API (the same API the Angular and React apps use).</p>
+
+<div class="row g-3">
+    @foreach (var card in _cards)
+    {
+        <div class="col-sm-6 col-lg-3">
+            <a href="@card.Href" class="text-decoration-none">
+                <div class="ims-card h-100">
+                    <h5 class="text-primary">@card.Title</h5>
+                    <div class="text-muted small">@card.Text</div>
+                </div>
+            </a>
+        </div>
+    }
+</div>
+
+@code {
+    private record Card(string Title, string Text, string Href);
+
+    private readonly Card[] _cards =
+    {
+        new("Category", "Item categories", "categories"),
+        new("Item Master", "Items, UOM, rate and stock limits", "items"),
+        new("Customer", "Who we sell to", "customers"),
+        new("Vendor", "Who we buy from", "vendors"),
+        new("User", "People who can log in", "users"),
+        new("Purchase Order", "Create, verify the PDF, approve", "purchase-orders"),
+        new("Receipt", "Goods received against a PO", "receipts"),
+        new("Sales Invoice", "Invoice customers, post to reduce stock", "sales-invoices"),
+        new("Stock", "What is on hand", "stock"),
+        new("AI Assistant", "Ask questions in plain English", "ai-assistant"),
+    };
+}

@@ -1,0 +1,25 @@
+<div class="nav-item dropdown">
+    <button type="button" class="btn btn-link dropdown-toggle" @onclick="Toggle">@Title</button>
+
+    @if (_open)
+    {
+        @* a transparent layer: clicking anywhere outside the menu closes it *@
+        <div class="ims-backdrop" @onclick="Close"></div>
+
+        <div class="dropdown-menu show" @onclick="Close">
+            @ChildContent
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private bool _open;
+
+    private void Toggle() => _open = !_open;
+
+    private void Close() => _open = false;
+}

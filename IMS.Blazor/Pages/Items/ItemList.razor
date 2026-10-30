@@ -1,0 +1,188 @@
+@page "/items"
+@inject ItemmasterService Service
+@inject CategoryService Categories
+@inject NavigationManager Nav
+@inject ToastService Toasts
+
+<PageTitle>Item Master</PageTitle>
+
+<div class="ims-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="text-primary fw-bold mb-0">Item Master</h4>
+        <button class="btn btn-primary" @onclick='() => Nav.NavigateTo("items/create")'>+ New Item</button>
+    </div>
+
+    <form class="row g-2 mb-3" @onsubmit="SearchAsync" @onsubmit:preventDefault>
+        <div class="col-auto"><input class="form-control" placeholder="Item code" @bind="itemCode" /></div>
+        <div class="col-auto"><input class="form-control" placeholder="Item name" @bind="itemName" /></div>
+        <div class="col-auto">
+            <select class="form-select" @bind="categoryId">
+                <option value="">All categories</option>
+                @foreach (var c in categories)
+                {
+                    <option value="@c.Id">@c.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-auto">
+            <select class="form-select" @bind="status">
+                <option value="">All</option>
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Search</button>
+            <button type="button" class="btn btn-outline-secondary" @onclick="ClearAsync">Clear</button>
+        </div>
+    </form>
+
+    <DataTable Items="rows" Loading="loading" EmptyText="No items found.">
+        <Header>
+            <th>Code</th>
+            <th>Bar Code</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>UOM</th>
+            <th class="text-end">Rate</th>
+            <th class="text-end">Min</th>
+            <th class="text-end">Max</th>
+            <th>Status</th>
+            <th class="text-end">Actions</th>
+        </Header>
+        <Row Context="i">
+            <td>@i.ItemCode</td>
+            <td>@i.ItemBarCode</td>
+            <td>@i.ItemName</td>
+            <td>@CategoryName(i.CategoryId)</td>
+            <td>@i.Uom</td>
+            <td class="text-end">@((i.Rate ?? 0).ToString("N2"))</td>
+            <td class="text-end">@i.MinimumStock</td>
+            <td class="text-end">@i.MaximumStock</td>
+            <td><StatusBadge Status="@(i.IsActive ? "Active" : "Inactive")" /></td>
+            <td class="ims-actions">
+                <button class="btn btn-sm btn-outline-primary" @onclick='() => Nav.NavigateTo($"items/edit/{i.Id}")'>Edit</button>
+                <button class="btn btn-sm btn-outline-danger" @onclick="() => toDelete = i">Delete</button>
+            </td>
+        </Row>
+    </DataTable>
+
+    <Pager Page="page" PageSize="pageSize" Total="total" PageChanged="PageChangedAsync" PageSizeChanged="PageSizeChangedAsync" />
+</div>
+
+<ConfirmDialog Visible="@(toDelete is not null)"
+               Title="Delete Item"
+               ConfirmText="Delete"
+               ConfirmClass="btn-danger"
+               OnConfirm="DeleteAsync"
+               OnCancel="() => toDelete = null">
+    Are you sure you want to delete <strong>@toDelete?.ItemName</strong>? This action cannot be undone.
+</ConfirmDialog>
+
+@code {
+    private List<Itemmaster> rows = new();
+    private List<Category> categories = new();
+    private bool loading;
+    private int page = 1;
+    private int pageSize = 10;
+    private int total;
+
+    private string itemCode = "", itemName = "", categoryId = "", status = "";
+
+    private Itemmaster? toDelete;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            categories = await Categories.GetAllAsync();
+        }
+        catch (ApiException ex)
+        {
+            Toasts.Error(ex.Message);
+        }
+
+        await LoadAsync();
+    }
+
+    private string CategoryName(int id) =>
+        categories.FirstOrDefault(c => c.Id == id)?.Name ?? id.ToString();
+
+    private async Task LoadAsync()
+    {
+        loading = true;
+
+        try
+        {
+            var filter = new Dictionary<string, string?>
+            {
+                ["itemCode"] = itemCode,
+                ["itemName"] = itemName,
+                ["categoryId"] = categoryId,
+                ["isActive"] = status,
+            };
+
+            var result = await Service.GetPagedAsync(filter, page, pageSize);
+
+            rows = result.Data;
+            total = result.TotalRecords;
+        }
+        catch (ApiException ex)
+        {
+            Toasts.Error(ex.Message);
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private async Task SearchAsync()
+    {
+        page = 1;
+        await LoadAsync();
+    }
+
+    private async Task ClearAsync()
+    {
+        itemCode = itemName = categoryId = status = "";
+        page = 1;
+        await LoadAsync();
+    }
+
+    private async Task PageChangedAsync(int newPage)
+    {
+        page = newPage;
+        await LoadAsync();
+    }
+
+    private async Task PageSizeChangedAsync(int newSize)
+    {
+        pageSize = newSize;
+        page = 1;
+        await LoadAsync();
+    }
+
+    private async Task DeleteAsync()
+    {
+        if (toDelete is null)
+        {
+            return;
+        }
+
+        var target = toDelete;
+        toDelete = null;
+
+        var result = await Service.DeleteAsync(target.Id);
+
+        if (result.Success)
+        {
+            Toasts.Success($"{target.ItemName} deleted");
+            await LoadAsync();
+        }
+        else
+        {
+            Toasts.Error(result.MessageOr("Delete failed"));
+        }
+    }
+}

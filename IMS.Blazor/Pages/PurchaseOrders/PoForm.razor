@@ -1,0 +1,331 @@
+@page "/purchase-orders/create"
+@page "/purchase-orders/edit/{Id:int}"
+@inject PurchaseOrderService Service
+@inject VendorService VendorApi
+@inject ItemmasterService ItemApi
+@inject NavigationManager Nav
+@inject ToastService Toasts
+
+<PageTitle>Purchase Order</PageTitle>
+
+<div class="ims-card">
+    <div class="d-flex align-items-center gap-3 mb-3">
+        <h4 class="text-primary fw-bold mb-0">@Title</h4>
+        @if (Id > 0)
+        {
+            <StatusBadge Status="@status" />
+        }
+    </div>
+
+    @if (editContext is not null)
+    {
+        <EditForm EditContext="editContext" OnValidSubmit="SaveAsync">
+            <DataAnnotationsValidator />
+
+            @* a disabled fieldset switches off every input inside it (non-Draft purchase orders) *@
+            <fieldset disabled="@IsReadOnly">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">PO Number</label>
+                        <div class="input-group">
+                            <InputText class="form-control" @bind-Value="request.PoNumber" disabled="@(Id > 0)" />
+                            @if (Id == 0)
+                            {
+                                <button type="button" class="btn btn-outline-secondary" title="Generate a new number" @onclick="GenerateNumber">New</button>
+                            }
+                        </div>
+                        <ValidationMessage For="() => request.PoNumber" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">PO Date</label>
+                        <InputDate class="form-control" @bind-Value="request.PoDate" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Vendor</label>
+                        <InputSelect class="form-select" @bind-Value="request.VendorId">
+                            <option value="0">-- select vendor --</option>
+                            @foreach (var v in vendors)
+                            {
+                                <option value="@v.Id">@v.VendorCode - @v.VendorName</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="() => request.VendorId" />
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Notes</label>
+                        <InputTextArea class="form-control" rows="2" @bind-Value="request.Notes" />
+                        <ValidationMessage For="() => request.Notes" />
+                    </div>
+                </div>
+
+                <LinesEditor Lines="request.Details" Items="items" ReadOnly="IsReadOnly" OnChanged="LinesChanged" />
+            </fieldset>
+
+            @if (lineErrors.Count > 0)
+            {
+                <div class="alert alert-danger mt-3 py-2">
+                    <ul class="mb-0">
+                        @foreach (var error in lineErrors)
+                        {
+                            <li>@error</li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            <DocumentTotals Value="CurrentTotals" />
+
+            <div class="d-flex flex-wrap gap-2 mt-4">
+                @if (!IsReadOnly)
+                {
+                    <button type="submit" class="btn btn-primary" disabled="@saving">@(Id > 0 ? "Update" : "Save")</button>
+                }
+
+                @if (Id > 0)
+                {
+                    <button type="button" class="btn btn-outline-secondary" @onclick="ViewPdfAsync">View PDF</button>
+                }
+
+                @if (Id > 0 && status == "Draft")
+                {
+                    <button type="button" class="btn btn-outline-success" disabled="@dirty" title="@(dirty ? "Save your changes first" : "")" @onclick="VerifyAndApproveAsync">Verify &amp; Approve</button>
+                }
+
+                @if (Id > 0 && status is "Draft" or "Approved")
+                {
+                    <button type="button" class="btn btn-outline-warning" @onclick="() => confirmCancel = true">Cancel PO</button>
+                }
+
+                <button type="button" class="btn btn-link" @onclick='() => Nav.NavigateTo("purchase-orders")'>Close</button>
+            </div>
+        </EditForm>
+    }
+</div>
+
+<ConfirmDialog Visible="confirmCancel"
+               Title="Cancel Purchase Order"
+               ConfirmText="Cancel PO"
+               ConfirmClass="btn-warning"
+               OnConfirm="CancelPoAsync"
+               OnCancel="() => confirmCancel = false">
+    Cancel this purchase order? This cannot be undone.
+</ConfirmDialog>
+
+<PdfPreview @ref="pdf" />
+
+@code {
+    /// <summary>From /purchase-orders/edit/5 ; 0 on /purchase-orders/create.</summary>
+    [Parameter] public int Id { get; set; }
+
+    private PurchaseOrderRequest request = new();
+    private EditContext? editContext;
+    private List<Vendor> vendors = new();
+    private List<Itemmaster> items = new();
+    private List<string> lineErrors = new();
+    private string status = "Draft";
+    private Totals? savedTotals;
+    private bool saving, dirty, confirmCancel, lookupsLoaded;
+    private int loadedId = -1;
+    private PdfPreview? pdf;
+
+    private bool IsReadOnly => status != "Draft";
+
+    private string Title => Id == 0 ? "New Purchase Order" : IsReadOnly ? "View Purchase Order" : "Edit Purchase Order";
+
+    // totals follow the lines while typing (same maths as the server)
+    private Totals CurrentTotals =>
+        IsReadOnly && savedTotals is { } saved
+            ? saved
+            : Money.Sum(request.Details.Select(d => Money.CalcLine(d)));
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id == loadedId)
+        {
+            return;
+        }
+
+        loadedId = Id;
+
+        try
+        {
+            if (!lookupsLoaded)
+            {
+                vendors = await VendorApi.GetAllAsync();
+                items = await ItemApi.GetAllAsync();
+                lookupsLoaded = true;
+            }
+
+            if (Id == 0)
+            {
+                status = "Draft";
+                savedTotals = null;
+                SetModel(new PurchaseOrderRequest
+                {
+                    PoNumber = NewPoNumber(),
+                    Details = new List<DocLine> { new() },
+                });
+            }
+            else
+            {
+                await LoadPoAsync();
+            }
+        }
+        catch (ApiException ex)
+        {
+            Toasts.Error(ex.Message);
+            Nav.NavigateTo("purchase-orders");
+        }
+    }
+
+    private static string NewPoNumber() => $"PO-{DateTime.Now:yyyyMMdd-HHmmss}";
+
+    private void GenerateNumber() => request.PoNumber = NewPoNumber();
+
+    private void SetModel(PurchaseOrderRequest model)
+    {
+        request = model;
+        editContext = new EditContext(model);
+        editContext.OnFieldChanged += (_, _) => dirty = true;
+        lineErrors = new List<string>();
+        dirty = false;
+    }
+
+    private async Task LoadPoAsync()
+    {
+        var po = await Service.GetByIdAsync(Id);
+
+        if (po is null)
+        {
+            Toasts.Error("Purchase order not found");
+            Nav.NavigateTo("purchase-orders");
+            return;
+        }
+
+        status = po.Status;
+        savedTotals = new Totals(po.SubTotal, po.TaxAmount, po.TotalAmount);
+
+        SetModel(new PurchaseOrderRequest
+        {
+            PoNumber = po.PoNumber,
+            PoDate = po.PoDate,
+            VendorId = po.VendorId,
+            Notes = po.Notes,
+            Details = po.Details.Select(d => new DocLine
+            {
+                ItemmasterId = d.ItemmasterId,
+                Quantity = d.Quantity,
+                Rate = d.Rate,
+                DiscountAmount = d.DiscountAmount,
+                TaxPercent = d.TaxPercent,
+            }).ToList(),
+        });
+    }
+
+    private void LinesChanged()
+    {
+        dirty = true;
+        lineErrors.Clear();
+    }
+
+    // ---------------- SAVE ----------------
+    private async Task SaveAsync()
+    {
+        lineErrors = LineValidator.Validate(request.Details);
+
+        if (lineErrors.Count > 0)
+        {
+            Toasts.Error(lineErrors[0]);
+            return;
+        }
+
+        request.PoNumber = request.PoNumber.Trim();
+        request.Notes = string.IsNullOrWhiteSpace(request.Notes) ? "" : request.Notes.Trim();
+
+        saving = true;
+
+        try
+        {
+            var result = Id > 0
+                ? await Service.UpdateAsync(Id, request)
+                : await Service.CreateAsync(request);
+
+            if (!result.Success)
+            {
+                Toasts.Error(result.MessageOr("Unable to save the purchase order"));
+                return;
+            }
+
+            var savedId = Id > 0 ? Id : result.NewId ?? 0;
+            var poNumber = request.PoNumber;
+
+            dirty = false;
+            Toasts.Success(Id > 0 ? "Purchase order updated" : "Purchase order created");
+
+            // Show the saved PO as a PDF: verify it, approve it, or just close and go on
+            await pdf!.ShowAsync(
+                PdfDocType.PurchaseOrder,
+                savedId,
+                $"Verify {poNumber}",
+                "Approve",
+                onAction: async () => await ApproveAsync(savedId, poNumber),
+                onClose: () =>
+                {
+                    Nav.NavigateTo("purchase-orders");
+                    return Task.CompletedTask;
+                });
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+    private async Task ApproveAsync(int poId, string poNumber)
+    {
+        var result = await Service.ApproveAsync(poId);
+
+        if (result.Success)
+        {
+            Toasts.Success($"{poNumber} approved");
+        }
+        else
+        {
+            Toasts.Error(result.MessageOr("Approve failed"));
+        }
+    }
+
+    // ---------------- WORKFLOW ----------------
+    private Task ViewPdfAsync() =>
+        pdf!.ShowAsync(PdfDocType.PurchaseOrder, Id, $"Purchase Order {request.PoNumber}");
+
+    private Task VerifyAndApproveAsync() =>
+        pdf!.ShowAsync(
+            PdfDocType.PurchaseOrder,
+            Id,
+            $"Verify {request.PoNumber}",
+            "Approve",
+            onAction: async () => await ApproveAsync(Id, request.PoNumber),
+            onClose: LoadPoAsync); // reload: the screen becomes read-only after approval
+
+    private async Task CancelPoAsync()
+    {
+        confirmCancel = false;
+
+        var result = await Service.CancelAsync(Id);
+
+        if (result.Success)
+        {
+            Toasts.Success("Purchase order cancelled");
+        }
+        else
+        {
+            Toasts.Error(result.MessageOr("The operation failed"));
+        }
+
+        await LoadPoAsync();
+    }
+}

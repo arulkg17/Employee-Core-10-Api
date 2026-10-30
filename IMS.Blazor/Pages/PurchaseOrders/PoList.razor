@@ -1,0 +1,236 @@
+@page "/purchase-orders"
+@inject PurchaseOrderService Service
+@inject VendorService VendorApi
+@inject NavigationManager Nav
+@inject ToastService Toasts
+
+<PageTitle>Purchase Orders</PageTitle>
+
+<div class="ims-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="text-primary fw-bold mb-0">Purchase Orders</h4>
+        <button class="btn btn-primary" @onclick='() => Nav.NavigateTo("purchase-orders/create")'>+ New Purchase Order</button>
+    </div>
+
+    <form class="row g-2 mb-3" @onsubmit="SearchAsync" @onsubmit:preventDefault>
+        <div class="col-auto"><input class="form-control" placeholder="PO number" @bind="poNumber" /></div>
+        <div class="col-auto">
+            <select class="form-select" @bind="vendorId">
+                <option value="">All vendors</option>
+                @foreach (var v in vendors)
+                {
+                    <option value="@v.Id">@v.VendorCode - @v.VendorName</option>
+                }
+            </select>
+        </div>
+        <div class="col-auto">
+            <select class="form-select" @bind="status">
+                <option value="">All statuses</option>
+                @foreach (var s in PoStatuses.All)
+                {
+                    <option value="@s">@s</option>
+                }
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Search</button>
+            <button type="button" class="btn btn-outline-secondary" @onclick="ClearAsync">Clear</button>
+        </div>
+    </form>
+
+    <DataTable Items="rows" Loading="loading" EmptyText="No purchase orders found.">
+        <Header>
+            <th>PO Number</th>
+            <th>Date</th>
+            <th>Vendor</th>
+            <th>Status</th>
+            <th class="text-end">Total</th>
+            <th class="text-end">Actions</th>
+        </Header>
+        <Row Context="po">
+            <td>@po.PoNumber</td>
+            <td>@po.PoDate.ToString("dd-MMM-yyyy")</td>
+            <td>@VendorName(po.VendorId)</td>
+            <td><StatusBadge Status="@po.Status" /></td>
+            <td class="text-end">@po.TotalAmount.ToString("N2")</td>
+            <td class="ims-actions">
+                <button class="btn btn-sm btn-outline-secondary" @onclick="() => ViewPdfAsync(po)">PDF</button>
+                <button class="btn btn-sm btn-outline-primary" @onclick='() => Nav.NavigateTo($"purchase-orders/edit/{po.Id}")'>@(po.Status == "Draft" ? "Edit" : "View")</button>
+
+                @if (po.Status == "Draft")
+                {
+                    <button class="btn btn-sm btn-success" @onclick="() => VerifyAndApproveAsync(po)">Verify &amp; Approve</button>
+                }
+
+                @if (po.Status is "Draft" or "Approved")
+                {
+                    <button class="btn btn-sm btn-outline-warning" @onclick='() => pending = new PendingAction("cancel", po)'>Cancel</button>
+                }
+
+                @if (po.Status is "Draft" or "Cancelled")
+                {
+                    <button class="btn btn-sm btn-outline-danger" @onclick='() => pending = new PendingAction("delete", po)'>Delete</button>
+                }
+            </td>
+        </Row>
+    </DataTable>
+
+    <Pager Page="page" PageSize="pageSize" Total="total" PageChanged="PageChangedAsync" PageSizeChanged="PageSizeChangedAsync" />
+</div>
+
+<ConfirmDialog Visible="@(pending is not null)"
+               Title="@(pending?.Kind == "cancel" ? "Cancel Purchase Order" : "Delete Purchase Order")"
+               ConfirmText="@(pending?.Kind == "cancel" ? "Cancel PO" : "Delete")"
+               ConfirmClass="@(pending?.Kind == "cancel" ? "btn-warning" : "btn-danger")"
+               OnConfirm="ConfirmPendingAsync"
+               OnCancel="() => pending = null">
+    @(pending?.Kind == "cancel" ? "Cancel" : "Delete") purchase order <strong>@pending?.Po.PoNumber</strong>?
+</ConfirmDialog>
+
+<PdfPreview @ref="pdf" />
+
+@code {
+    private record PendingAction(string Kind, PurchaseOrder Po);
+
+    private List<PurchaseOrder> rows = new();
+    private List<Vendor> vendors = new();
+    private bool loading;
+    private int page = 1;
+    private int pageSize = 10;
+    private int total;
+
+    private string poNumber = "", vendorId = "", status = "";
+
+    private PendingAction? pending;
+    private PdfPreview? pdf;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            vendors = await VendorApi.GetAllAsync();
+        }
+        catch (ApiException ex)
+        {
+            Toasts.Error(ex.Message);
+        }
+
+        await LoadAsync();
+    }
+
+    private string VendorName(int id)
+    {
+        var v = vendors.FirstOrDefault(x => x.Id == id);
+
+        return v is null ? $"#{id}" : $"{v.VendorCode} - {v.VendorName}";
+    }
+
+    private async Task LoadAsync()
+    {
+        loading = true;
+
+        try
+        {
+            var filter = new Dictionary<string, string?>
+            {
+                ["PONumber"] = poNumber,
+                ["VendorId"] = vendorId,
+                ["Status"] = status,
+            };
+
+            var result = await Service.GetPagedAsync(filter, page, pageSize);
+
+            rows = result.Data;
+            total = result.TotalRecords;
+        }
+        catch (ApiException ex)
+        {
+            Toasts.Error(ex.Message);
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private async Task SearchAsync()
+    {
+        page = 1;
+        await LoadAsync();
+    }
+
+    private async Task ClearAsync()
+    {
+        poNumber = vendorId = status = "";
+        page = 1;
+        await LoadAsync();
+    }
+
+    private async Task PageChangedAsync(int newPage)
+    {
+        page = newPage;
+        await LoadAsync();
+    }
+
+    private async Task PageSizeChangedAsync(int newSize)
+    {
+        pageSize = newSize;
+        page = 1;
+        await LoadAsync();
+    }
+
+    // ---------------- PDF ----------------
+    private Task ViewPdfAsync(PurchaseOrder po) =>
+        pdf!.ShowAsync(PdfDocType.PurchaseOrder, po.Id, $"Purchase Order {po.PoNumber}");
+
+    /// <summary>Opens the PDF; the user approves from inside the preview.</summary>
+    private Task VerifyAndApproveAsync(PurchaseOrder po) =>
+        pdf!.ShowAsync(
+            PdfDocType.PurchaseOrder,
+            po.Id,
+            $"Verify {po.PoNumber}",
+            "Approve",
+            onAction: async () =>
+            {
+                var result = await Service.ApproveAsync(po.Id);
+
+                if (result.Success)
+                {
+                    Toasts.Success($"{po.PoNumber} approved");
+                }
+                else
+                {
+                    Toasts.Error(result.MessageOr("Approve failed"));
+                }
+
+                await LoadAsync();
+            });
+
+    // ---------------- CANCEL / DELETE ----------------
+    private async Task ConfirmPendingAsync()
+    {
+        if (pending is null)
+        {
+            return;
+        }
+
+        var (kind, po) = pending;
+        pending = null;
+
+        var result = kind == "cancel"
+            ? await Service.CancelAsync(po.Id)
+            : await Service.DeleteAsync(po.Id);
+
+        if (result.Success)
+        {
+            Toasts.Success(kind == "cancel" ? $"{po.PoNumber} cancelled" : $"{po.PoNumber} deleted");
+        }
+        else
+        {
+            // e.g. "Cannot cancel: receipts exist for this purchase order"
+            Toasts.Error(result.MessageOr("The operation failed"));
+        }
+
+        await LoadAsync();
+    }
+}

@@ -1,0 +1,531 @@
+@page "/receipts/create"
+@page "/receipts/edit/{Id:int}"
+@inject ReceiptService Service
+@inject PurchaseOrderService PoApi
+@inject VendorService VendorApi
+@inject ItemmasterService ItemApi
+@inject NavigationManager Nav
+@inject ToastService Toasts
+
+<PageTitle>Receipt</PageTitle>
+
+<div class="ims-card">
+    <div class="d-flex align-items-center gap-3 mb-3">
+        <h4 class="text-primary fw-bold mb-0">@Title</h4>
+        @if (Id > 0)
+        {
+            <StatusBadge Status="@status" />
+        }
+    </div>
+
+    @if (editContext is not null)
+    {
+        <EditForm EditContext="editContext" OnValidSubmit="SaveAsync">
+            <DataAnnotationsValidator />
+
+            <fieldset disabled="@IsReadOnly">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Receipt No</label>
+                        <InputText class="form-control" @bind-Value="request.ReceiptNumber" disabled="@(Id > 0)" />
+                        @if (Id == 0)
+                        {
+                            <div class="form-text">Leave blank to auto-generate</div>
+                        }
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Receipt Date</label>
+                        <InputDate class="form-control" @bind-Value="request.ReceiptDate" />
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Purchase Order</label>
+                        <InputSelect class="form-select" @bind-Value="request.PurchaseOrderId" @bind-Value:after="PoChangedAsync" disabled="@(Id > 0)">
+                            <option value="0">-- select purchase order --</option>
+                            @foreach (var o in PoOptions)
+                            {
+                                <option value="@o.Id">@o.PoNumber (@o.Status)</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="() => request.PurchaseOrderId" />
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Vendor</label>
+                        <input class="form-control" value="@VendorLabel" disabled />
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Notes</label>
+                        <InputTextArea class="form-control" rows="2" @bind-Value="request.Notes" />
+                        <ValidationMessage For="() => request.Notes" />
+                    </div>
+                </div>
+            </fieldset>
+
+            @* ---------- lines ---------- *@
+            @if (IsReadOnly && saved is not null)
+            {
+                @* posted / cancelled: the lines exactly as the server saved them *@
+                <table class="table table-sm align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Item</th>
+                            <th class="text-end">Received</th>
+                            <th class="text-end">Rate</th>
+                            <th class="text-end">Discount</th>
+                            <th class="text-end">Tax %</th>
+                            <th class="text-end">Tax</th>
+                            <th class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < saved.Details.Count; i++)
+                        {
+                            var d = saved.Details[i];
+                            var number = i + 1;
+
+                            <tr>
+                                <td>@number</td>
+                                <td>@ItemName(d.ItemmasterId)</td>
+                                <td class="text-end">@d.ReceivedQuantity</td>
+                                <td class="text-end">@d.Rate.ToString("N2")</td>
+                                <td class="text-end">@d.DiscountAmount.ToString("N2")</td>
+                                <td class="text-end">@d.TaxPercent</td>
+                                <td class="text-end">@d.TaxAmount.ToString("N2")</td>
+                                <td class="text-end">@d.LineTotal.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else if (lines.Count == 0)
+            {
+                <p class="text-muted py-2">Select a purchase order to load its lines.</p>
+            }
+            else
+            {
+                <table class="table table-sm align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th style="min-width:200px">Item</th>
+                            <th class="text-end">Ordered</th>
+                            <th class="text-end">Already received</th>
+                            <th class="text-end">Outstanding</th>
+                            <th style="width:140px">Receive now</th>
+                            <th class="text-end">Rate</th>
+                            <th class="text-end">Tax</th>
+                            <th class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < lines.Count; i++)
+                        {
+                            var l = lines[i];
+                            var amounts = AmountsOf(l);
+                            var number = i + 1;
+
+                            <tr>
+                                <td>@number</td>
+                                <td>@ItemName(l.ItemmasterId)</td>
+                                <td class="text-end">@l.Ordered</td>
+                                <td class="text-end">@l.AlreadyReceived</td>
+                                <td class="text-end">@l.Outstanding</td>
+                                <td>
+                                    <input type="number" step="any" min="0" max="@l.Outstanding" class="form-control form-control-sm" @bind="l.ReceiveNow" @bind:after="Touch" />
+                                </td>
+                                <td class="text-end">@l.Rate.ToString("N2")</td>
+                                <td class="text-end">@amounts.TaxAmount.ToString("N2")</td>
+                                <td class="text-end">@amounts.LineTotal.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+
+            @if (lineErrors.Count > 0)
+            {
+                <div class="alert alert-danger mt-3 py-2">
+                    <ul class="mb-0">
+                        @foreach (var error in lineErrors)
+                        {
+                            <li>@error</li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            <DocumentTotals Value="CurrentTotals" />
+
+            <div class="d-flex flex-wrap gap-2 mt-4">
+                @if (!IsReadOnly)
+                {
+                    <button type="submit" class="btn btn-primary" disabled="@saving">@(Id > 0 ? "Update" : "Save")</button>
+                }
+
+                @if (Id > 0)
+                {
+                    <button type="button" class="btn btn-outline-secondary" @onclick="ViewPdfAsync">View PDF</button>
+                }
+
+                @if (Id > 0 && status == "Draft")
+                {
+                    <button type="button" class="btn btn-outline-success" disabled="@dirty" title="@(dirty ? "Save your changes first" : "")" @onclick='() => pendingAction = "post"'>Post</button>
+                }
+
+                @if (Id > 0 && status is "Draft" or "Posted")
+                {
+                    <button type="button" class="btn btn-outline-warning" @onclick='() => pendingAction = "cancel"'>Cancel Receipt</button>
+                }
+
+                <button type="button" class="btn btn-link" @onclick='() => Nav.NavigateTo("receipts")'>Close</button>
+            </div>
+        </EditForm>
+    }
+</div>
+
+<ConfirmDialog Visible="@(pendingAction is not null)"
+               Title="@(pendingAction == "post" ? "Post Receipt" : "Cancel Receipt")"
+               ConfirmText="@(pendingAction == "post" ? "Post" : "Cancel Receipt")"
+               ConfirmClass="@(pendingAction == "post" ? "btn-primary" : "btn-warning")"
+               OnConfirm="RunPendingAsync"
+               OnCancel="() => pendingAction = null">
+    @(pendingAction == "post"
+        ? "Post this receipt? The PO received quantities, PO status and stock will be updated."
+        : "Cancel this receipt? The posted stock is reversed.")
+</ConfirmDialog>
+
+<PdfPreview @ref="pdf" />
+
+@code {
+    /// <summary>One receipt line = one purchase order line + the quantity received now.</summary>
+    private class ReceiptLineView
+    {
+        public int PurchaseOrderDetailId { get; set; }
+        public int ItemmasterId { get; set; }
+        public decimal Ordered { get; set; }
+        public decimal AlreadyReceived { get; set; }
+        public decimal Outstanding { get; set; }
+        public decimal Rate { get; set; }
+        public decimal PoDiscount { get; set; }
+        public decimal TaxPercent { get; set; }
+        public decimal ReceiveNow { get; set; }
+    }
+
+    [Parameter] public int Id { get; set; }
+
+    private ReceiptRequest request = new();
+    private EditContext? editContext;
+    private List<ReceiptLineView> lines = new();
+    private List<string> lineErrors = new();
+    private List<PurchaseOrder> orders = new();
+    private List<Vendor> vendors = new();
+    private List<Itemmaster> items = new();
+    private PurchaseOrder? selectedPo;
+    private Receipt? saved;
+    private string status = "Draft";
+    private string? pendingAction;
+    private bool saving, dirty, lookupsLoaded;
+    private int loadedId = -1;
+    private PdfPreview? pdf;
+
+    private bool IsReadOnly => status != "Draft";
+
+    private string Title => Id == 0 ? "New Receipt" : IsReadOnly ? "View Receipt" : "Edit Receipt";
+
+    // New receipts can only be made for Approved / PartiallyReceived purchase orders
+    private IEnumerable<PurchaseOrder> PoOptions =>
+        Id > 0 ? orders : orders.Where(o => o.Status is "Approved" or "PartiallyReceived");
+
+    private string VendorLabel
+    {
+        get
+        {
+            if (selectedPo is null)
+            {
+                return "";
+            }
+
+            var v = vendors.FirstOrDefault(x => x.Id == selectedPo.VendorId);
+
+            return v is null ? $"#{selectedPo.VendorId}" : $"{v.VendorCode} - {v.VendorName}";
+        }
+    }
+
+    private string ItemName(int id)
+    {
+        var item = items.FirstOrDefault(i => i.Id == id);
+
+        return item is null ? $"#{id}" : $"{item.ItemCode} - {item.ItemName}";
+    }
+
+    /// <summary>The PO line discount is pro-rated by the quantity received now (same as the server).</summary>
+    private static LineAmounts AmountsOf(ReceiptLineView l)
+    {
+        var discount = l.Ordered == 0
+            ? 0
+            : Money.Round2(l.PoDiscount * l.ReceiveNow / l.Ordered);
+
+        return Money.CalcLine(l.ReceiveNow, l.Rate, discount, l.TaxPercent);
+    }
+
+    private Totals CurrentTotals =>
+        IsReadOnly && saved is not null
+            ? new Totals(saved.SubTotal, saved.TaxAmount, saved.TotalAmount)
+            : Money.Sum(lines.Select(AmountsOf));
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id == loadedId)
+        {
+            return;
+        }
+
+        loadedId = Id;
+
+        try
+        {
+            if (!lookupsLoaded)
+            {
+                vendors = await VendorApi.GetAllAsync();
+                items = await ItemApi.GetAllAsync();
+                orders = await PoApi.GetAllAsync();
+                lookupsLoaded = true;
+            }
+
+            if (Id == 0)
+            {
+                status = "Draft";
+                saved = null;
+                selectedPo = null;
+                lines = new List<ReceiptLineView>();
+                SetModel(new ReceiptRequest());
+            }
+            else
+            {
+                await LoadReceiptAsync();
+            }
+        }
+        catch (ApiException ex)
+        {
+            Toasts.Error(ex.Message);
+            Nav.NavigateTo("receipts");
+        }
+    }
+
+    private void SetModel(ReceiptRequest model)
+    {
+        request = model;
+        editContext = new EditContext(model);
+        editContext.OnFieldChanged += (_, _) => dirty = true;
+        lineErrors = new List<string>();
+        dirty = false;
+    }
+
+    private async Task LoadReceiptAsync()
+    {
+        var receipt = await Service.GetByIdAsync(Id);
+
+        if (receipt is null)
+        {
+            Toasts.Error("Receipt not found");
+            Nav.NavigateTo("receipts");
+            return;
+        }
+
+        var po = await PoApi.GetByIdAsync(receipt.PurchaseOrderId);
+
+        saved = receipt;
+        status = receipt.Status;
+        selectedPo = po;
+        lines = po is null ? new List<ReceiptLineView>() : BuildLines(po, receipt.Details);
+
+        SetModel(new ReceiptRequest
+        {
+            ReceiptNumber = receipt.ReceiptNumber,
+            ReceiptDate = receipt.ReceiptDate,
+            PurchaseOrderId = receipt.PurchaseOrderId,
+            Notes = receipt.Notes,
+        });
+    }
+
+    /// <summary>
+    /// existing == null  : new receipt - every PO line with something outstanding, default = outstanding.
+    /// existing != null  : Draft receipt - every PO line, quantity = what the receipt already has (or 0).
+    /// </summary>
+    private static List<ReceiptLineView> BuildLines(PurchaseOrder po, List<ReceiptDetail>? existing)
+    {
+        var result = new List<ReceiptLineView>();
+
+        foreach (var d in po.Details)
+        {
+            var outstanding = Money.Round2(d.Quantity - d.ReceivedQuantity);
+            var savedLine = existing?.FirstOrDefault(e => e.PurchaseOrderDetailId == d.Id);
+
+            if (existing is null && outstanding <= 0)
+            {
+                continue;
+            }
+
+            result.Add(new ReceiptLineView
+            {
+                PurchaseOrderDetailId = d.Id,
+                ItemmasterId = d.ItemmasterId,
+                Ordered = d.Quantity,
+                AlreadyReceived = d.ReceivedQuantity,
+                Outstanding = outstanding,
+                Rate = d.Rate,
+                PoDiscount = d.DiscountAmount,
+                TaxPercent = d.TaxPercent,
+                ReceiveNow = existing is not null ? savedLine?.ReceivedQuantity ?? 0 : outstanding,
+            });
+        }
+
+        return result;
+    }
+
+    /// <summary>New receipt: the user picked a purchase order.</summary>
+    private async Task PoChangedAsync()
+    {
+        selectedPo = null;
+        lines = new List<ReceiptLineView>();
+        lineErrors.Clear();
+
+        if (request.PurchaseOrderId <= 0)
+        {
+            return;
+        }
+
+        try
+        {
+            var po = await PoApi.GetByIdAsync(request.PurchaseOrderId);
+
+            if (po is null)
+            {
+                Toasts.Error("Purchase order not found");
+                return;
+            }
+
+            selectedPo = po;
+            lines = BuildLines(po, null);
+            dirty = true;
+
+            if (lines.Count == 0)
+            {
+                Toasts.Info("This purchase order has nothing left to receive.");
+            }
+        }
+        catch (ApiException ex)
+        {
+            Toasts.Error(ex.Message);
+        }
+    }
+
+    private void Touch()
+    {
+        dirty = true;
+        lineErrors.Clear();
+    }
+
+    // ---------------- SAVE ----------------
+    private async Task SaveAsync()
+    {
+        lineErrors = new List<string>();
+
+        for (var i = 0; i < lines.Count; i++)
+        {
+            var l = lines[i];
+
+            if (l.ReceiveNow < 0 || l.ReceiveNow > l.Outstanding)
+            {
+                lineErrors.Add($"Line {i + 1}: quantity must be between 0 and the outstanding {l.Outstanding}.");
+            }
+        }
+
+        if (lines.Count == 0 || lines.All(l => l.ReceiveNow <= 0))
+        {
+            lineErrors.Add("Enter a received quantity on at least one line.");
+        }
+
+        if (lineErrors.Count > 0)
+        {
+            Toasts.Error(lineErrors[0]);
+            return;
+        }
+
+        // blank receipt number = auto-generate; only lines with a quantity are sent
+        request.ReceiptNumber = string.IsNullOrWhiteSpace(request.ReceiptNumber) ? null : request.ReceiptNumber.Trim();
+        request.Notes = string.IsNullOrWhiteSpace(request.Notes) ? "" : request.Notes.Trim();
+        request.Details = lines
+            .Where(l => l.ReceiveNow > 0)
+            .Select(l => new ReceiptLineRequest
+            {
+                PurchaseOrderDetailId = l.PurchaseOrderDetailId,
+                ReceivedQuantity = l.ReceiveNow,
+            })
+            .ToList();
+
+        saving = true;
+
+        try
+        {
+            var result = Id > 0
+                ? await Service.UpdateAsync(Id, request)
+                : await Service.CreateAsync(request);
+
+            if (!result.Success)
+            {
+                Toasts.Error(result.MessageOr("Unable to save the receipt"));
+                return;
+            }
+
+            var savedId = Id > 0 ? Id : result.NewId ?? 0;
+
+            dirty = false;
+            Toasts.Success(Id > 0 ? "Receipt updated" : "Receipt created");
+
+            // show the saved receipt as a PDF copy, then go back to the list
+            await pdf!.ShowAsync(
+                PdfDocType.Receipt,
+                savedId,
+                "Goods Receipt",
+                onClose: () =>
+                {
+                    Nav.NavigateTo("receipts");
+                    return Task.CompletedTask;
+                });
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+    // ---------------- WORKFLOW ----------------
+    private Task ViewPdfAsync() => pdf!.ShowAsync(PdfDocType.Receipt, Id, "Goods Receipt");
+
+    private async Task RunPendingAsync()
+    {
+        var action = pendingAction;
+        pendingAction = null;
+
+        var result = action == "post"
+            ? await Service.PostAsync(Id)
+            : await Service.CancelAsync(Id);
+
+        if (result.Success)
+        {
+            Toasts.Success(action == "post" ? "Receipt posted" : "Receipt cancelled");
+        }
+        else
+        {
+            // e.g. "Cannot cancel: the received stock was already sold"
+            Toasts.Error(result.MessageOr("The operation failed"));
+        }
+
+        await LoadReceiptAsync();
+    }
+}

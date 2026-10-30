@@ -1,0 +1,152 @@
+@page "/ai-assistant"
+@implements IDisposable
+@inject InvoiceAiService Ai
+@inject ToastService Toasts
+
+<PageTitle>AI Assistant</PageTitle>
+
+<div class="ims-card" style="max-width: 900px;">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h4 class="text-primary fw-bold mb-0">AI Assistant</h4>
+
+        <div class="btn-group btn-group-sm">
+            <button type="button" class="btn @(!multi ? "btn-primary" : "btn-outline-primary")" @onclick="() => multi = false">Single intent</button>
+            <button type="button" class="btn @(multi ? "btn-primary" : "btn-outline-primary")" @onclick="() => multi = true">Multiple intents</button>
+        </div>
+    </div>
+
+    <p class="text-muted">
+        @(multi
+            ? "Ask several things in one question; each part is answered separately."
+            : "Ask one question about customers, vendors, users, items or categories.")
+        Press <strong>Ctrl + Enter</strong> to send.
+    </p>
+
+    <textarea class="form-control" rows="3" placeholder="Your question"
+              disabled="@busy"
+              @bind="question" @bind:event="oninput"
+              @onkeydown="OnKeyDownAsync"></textarea>
+
+    <div class="d-flex flex-wrap gap-2 my-3 align-items-center">
+        <button type="button" class="btn btn-primary" disabled="@(busy || string.IsNullOrWhiteSpace(question))" @onclick="AskAsync">Ask</button>
+
+        @foreach (var sample in Samples)
+        {
+            <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => question = sample">@sample</button>
+        }
+    </div>
+
+    @if (busy)
+    {
+        <div class="progress" style="height: 4px;">
+            <div class="progress-bar progress-bar-striped progress-bar-animated w-100"></div>
+        </div>
+        <div class="text-muted mt-1">Thinking... @elapsed s (the local Ollama model can take 10 to 20 seconds)</div>
+    }
+
+    @if (history.Count > 0)
+    {
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <h5 class="mb-0">Answers</h5>
+            <button type="button" class="btn btn-sm btn-link" @onclick="() => history.Clear()">Clear</button>
+        </div>
+    }
+
+    @foreach (var entry in history)
+    {
+        <div class="border rounded p-2 my-2 @(entry.Failed ? "border-danger bg-danger-subtle" : "border-primary")">
+            <div class="d-flex fw-semibold">
+                <span>@entry.Question</span>
+                <span class="ms-auto small text-muted fw-normal">@(entry.Multi ? "multi" : "single") · @entry.Seconds.ToString("0.0") s</span>
+            </div>
+            <pre class="mb-0 mt-2" style="white-space: pre-wrap; font-family: inherit;">@entry.Answer</pre>
+        </div>
+    }
+</div>
+
+@code {
+    private record AiEntry(string Question, bool Multi, string Answer, double Seconds, bool Failed);
+
+    private static readonly string[] SingleSamples =
+    {
+        "How many customers are there?",
+        "How many active vendors are there?",
+        "List the users from Chennai",
+    };
+
+    private static readonly string[] MultiSamples =
+    {
+        "How many customers, vendors and users do we have?",
+        "How many customers are in each state and how many vendors are active?",
+        "Give me the active user count and the number of categories",
+    };
+
+    private bool multi;
+    private string question = "";
+    private bool busy;
+    private int elapsed;
+    private readonly List<AiEntry> history = new();
+    private Timer? timer;
+
+    private string[] Samples => multi ? MultiSamples : SingleSamples;
+
+    private async Task OnKeyDownAsync(KeyboardEventArgs e)
+    {
+        if (e.CtrlKey && e.Key == "Enter")
+        {
+            await AskAsync();
+        }
+    }
+
+    private async Task AskAsync()
+    {
+        var text = question.Trim();
+
+        if (text.Length == 0 || busy)
+        {
+            return;
+        }
+
+        var useMulti = multi;
+        var started = DateTime.UtcNow;
+
+        busy = true;
+        elapsed = 0;
+
+        // a ticking counter while the model thinks
+        timer = new Timer(_ =>
+        {
+            elapsed++;
+            _ = InvokeAsync(StateHasChanged);
+        }, null, 1000, 1000);
+
+        AiEntry entry;
+
+        try
+        {
+            var answer = await Ai.AskAsync(text, useMulti);
+
+            entry = new AiEntry(text, useMulti, answer, (DateTime.UtcNow - started).TotalSeconds, false);
+        }
+        catch (ApiException ex)
+        {
+            entry = new AiEntry(text, useMulti, ex.Message, (DateTime.UtcNow - started).TotalSeconds, true);
+        }
+        finally
+        {
+            StopTimer();
+            busy = false;
+        }
+
+        history.Insert(0, entry);
+        question = "";
+    }
+
+    private void StopTimer()
+    {
+        timer?.Dispose();
+        timer = null;
+    }
+
+    public void Dispose() => StopTimer();
+}

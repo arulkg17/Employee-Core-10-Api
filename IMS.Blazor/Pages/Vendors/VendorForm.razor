@@ -1,0 +1,128 @@
+@page "/vendors/create"
+@page "/vendors/edit/{Id:int}"
+@inject VendorService Service
+@inject NavigationManager Nav
+@inject ToastService Toasts
+
+<PageTitle>@(Id > 0 ? "Edit Vendor" : "New Vendor")</PageTitle>
+
+<div class="ims-card" style="max-width: 900px;">
+    <h4 class="text-primary fw-bold mb-3">@(Id > 0 ? "Edit Vendor" : "New Vendor")</h4>
+
+    <EditForm Model="model" OnValidSubmit="SaveAsync">
+        <DataAnnotationsValidator />
+
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Vendor Code</label>
+                <InputText class="form-control" @bind-Value="model.VendorCode" />
+                <ValidationMessage For="() => model.VendorCode" />
+            </div>
+
+            <div class="col-md-8">
+                <label class="form-label">Vendor Name</label>
+                <InputText class="form-control" @bind-Value="model.VendorName" />
+                <ValidationMessage For="() => model.VendorName" />
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">City</label>
+                <InputText class="form-control" @bind-Value="model.City" />
+                <ValidationMessage For="() => model.City" />
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">State</label>
+                <InputText class="form-control" @bind-Value="model.State" />
+                <ValidationMessage For="() => model.State" />
+            </div>
+
+            <div class="col-12">
+                <div class="form-check">
+                    <InputCheckbox class="form-check-input" id="active" @bind-Value="model.IsActive" />
+                    <label class="form-check-label" for="active">Active</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 d-flex gap-2">
+            <button type="submit" class="btn btn-primary" disabled="@saving">@(Id > 0 ? "Update" : "Save")</button>
+            <button type="button" class="btn btn-outline-secondary" @onclick='() => Nav.NavigateTo("vendors")'>Cancel</button>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    /// <summary>Filled from the address /vendors/edit/5 ; stays 0 on /vendors/create.</summary>
+    [Parameter] public int Id { get; set; }
+
+    private Vendor model = new();
+    private bool saving;
+    private int loadedId = -1;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id == loadedId)
+        {
+            return;
+        }
+
+        loadedId = Id;
+
+        if (Id == 0)
+        {
+            model = new Vendor();
+            return;
+        }
+
+        try
+        {
+            var vendor = await Service.GetByIdAsync(Id);
+
+            if (vendor is null)
+            {
+                Toasts.Error("Vendor not found");
+                Nav.NavigateTo("vendors");
+                return;
+            }
+
+            model = vendor;
+        }
+        catch (ApiException ex)
+        {
+            Toasts.Error(ex.Message);
+            Nav.NavigateTo("vendors");
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        model.VendorCode = model.VendorCode.Trim();
+        model.VendorName = model.VendorName.Trim();
+        model.City = string.IsNullOrWhiteSpace(model.City) ? null : model.City.Trim();
+        model.State = string.IsNullOrWhiteSpace(model.State) ? null : model.State.Trim();
+
+        saving = true;
+
+        try
+        {
+            var result = Id > 0
+                ? await Service.UpdateAsync(Id, model)
+                : await Service.CreateAsync(model);
+
+            if (!result.Success)
+            {
+                // e.g. duplicate code
+                Toasts.Error(result.MessageOr("Save failed"));
+                return;
+            }
+
+            Toasts.Success(Id > 0 ? "Vendor updated successfully" : "Vendor created successfully");
+            Nav.NavigateTo("vendors");
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+}

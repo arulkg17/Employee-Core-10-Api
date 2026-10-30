@@ -1,0 +1,173 @@
+@page "/items/create"
+@page "/items/edit/{Id:int}"
+@inject ItemmasterService Service
+@inject CategoryService Categories
+@inject NavigationManager Nav
+@inject ToastService Toasts
+
+<PageTitle>@(Id > 0 ? "Edit Item" : "New Item")</PageTitle>
+
+<div class="ims-card" style="max-width: 1000px;">
+    <h4 class="text-primary fw-bold mb-3">@(Id > 0 ? "Edit Item" : "New Item")</h4>
+
+    <EditForm Model="model" OnValidSubmit="SaveAsync">
+        <DataAnnotationsValidator />
+
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Category</label>
+                <InputSelect class="form-select" @bind-Value="model.CategoryId">
+                    <option value="0">-- select --</option>
+                    @foreach (var c in categories)
+                    {
+                        <option value="@c.Id">@c.Name</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => model.CategoryId" />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Item Code</label>
+                <InputText class="form-control" @bind-Value="model.ItemCode" />
+                <ValidationMessage For="() => model.ItemCode" />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Bar Code</label>
+                <InputText class="form-control" @bind-Value="model.ItemBarCode" />
+                <ValidationMessage For="() => model.ItemBarCode" />
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Item Name</label>
+                <InputText class="form-control" @bind-Value="model.ItemName" />
+                <ValidationMessage For="() => model.ItemName" />
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Description</label>
+                <InputTextArea class="form-control" rows="2" @bind-Value="model.Description" />
+                <ValidationMessage For="() => model.Description" />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">UOM</label>
+                <InputSelect class="form-select" @bind-Value="model.Uom">
+                    <option value="">-- select --</option>
+                    @foreach (var u in Itemmaster.UomList)
+                    {
+                        <option value="@u">@u</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => model.Uom" />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Rate</label>
+                <InputNumber class="form-control" @bind-Value="model.Rate" />
+                <ValidationMessage For="() => model.Rate" />
+            </div>
+
+            <div class="col-md-4 d-flex align-items-end">
+                <div class="form-check">
+                    <InputCheckbox class="form-check-input" id="active" @bind-Value="model.IsActive" />
+                    <label class="form-check-label" for="active">Active</label>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Minimum Stock</label>
+                <InputNumber class="form-control" @bind-Value="model.MinimumStock" />
+                <ValidationMessage For="() => model.MinimumStock" />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Maximum Stock</label>
+                <InputNumber class="form-control" @bind-Value="model.MaximumStock" />
+                <ValidationMessage For="() => model.MaximumStock" />
+            </div>
+        </div>
+
+        <div class="mt-4 d-flex gap-2">
+            <button type="submit" class="btn btn-primary" disabled="@saving">@(Id > 0 ? "Update" : "Save")</button>
+            <button type="button" class="btn btn-outline-secondary" @onclick='() => Nav.NavigateTo("items")'>Cancel</button>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private Itemmaster model = new();
+    private List<Category> categories = new();
+    private bool saving;
+    private int loadedId = -1;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id == loadedId)
+        {
+            return;
+        }
+
+        loadedId = Id;
+
+        try
+        {
+            categories = await Categories.GetAllAsync();
+
+            if (Id == 0)
+            {
+                model = new Itemmaster();
+                return;
+            }
+
+            var item = await Service.GetByIdAsync(Id);
+
+            if (item is null)
+            {
+                Toasts.Error("Item not found");
+                Nav.NavigateTo("items");
+                return;
+            }
+
+            model = item;
+        }
+        catch (ApiException ex)
+        {
+            Toasts.Error(ex.Message);
+            Nav.NavigateTo("items");
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        model.ItemCode = model.ItemCode.Trim();
+        model.ItemBarCode = model.ItemBarCode.Trim();
+        model.ItemName = model.ItemName.Trim();
+        model.Description = string.IsNullOrWhiteSpace(model.Description) ? "" : model.Description.Trim();
+        model.Rate ??= 0;
+
+        saving = true;
+
+        try
+        {
+            var result = Id > 0
+                ? await Service.UpdateAsync(Id, model)
+                : await Service.CreateAsync(model);
+
+            if (!result.Success)
+            {
+                Toasts.Error(result.MessageOr("Save failed"));
+                return;
+            }
+
+            Toasts.Success(Id > 0 ? "Item updated successfully" : "Item created successfully");
+            Nav.NavigateTo("items");
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+}

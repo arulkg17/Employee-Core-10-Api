@@ -1,0 +1,47 @@
+<div class="d-flex flex-wrap justify-content-end align-items-center gap-3 mt-2">
+    <label class="small text-muted mb-0">
+        Rows per page
+        <select class="form-select form-select-sm d-inline-block w-auto ms-1" value="@PageSize" @onchange="SizeChangedAsync">
+            @foreach (var size in _sizes)
+            {
+                <option value="@size">@size</option>
+            }
+        </select>
+    </label>
+
+    <span class="small text-muted">@RangeText</span>
+
+    <div class="btn-group btn-group-sm">
+        <button class="btn btn-outline-secondary" disabled="@(Page <= 1)" @onclick="() => GoToAsync(1)">&laquo;</button>
+        <button class="btn btn-outline-secondary" disabled="@(Page <= 1)" @onclick="() => GoToAsync(Page - 1)">&lsaquo;</button>
+        <button class="btn btn-outline-secondary" disabled="@(Page >= TotalPages)" @onclick="() => GoToAsync(Page + 1)">&rsaquo;</button>
+        <button class="btn btn-outline-secondary" disabled="@(Page >= TotalPages)" @onclick="() => GoToAsync(TotalPages)">&raquo;</button>
+    </div>
+</div>
+
+@code {
+    private static readonly int[] _sizes = { 5, 10, 25, 50 };
+
+    /// <summary>Current page, starting at 1.</summary>
+    [Parameter] public int Page { get; set; } = 1;
+
+    [Parameter] public int PageSize { get; set; } = 10;
+
+    [Parameter] public int Total { get; set; }
+
+    [Parameter] public EventCallback<int> PageChanged { get; set; }
+
+    [Parameter] public EventCallback<int> PageSizeChanged { get; set; }
+
+    private int TotalPages => Math.Max(1, (int)Math.Ceiling(Total / (double)PageSize));
+
+    private string RangeText =>
+        Total == 0
+            ? "0 of 0"
+            : $"{(Page - 1) * PageSize + 1}-{Math.Min(Page * PageSize, Total)} of {Total}";
+
+    private Task GoToAsync(int page) => PageChanged.InvokeAsync(Math.Clamp(page, 1, TotalPages));
+
+    private Task SizeChangedAsync(ChangeEventArgs e) =>
+        PageSizeChanged.InvokeAsync(int.TryParse(e.Value?.ToString(), out var size) ? size : PageSize);
+}
