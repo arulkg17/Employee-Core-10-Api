@@ -87,6 +87,7 @@ public class UserController : ControllerBase
     // ============================================================
     // POST: api/v1/User/Create
     // ============================================================
+    [AllowAnonymous]
     [HttpPost("Create")]
     public async Task<IActionResult> Create(
         [FromBody] UserCreateDto dto)

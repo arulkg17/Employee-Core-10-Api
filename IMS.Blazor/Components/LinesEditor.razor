@@ -1,0 +1,120 @@
+@* The item lines of a Purchase Order or Sales Invoice. It edits the list it is given. *@
+
+<table class="table table-sm align-middle">
+    <thead class="table-light">
+        <tr>
+            <th style="width:40px">#</th>
+            <th style="min-width:230px">Item</th>
+            <th style="width:110px">Qty</th>
+            <th style="width:120px">Rate</th>
+            <th style="width:120px">Discount</th>
+            <th style="width:90px">Tax %</th>
+            <th class="text-end">Tax</th>
+            <th class="text-end">Total</th>
+            @if (!ReadOnly)
+            {
+                <th style="width:60px"></th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @for (var i = 0; i < Lines.Count; i++)
+        {
+            var line = Lines[i];
+            var amounts = Money.CalcLine(line);
+            var number = i + 1;
+            var onHand = StockOf(line.ItemmasterId);
+            var lowStock = onHand is not null && Demand(line.ItemmasterId) > onHand;
+
+            <tr>
+                <td>@number</td>
+                <td>
+                    <select class="form-select form-select-sm"
+                            value="@line.ItemmasterId"
+                            disabled="@ReadOnly"
+                            @onchange="e => ItemPickedAsync(line, e.Value?.ToString())">
+                        <option value="0">-- select item --</option>
+                        @foreach (var item in Items)
+                        {
+                            <option value="@item.Id">@item.ItemCode - @item.ItemName</option>
+                        }
+                    </select>
+
+                    @if (onHand is not null)
+                    {
+                        <div class="small @(lowStock ? "text-danger fw-bold" : "text-muted")">On hand: @onHand</div>
+                    }
+                </td>
+                <td><input type="number" step="any" min="0" class="form-control form-control-sm" disabled="@ReadOnly" @bind="line.Quantity" @bind:after="ChangedAsync" /></td>
+                <td><input type="number" step="any" min="0" class="form-control form-control-sm" disabled="@ReadOnly" @bind="line.Rate" @bind:after="ChangedAsync" /></td>
+                <td><input type="number" step="any" min="0" class="form-control form-control-sm" disabled="@ReadOnly" @bind="line.DiscountAmount" @bind:after="ChangedAsync" /></td>
+                <td><input type="number" step="any" min="0" max="100" class="form-control form-control-sm" disabled="@ReadOnly" @bind="line.TaxPercent" @bind:after="ChangedAsync" /></td>
+                <td class="text-end">@amounts.TaxAmount.ToString("N2")</td>
+                <td class="text-end">@amounts.LineTotal.ToString("N2")</td>
+                @if (!ReadOnly)
+                {
+                    <td>
+                        <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => RemoveAsync(line)">Remove</button>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!ReadOnly)
+{
+    <button type="button" class="btn btn-outline-primary btn-sm" @onclick="AddAsync">+ Add line</button>
+}
+
+@code {
+    [Parameter, EditorRequired] public List<DocLine> Lines { get; set; } = new();
+
+    [Parameter, EditorRequired] public List<Itemmaster> Items { get; set; } = new();
+
+    [Parameter] public bool ReadOnly { get; set; }
+
+    /// <summary>itemId -> quantity on hand. When given, a "not enough stock" warning is shown.</summary>
+    [Parameter] public Dictionary<int, decimal>? Stock { get; set; }
+
+    /// <summary>Raised after every change, so the screen can recalculate its totals.</summary>
+    [Parameter] public EventCallback OnChanged { get; set; }
+
+    private Task ChangedAsync() => OnChanged.InvokeAsync();
+
+    private async Task AddAsync()
+    {
+        Lines.Add(new DocLine());
+        await ChangedAsync();
+    }
+
+    private async Task RemoveAsync(DocLine line)
+    {
+        Lines.Remove(line);
+        await ChangedAsync();
+    }
+
+    private async Task ItemPickedAsync(DocLine line, string? value)
+    {
+        line.ItemmasterId = int.TryParse(value, out var id) ? id : 0;
+
+        // default the rate from the item master when no rate was typed yet
+        var item = Items.FirstOrDefault(i => i.Id == line.ItemmasterId);
+
+        if (item?.Rate is > 0 && line.Rate == 0)
+        {
+            line.Rate = item.Rate.Value;
+        }
+
+        await ChangedAsync();
+    }
+
+    private decimal? StockOf(int itemId) =>
+        Stock is not null && itemId > 0
+            ? Stock.GetValueOrDefault(itemId)
+            : null;
+
+    // total quantity asked for per item (the same item may be on several lines)
+    private decimal Demand(int itemId) =>
+        Lines.Where(l => l.ItemmasterId == itemId).Sum(l => l.Quantity);
+}

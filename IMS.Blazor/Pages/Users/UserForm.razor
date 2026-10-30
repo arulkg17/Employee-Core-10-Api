@@ -1,0 +1,195 @@
+@page "/users/create"
+@page "/users/edit/{Id:int}"
+@inject AppUserService Service
+@inject NavigationManager Nav
+@inject ToastService Toasts
+
+<PageTitle>@(Id > 0 ? "Edit User" : "New User")</PageTitle>
+
+<div class="ims-card" style="max-width: 1000px;">
+    <h4 class="text-primary fw-bold mb-3">@(Id > 0 ? "Edit User" : "New User")</h4>
+
+    <EditForm Model="model" OnValidSubmit="SaveAsync">
+        <DataAnnotationsValidator />
+
+        <div class="row g-3">
+            <div class="ims-section">Account</div>
+
+            <div class="col-md-4">
+                <label class="form-label">User Name</label>
+                <InputText class="form-control" @bind-Value="model.UserName" />
+                <ValidationMessage For="() => model.UserName" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Email</label>
+                <InputText type="email" class="form-control" @bind-Value="model.Email" />
+                <ValidationMessage For="() => model.Email" />
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <div class="form-check">
+                    <InputCheckbox class="form-check-input" id="active" @bind-Value="model.IsActive" />
+                    <label class="form-check-label" for="active">Active</label>
+                </div>
+            </div>
+
+            <div class="ims-section">Name</div>
+
+            <div class="col-md-4">
+                <label class="form-label">First Name</label>
+                <InputText class="form-control" @bind-Value="model.FirstName" />
+                <ValidationMessage For="() => model.FirstName" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Middle Name</label>
+                <InputText class="form-control" @bind-Value="model.MiddleName" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Last Name</label>
+                <InputText class="form-control" @bind-Value="model.LastName" />
+                <ValidationMessage For="() => model.LastName" />
+            </div>
+            <div class="col-12">
+                <label class="form-label">Display Name</label>
+                <InputText class="form-control" @bind-Value="model.DisplayName" />
+                <div class="form-text">Leave blank to use "First Last"</div>
+            </div>
+
+            <div class="ims-section">Contact</div>
+
+            <div class="col-md-4">
+                <label class="form-label">Phone</label>
+                <InputText class="form-control" @bind-Value="model.PhoneNumber" />
+                <ValidationMessage For="() => model.PhoneNumber" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Alternate Phone</label>
+                <InputText class="form-control" @bind-Value="model.AlternatePhone" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Date of Birth</label>
+                <InputDate class="form-control" @bind-Value="model.DateOfBirth" />
+            </div>
+
+            <div class="ims-section">Address</div>
+
+            <div class="col-12">
+                <label class="form-label">Address Line 1</label>
+                <InputText class="form-control" @bind-Value="model.AddressLine1" />
+                <ValidationMessage For="() => model.AddressLine1" />
+            </div>
+            <div class="col-12">
+                <label class="form-label">Address Line 2</label>
+                <InputText class="form-control" @bind-Value="model.AddressLine2" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">City</label>
+                <InputText class="form-control" @bind-Value="model.City" />
+                <ValidationMessage For="() => model.City" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">State</label>
+                <InputText class="form-control" @bind-Value="model.State" />
+                <ValidationMessage For="() => model.State" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Zip Code</label>
+                <InputText class="form-control" @bind-Value="model.ZipCode" />
+                <ValidationMessage For="() => model.ZipCode" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Country</label>
+                <InputText class="form-control" @bind-Value="model.Country" />
+                <ValidationMessage For="() => model.Country" />
+            </div>
+        </div>
+
+        <div class="mt-4 d-flex gap-2">
+            <button type="submit" class="btn btn-primary" disabled="@saving">@(Id > 0 ? "Update" : "Save")</button>
+            <button type="button" class="btn btn-outline-secondary" @onclick='() => Nav.NavigateTo("users")'>Cancel</button>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private AppUser model = new();
+    private bool saving;
+    private int loadedId = -1;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id == loadedId)
+        {
+            return;
+        }
+
+        loadedId = Id;
+
+        if (Id == 0)
+        {
+            model = new AppUser();
+            return;
+        }
+
+        try
+        {
+            var user = await Service.GetByIdAsync(Id);
+
+            if (user is null)
+            {
+                Toasts.Error("User not found");
+                Nav.NavigateTo("users");
+                return;
+            }
+
+            model = user;
+        }
+        catch (ApiException ex)
+        {
+            Toasts.Error(ex.Message);
+            Nav.NavigateTo("users");
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        // tidy the text, and blank optional fields become null
+        model.UserName = model.UserName.Trim();
+        model.Email = model.Email.Trim();
+        model.FirstName = model.FirstName.Trim();
+        model.LastName = model.LastName.Trim();
+        model.DisplayName = string.IsNullOrWhiteSpace(model.DisplayName)
+            ? $"{model.FirstName} {model.LastName}"
+            : model.DisplayName.Trim();
+        model.MiddleName = Blank(model.MiddleName);
+        model.AlternatePhone = Blank(model.AlternatePhone);
+        model.AddressLine2 = Blank(model.AddressLine2);
+
+        saving = true;
+
+        try
+        {
+            var result = Id > 0
+                ? await Service.UpdateAsync(Id, model)
+                : await Service.CreateAsync(model);
+
+            if (!result.Success)
+            {
+                // e.g. duplicate user name / email
+                Toasts.Error(result.MessageOr("Save failed"));
+                return;
+            }
+
+            Toasts.Success(Id > 0 ? "User updated successfully" : "User created successfully");
+            Nav.NavigateTo("users");
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+    private static string? Blank(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+}

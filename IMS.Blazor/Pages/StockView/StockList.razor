@@ -1,0 +1,86 @@
+@page "/stock"
+@inject StockService Service
+@inject ToastService Toasts
+
+<PageTitle>Stock</PageTitle>
+
+<div class="ims-card">
+    <h4 class="text-primary fw-bold mb-3">Stock</h4>
+
+    @* read only: posted receipts minus posted sales invoices (search and paging are done here) *@
+    <input class="form-control mb-3" style="max-width: 320px;" placeholder="Search item"
+           @bind="search" @bind:event="oninput" @bind:after="SearchChanged" />
+
+    <DataTable Items="PageRows" Loading="loading" EmptyText="No stock yet. Post a receipt to add stock.">
+        <Header>
+            <th>Item Code</th>
+            <th>Item Name</th>
+            <th class="text-end">Received</th>
+            <th class="text-end">Sold</th>
+            <th class="text-end">On Hand</th>
+        </Header>
+        <Row Context="s">
+            <td>@s.ItemCode</td>
+            <td>@s.ItemName</td>
+            <td class="text-end">@s.ReceivedQuantity</td>
+            <td class="text-end">@s.SoldQuantity</td>
+            <td class="text-end">
+                <span class="badge @(s.OnHandQuantity <= 0 ? "text-bg-danger" : "text-bg-success")">@s.OnHandQuantity</span>
+            </td>
+        </Row>
+    </DataTable>
+
+    <Pager Page="page" PageSize="pageSize" Total="Filtered.Count" PageChanged="p => page = p" PageSizeChanged="SizeChanged" />
+</div>
+
+@code {
+    private List<ItemStock> rows = new();
+    private bool loading;
+    private string search = "";
+    private int page = 1;
+    private int pageSize = 10;
+
+    private List<ItemStock> Filtered
+    {
+        get
+        {
+            var text = search.Trim();
+
+            return text.Length == 0
+                ? rows
+                : rows.Where(r =>
+                        r.ItemCode.Contains(text, StringComparison.OrdinalIgnoreCase)
+                        || r.ItemName.Contains(text, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+        }
+    }
+
+    private IEnumerable<ItemStock> PageRows =>
+        Filtered.Skip((page - 1) * pageSize).Take(pageSize);
+
+    protected override async Task OnInitializedAsync()
+    {
+        loading = true;
+
+        try
+        {
+            rows = await Service.GetAllAsync();
+        }
+        catch (ApiException ex)
+        {
+            Toasts.Error(ex.Message);
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private void SearchChanged() => page = 1;
+
+    private void SizeChanged(int size)
+    {
+        pageSize = size;
+        page = 1;
+    }
+}

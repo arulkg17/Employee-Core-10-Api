@@ -1,0 +1,128 @@
+@page "/customers/create"
+@page "/customers/edit/{Id:int}"
+@inject CustomerService Service
+@inject NavigationManager Nav
+@inject ToastService Toasts
+
+<PageTitle>@(Id > 0 ? "Edit Customer" : "New Customer")</PageTitle>
+
+<div class="ims-card" style="max-width: 900px;">
+    <h4 class="text-primary fw-bold mb-3">@(Id > 0 ? "Edit Customer" : "New Customer")</h4>
+
+    <EditForm Model="model" OnValidSubmit="SaveAsync">
+        <DataAnnotationsValidator />
+
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Customer Code</label>
+                <InputText class="form-control" @bind-Value="model.CustomerCode" />
+                <ValidationMessage For="() => model.CustomerCode" />
+            </div>
+
+            <div class="col-md-8">
+                <label class="form-label">Customer Name</label>
+                <InputText class="form-control" @bind-Value="model.CustomerName" />
+                <ValidationMessage For="() => model.CustomerName" />
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">City</label>
+                <InputText class="form-control" @bind-Value="model.City" />
+                <ValidationMessage For="() => model.City" />
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">State</label>
+                <InputText class="form-control" @bind-Value="model.State" />
+                <ValidationMessage For="() => model.State" />
+            </div>
+
+            <div class="col-12">
+                <div class="form-check">
+                    <InputCheckbox class="form-check-input" id="active" @bind-Value="model.IsActive" />
+                    <label class="form-check-label" for="active">Active</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 d-flex gap-2">
+            <button type="submit" class="btn btn-primary" disabled="@saving">@(Id > 0 ? "Update" : "Save")</button>
+            <button type="button" class="btn btn-outline-secondary" @onclick='() => Nav.NavigateTo("customers")'>Cancel</button>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    /// <summary>Filled from the address /customers/edit/5 ; stays 0 on /customers/create.</summary>
+    [Parameter] public int Id { get; set; }
+
+    private Customer model = new();
+    private bool saving;
+    private int loadedId = -1;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id == loadedId)
+        {
+            return;
+        }
+
+        loadedId = Id;
+
+        if (Id == 0)
+        {
+            model = new Customer();
+            return;
+        }
+
+        try
+        {
+            var customer = await Service.GetByIdAsync(Id);
+
+            if (customer is null)
+            {
+                Toasts.Error("Customer not found");
+                Nav.NavigateTo("customers");
+                return;
+            }
+
+            model = customer;
+        }
+        catch (ApiException ex)
+        {
+            Toasts.Error(ex.Message);
+            Nav.NavigateTo("customers");
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        model.CustomerCode = model.CustomerCode.Trim();
+        model.CustomerName = model.CustomerName.Trim();
+        model.City = string.IsNullOrWhiteSpace(model.City) ? null : model.City.Trim();
+        model.State = string.IsNullOrWhiteSpace(model.State) ? null : model.State.Trim();
+
+        saving = true;
+
+        try
+        {
+            var result = Id > 0
+                ? await Service.UpdateAsync(Id, model)
+                : await Service.CreateAsync(model);
+
+            if (!result.Success)
+            {
+                // e.g. duplicate code
+                Toasts.Error(result.MessageOr("Save failed"));
+                return;
+            }
+
+            Toasts.Success(Id > 0 ? "Customer updated successfully" : "Customer created successfully");
+            Nav.NavigateTo("customers");
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+}
