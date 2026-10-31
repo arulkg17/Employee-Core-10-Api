@@ -1,6 +1,5 @@
 <Solution>
   <Project Path="Employee-Core10-API/Invoice-Core10-API.csproj" />
-  <Project Path="IMS.Blazor/IMS.Blazor.csproj" Id="e2f953fd-b829-4c1d-a2b7-4ca2a1b8a30d" />
   <Project Path="IMS.MCP.Server.Test/IMS.MCP.Server.Test.csproj" />
   <Project Path="IMS.MCP.Server/IMS.MCP.Server.csproj" />
   <Project Path="Invoice.AI.Tests/Invoice.AI.Tests.csproj" />
